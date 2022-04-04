@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Super Admin"
+    },
+    {
+        "name": "Admin"
+    },
+    {
+        "name": "Influencer"
+    },
+    {
+        "name": "Influencer Manager"
+    },
+    {
+        "name": "Campaign Manager"
+    }
+]

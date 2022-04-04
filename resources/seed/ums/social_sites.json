@@ -1,0 +1,22 @@
+[
+    {
+        "title": "Facebook",
+        "icon": "fe fe-facebook",
+        "link": "https://facebook.com/:username:"
+    },
+    {
+        "title": "Linkedin",
+        "icon": "fe fe-linkedin",
+        "link": "https://linkedin.com/in/:username:"
+    },
+    {
+        "title": "Twitter",
+        "icon": "fe fe-twitter",
+        "link": "https://twitter.com/@:username:"
+    },
+    {
+        "title": "Github",
+        "icon": "fe fe-github",
+        "link": "https://github.com/:username:"
+    }
+]

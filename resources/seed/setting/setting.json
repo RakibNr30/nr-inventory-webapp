@@ -1,0 +1,28 @@
+{
+  "contacts": {
+    "email": "inventory@example.com",
+    "phone": null,
+    "mobile": null,
+    "fax": null,
+    "website": null,
+    "address": "Dhaka, Bangladesh",
+    "google_map": "https://goo.gl/maps/r1ybUXG3DqJDq7Me6",
+    "longitude": 24.2378044,
+    "latitude": 89.8887497,
+    "facebook": null,
+    "twitter": null,
+    "linked_in": null,
+    "youtube": null,
+    "instagram": null,
+    "skype": null,
+    "whatsapp": null,
+    "working_hours": null,
+    "working_days": null
+  },
+  "seos": {},
+  "sites": {
+    "title": "NEW FLUENCE",
+    "description": ""
+  },
+  "socialite": {}
+}

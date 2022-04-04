@@ -1,0 +1,14 @@
+{
+    "name": "Ums",
+    "alias": "ums",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\Ums\\Providers\\UmsServiceProvider",
+        "Modules\\Ums\\Providers\\ObserverServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

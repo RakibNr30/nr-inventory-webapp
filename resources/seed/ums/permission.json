@@ -1,0 +1,126 @@
+[
+    {
+        "name": "My Profile",
+        "roles": [
+            "Super Admin",
+            "Admin",
+            "Influencer",
+            "Influencer Manager",
+            "Campaign Manager"
+        ]
+    },
+    {
+        "name": "Dashboard",
+        "roles": [
+            "Super Admin",
+            "Admin",
+            "Influencer",
+            "Influencer Manager",
+            "Campaign Manager"
+        ]
+    },
+    {
+        "name": "Influencer",
+        "roles": [
+            "Super Admin",
+            "Admin",
+            "Influencer",
+            "Influencer Manager",
+            "Campaign Manager"
+        ]
+    },
+    {
+        "name": "Campaigns",
+        "roles": [
+            "Super Admin",
+            "Admin",
+            "Influencer",
+            "Influencer Manager",
+            "Campaign Manager"
+        ]
+    },
+    {
+        "name": "Brands",
+        "roles": [
+            "Super Admin",
+            "Admin",
+            "Influencer",
+            "Influencer Manager",
+            "Campaign Manager"
+        ]
+    },
+    {
+        "name": "Products",
+        "roles": [
+            "Super Admin",
+            "Admin",
+            "Influencer",
+            "Influencer Manager",
+            "Campaign Manager"
+        ]
+    },
+    {
+        "name": "Logistics",
+        "roles": [
+            "Super Admin",
+            "Admin",
+            "Influencer",
+            "Influencer Manager",
+            "Campaign Manager"
+        ]
+    },
+    {
+        "name": "Settings",
+        "roles": [
+            "Super Admin",
+            "Admin",
+            "Influencer",
+            "Influencer Manager",
+            "Campaign Manager"
+        ]
+    },
+    {
+        "name": "Cms",
+        "roles": [
+            "Super Admin",
+            "Admin"
+        ]
+    },
+    {
+        "name": "Access Controls",
+        "roles": [
+            "Super Admin",
+            "Admin"
+        ]
+    },
+    {
+        "name": "Core Settings",
+        "roles": [
+            "Super Admin"
+        ]
+    },
+    {
+        "name": "Common Settings",
+        "roles": [
+            "Super Admin",
+            "Admin"
+        ]
+    },
+    {
+        "name": "App Settings",
+        "roles": [
+            "Super Admin",
+            "Admin"
+        ]
+    },
+    {
+        "name": "Sign Out",
+        "roles": [
+            "Super Admin",
+            "Admin",
+            "Influencer",
+            "Influencer Manager",
+            "Campaign Manager"
+        ]
+    }
+]

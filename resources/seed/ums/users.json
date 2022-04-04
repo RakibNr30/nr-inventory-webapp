@@ -1,0 +1,140 @@
+[
+  {
+    "name": "Abdur Rakib",
+    "account_info": {
+      "email": "abdurrakib.cs@gmail.com",
+      "roles": ["Super Admin"]
+    },
+    "additional_info": {
+      "first_name": "Abdur",
+      "last_name": "Rakib",
+      "designation": "Software Engineer",
+      "blood_group": "B (+ve)",
+      "gender": 1
+    }
+  },
+    {
+        "name": "Mr Admin One",
+        "account_info": {
+            "email": "admin1@example.com",
+            "roles": ["Admin"]
+        },
+        "additional_info": {
+            "first_name": "Mr Admin",
+            "last_name": "One",
+            "designation": "Software Engineer",
+            "blood_group": "B (+ve)",
+            "gender": 1
+        }
+    },
+    {
+        "name": "Mrs Admin Two",
+        "account_info": {
+            "email": "admin2@example.com",
+            "roles": ["Admin"]
+        },
+        "additional_info": {
+            "first_name": "Mrs Admin",
+            "last_name": "Two",
+            "designation": "Software Engineer",
+            "blood_group": "B (+ve)",
+            "gender": 2
+        }
+    },
+    {
+        "name": "Mr Influencer One",
+        "account_info": {
+            "email": "influencer1@example.com",
+            "roles": ["Influencer"]
+        },
+        "additional_info": {
+            "first_name": "Mr Influencer",
+            "last_name": "One",
+            "designation": "Software Engineer",
+            "blood_group": "B (+ve)",
+            "gender": 1
+        },
+        "social_account_info": {
+            "instagram_username": "ins_inf_01",
+            "instagram_followers": 78261789,
+            "tiktok_username": "tik_inf_01",
+            "tiktok_followers": 23421
+        }
+    },
+    {
+        "name": "Mrs Influencer Two",
+        "account_info": {
+            "email": "influencer2@example.com",
+            "roles": ["Influencer"]
+        },
+        "additional_info": {
+            "first_name": "Mrs Influencer",
+            "last_name": "Two",
+            "designation": "Software Engineer",
+            "blood_group": "B (+ve)",
+            "gender": 2
+        },
+        "social_account_info": {
+            "instagram_username": "ins_inf_02",
+            "instagram_followers": 321,
+            "tiktok_username": "tik_inf_02",
+            "tiktok_followers": 32132312312321
+        }
+    },
+    {
+        "name": "Mr Influencer Manager One",
+        "account_info": {
+            "email": "influencer-manager1@example.com",
+            "roles": ["Influencer Manager"]
+        },
+        "additional_info": {
+            "first_name": "Mr Influencer Manager",
+            "last_name": "One",
+            "designation": "Software Engineer",
+            "blood_group": "B (+ve)",
+            "gender": 1
+        }
+    },
+    {
+        "name": "Mrs Influencer Manager Two",
+        "account_info": {
+            "email": "influencer-manager2@example.com",
+            "roles": ["Influencer Manager"]
+        },
+        "additional_info": {
+            "first_name": "Mrs Influencer Manager",
+            "last_name": "Two",
+            "designation": "Software Engineer",
+            "blood_group": "B (+ve)",
+            "gender": 2
+        }
+    },
+    {
+        "name": "Mr Campaign Manager One",
+        "account_info": {
+            "email": "campaign-manager1@example.com",
+            "roles": ["Campaign Manager"]
+        },
+        "additional_info": {
+            "first_name": "Mr Campaign Manager",
+            "last_name": "One",
+            "designation": "Software Engineer",
+            "blood_group": "B (+ve)",
+            "gender": 1
+        }
+    },
+    {
+        "name": "Mrs Campaign Manager Two",
+        "account_info": {
+            "email": "campaign-manager2@example.com",
+            "roles": ["Campaign Manager"]
+        },
+        "additional_info": {
+            "first_name": "Mrs Campaign Manager",
+            "last_name": "Two",
+            "designation": "Software Engineer",
+            "blood_group": "B (+ve)",
+            "gender": 2
+        }
+    }
+]
