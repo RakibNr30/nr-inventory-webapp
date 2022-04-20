@@ -2,22 +2,26 @@
 
 namespace Modules\Ums\Http\Controllers;
 
+use App\Helpers\AuthManager;
 use App\Http\Controllers\Controller;
 
 // requests...
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Modules\Cms\Services\CampaignInfluencerService;
+use Modules\Cms\Services\CampaignService;
+use Modules\Cms\Services\DashboardService;
+use Modules\Cms\Services\InfluencerCategoryService;
 use Modules\Ums\Entities\User;
+use Modules\Ums\Http\Requests\InfluencerStoreRequest;
+use Modules\Ums\Http\Requests\InfluencerUpdateRequest;
 use Modules\Ums\Http\Requests\UserStoreRequest;
 use Modules\Ums\Http\Requests\UserUpdateRequest;
 
-// datatable...
-use Modules\Ums\DataTables\UserDataTable;
-
-// services...
-use Modules\Ums\Services\RoleService;
 use Modules\Ums\Services\UserAdditionalInfoService;
 use Modules\Ums\Services\UserService;
+use Modules\Ums\Services\UserShippingInfoService;
+use Modules\Ums\Services\UserSocialAccountInfoService;
 use function GuzzleHttp\Promise\all;
 
 class InfluencerController extends Controller
@@ -28,40 +32,104 @@ class InfluencerController extends Controller
     protected $userService;
 
     /**
-     * @var $additionalInfoService
+     * @var $userAdditionalInfoService
      */
     protected $userAdditionalInfoService;
 
     /**
-     * @var $roleService
+     * @var $userShippingInfoService
      */
-    protected $roleService;
+    protected $userShippingInfoService;
+
+    /**
+     * @var $userSocialAccountInfoService
+     */
+    protected $userSocialAccountInfoService;
+
+    /**
+     * @var $influencerCategoryService
+     */
+    protected $influencerCategoryService;
+
+    /**
+     * @var $dashboardService
+     */
+    protected $dashboardService;
+
+    /**
+     * @var $campaignService
+     */
+    protected $campaignService;
+
+    /**
+     * @var $campaignInfluencerService
+     */
+    protected $campaignInfluencerService;
 
     /**
      * Constructor
      *
      * @param UserService $userService
      * @param UserAdditionalInfoService $userAdditionalInfoService
-     * @param RoleService $roleService
+     * @param InfluencerCategoryService $influencerCategoryService
+     * @param DashboardService $dashboardService
+     * @param CampaignService $campaignService
+     * @param UserShippingInfoService $userShippingInfoService
+     * @param UserSocialAccountInfoService $userSocialAccountInfoService
+     * @param CampaignInfluencerService $campaignInfluencerService
      */
-    public function __construct(UserService $userService, UserAdditionalInfoService $userAdditionalInfoService, RoleService $roleService)
+    public function __construct
+    (
+        UserService $userService,
+        UserAdditionalInfoService $userAdditionalInfoService,
+        InfluencerCategoryService $influencerCategoryService,
+        DashboardService $dashboardService,
+        CampaignService $campaignService,
+        UserShippingInfoService $userShippingInfoService,
+        UserSocialAccountInfoService $userSocialAccountInfoService,
+        CampaignInfluencerService $campaignInfluencerService
+    )
     {
         $this->userService = $userService;
         $this->userAdditionalInfoService = $userAdditionalInfoService;
-        $this->roleService = $roleService;
+        $this->influencerCategoryService = $influencerCategoryService;
+        $this->dashboardService = $dashboardService;
+        $this->campaignService = $campaignService;
+        $this->userShippingInfoService = $userShippingInfoService;
+        $this->userSocialAccountInfoService = $userSocialAccountInfoService;
+        $this->campaignInfluencerService = $campaignInfluencerService;
         //$this->middleware(['permission:User']);
     }
 
     /**
      * User list
      *
-     * @param UserDataTable $datatable
      * @return \Illuminate\View\View
      */
     public function index()
     {
-        $influencers = $this->userService->influencers(10);
-        return view('ums::influencer.index', compact('influencers'));
+        $dashboard = new \stdClass();
+
+        if (AuthManager::isBrand()) {
+            $favourite = 0;
+            if (\request()->has('favourite')) {
+                $favourite = \request()->get('favourite');
+            }
+
+            if ($favourite == 1) {
+                $influencers = $this->campaignInfluencerService->brandFavouriteInfluencers();
+            } else {
+                $influencers = $this->campaignInfluencerService->brandInfluencers();
+            }
+
+            $dashboard->statistics = $this->dashboardService->statisticsBrand();
+        }
+        if (!AuthManager::isBrand() && !AuthManager::isInfluencer()) {
+            $influencers = $this->campaignInfluencerService->all();
+            $dashboard->statistics = $this->dashboardService->statistics();
+        }
+
+        return view('ums::influencer.index', compact('influencers', 'dashboard'));
     }
 
     /**
@@ -71,10 +139,14 @@ class InfluencerController extends Controller
      */
     public function create()
     {
-        // roles
-        $roles = $this->roleService->all();
+        // influencer categories
+        $influencerCategories = $this->influencerCategoryService->all();
+
+        // campaigns
+        // $campaigns = $this->campaignService->all();
+
         // return view
-        return view('ums::user.create', compact('roles'));
+        return view('ums::influencer.create', compact('influencerCategories'));
     }
 
 
@@ -84,49 +156,39 @@ class InfluencerController extends Controller
      * @param UserStoreRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(UserStoreRequest $request)
+    public function store(InfluencerStoreRequest $request)
     {
         // get data
         $data = $request->all();
+
         $data['password'] = bcrypt($data['password']);
         $data['approved_at'] = Carbon::now();
         $data['approved_by'] = auth()->user()->id;
+        $data['is_influencer'] = true;
+        $data['is_process_completed'] = true;
+        $data['categories'] = array_map('intval', $data['categories'] ?? []);
+
         // create user
         $user = $this->userService->create($data);
         // assign roles
-        if (count($data['roles']) > 0) {
-            // remove chairman role
-            if (in_array('Chairman', $data['roles'])) {
-                $chairman = User::role('Chairman')->first();
-                if ($chairman) {
-                    if ($chairman->hasRole('Chairman')) {
-                        $chairman->removeRole('Chairman');
-                    }
-                }
-            }
-            // assign roles
-            $user->assignRole($data['roles']);
-        }
+        $user->assignRole(['Influencer']);
         // upload files
         $user->uploadFiles();
         // check if user created
         if ($user) {
             $data['user_id'] = $user->id;
-            $data['personal_email'] = $user->email;
-            $data['personal_phone'] = $user->phone;
-            $additionalInfo = $this->userAdditionalInfoService->create($data);
-            // upload files
-            $additionalInfo->uploadFiles();
-            if ($additionalInfo) {
-                // flash notification
-                notifier()->success('User created successfully.');
-            } else {
-                // flash notification
-                notifier()->error('User cannot be created successfully.');
-            }
+            $this->userAdditionalInfoService->create($data);
+
+            $data['first_name'] = $data['shipping_first_name'];
+            $data['last_name'] = $data['shipping_last_name'];
+
+            $this->userShippingInfoService->create($data);
+            $this->userSocialAccountInfoService->create($data);
+
+            notifier()->success('Influencer added successfully.');
         } else {
             // flash notification
-            notifier()->error('User cannot be created successfully.');
+            notifier()->error('Influencer cannot be added successfully.');
         }
         // redirect back
         return redirect()->back();
@@ -168,33 +230,35 @@ class InfluencerController extends Controller
         // check if user doesn't exists
         if (empty($user)) {
             // flash notification
-            notifier()->error('User not found!');
+            notifier()->error('Influencer not found!');
             // redirect back
             return redirect()->back();
         }
-        // roles
-        $roles = $this->roleService->all();
-        // given roles
-        $givenRoles = $user->roles->pluck('name')->toArray();
+
+        // influencer categories
+        $influencerCategories = $this->influencerCategoryService->all();
+        // campaigns
+        // $campaigns = $this->campaignService->all();
+
         // return view
-        return view('ums::user.edit', compact('user', 'roles', 'givenRoles'));
+        return view('ums::influencer.edit', compact('user', 'influencerCategories'));
     }
 
     /**
      * Update user
      *
-     * @param UserUpdateRequest $request
+     * @param InfluencerUpdateRequest $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(UserUpdateRequest $request, $id)
+    public function update(InfluencerUpdateRequest $request, $id)
     {
         // get user
         $user = $this->userService->find($id);
         // check if user doesn't exists
         if (empty($user)) {
             // flash notification
-            notifier()->error('User not found!');
+            notifier()->error('Influencer not found!');
             // redirect back
             return redirect()->back();
         }
@@ -202,39 +266,25 @@ class InfluencerController extends Controller
         $data = $request->all();
         // upload files
         $user->uploadFiles();
+
+        $data['categories'] = array_map('intval', $data['categories'] ?? []);
         // update user
         $user = $this->userService->update($data, $id);
-        // assign roles
-        if (count($data['roles']) > 0) {
-            // remove chairman role
-            if (in_array('Chairman', $data['roles'])) {
-                $chairman = User::role('Chairman')->first();
-                if ($chairman) {
-                    if ($chairman->hasRole('Chairman')) {
-                        $chairman->removeRole('Chairman');
-                    }
-                }
-            }
-            // assign roles
-            $user->syncRoles($data['roles']);
-        }
+
         // check if user updated
         if ($user) {
-            $data['personal_email'] = $user->email;
-            $data['personal_phone'] = $user->phone;
-            $additionalInfo = $this->userAdditionalInfoService->updateOrCreate(['user_id' => $user->id], $data);
-            // upload files
-            $additionalInfo->uploadFiles();
-            if ($additionalInfo) {
-                // flash notification
-                notifier()->success('User updated successfully.');
-            } else {
-                // flash notification
-                notifier()->error('User cannot be updated successfully.');
-            }
+            $this->userAdditionalInfoService->updateOrCreate(['user_id' => $user->id], $data);
+
+            $data['first_name'] = $data['shipping_first_name'];
+            $data['last_name'] = $data['shipping_last_name'];
+
+            $this->userShippingInfoService->updateOrCreate(['user_id' => $user->id], $data);
+            $this->userSocialAccountInfoService->updateOrCreate(['user_id' => $user->id], $data);
+
+            notifier()->success('Influencer updated successfully.');
         } else {
             // flash notification
-            notifier()->error('User cannot be updated successfully.');
+            notifier()->error('Incluencer cannot be updated successfully.');
         }
         // redirect back
         return redirect()->back();
@@ -288,6 +338,7 @@ class InfluencerController extends Controller
      * @param Request $request
      * @return array
      */
+
     /*public function priorityUpdate(Request $request)
     {
         if ($request->has('ids')) {

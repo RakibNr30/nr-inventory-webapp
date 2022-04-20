@@ -19,7 +19,7 @@ class RegisterCompleted
     {
         if (auth()->user()) {
             if (!AuthManager::isProcessCompleted(auth()->user()) &&
-                AuthManager::isInfluencer()
+                (AuthManager::isInfluencer() || AuthManager::isBrand())
             ) {
                 session(['user_id' => auth()->user()->id]);
                 auth()->logout();

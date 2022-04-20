@@ -4,6 +4,8 @@ namespace Modules\Cms\Entities;
 
 use App\BaseModel;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Modules\Ums\Entities\User;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
@@ -17,6 +19,7 @@ class Brand extends BaseModel implements hasMedia
         'title',
 		'slug',
 		'details',
+		'user_id',
     ];
 
     protected $hidden = [
@@ -27,6 +30,7 @@ class Brand extends BaseModel implements hasMedia
         'title' => 'string',
 		'slug' => 'string',
 		'details' => 'string',
+		'user_id' => 'integer',
     ];
 
     public function sluggable()
@@ -62,5 +66,13 @@ class Brand extends BaseModel implements hasMedia
             $this->addMediaFromRequest('logo')
                 ->toMediaCollection(config('core.media_collection.brand.logo'));
         }
+    }
+
+    public function user () {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function products () {
+        return $this->hasMany(Product::class, 'brand_id', 'id');
     }
 }

@@ -10,11 +10,12 @@
                         <div class="card-header">
                             <h3 class="card-title mt-1">Edit Campaign</h3>
                             <a href="{{ route('backend.cms.campaign.index') }}" type="button" class="btn btn-success btn-sm text-white float-right">View Campaign List</a>
+                            <a href="{{ route('backend.cms.campaign.influencer.create', [$campaign->id]) }}" type="button" class="btn btn-primary btn-sm text-white float-right mr-2">Add Influencer to Campaign</a>
                         </div>
                         {!! Form::open(['url' => route('backend.cms.campaign.update', [$campaign->id]), 'method' => 'put', 'files' => true]) !!}
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="title" class="@error('title') text-danger @enderror">Title</label>
                                         <input id="title" name="title" value="{{ old('title') ?: $campaign->title }}" type="text" class="form-control @error('title') is-invalid @enderror" placeholder="Enter title" autofocus>
@@ -40,35 +41,289 @@
                                         @endif
                                     </div>
                                 </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="brand_id" class="@error('brand_id') text-danger @enderror">Brand</label>
+                                        <select id="brand_id" name="brand_id"
+                                                class="form-control select2 @error('brand_id') is-invalid @enderror" data-placeholder="Select Brand">
+                                            <option>Select a brand</option>
+                                            @foreach($brands as $brand)
+                                                <option value="{{ $brand->id }}" {{ $brand->id == $campaign->brand_id ? 'selected' : '' }}>{{ $brand->additionalInfo->first_name ?? '' }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('brand_id')
+                                        <span class="invalid-feedback"
+                                        role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="available_until" class="@error('available_until') text-danger @enderror">Available Until</label>
-                                        <input id="available_until" name="available_until" value="{{ old('available_until') ?: $campaign->available_until }}" type="text" class="form-control datepicker @error('available_until') is-invalid @enderror" placeholder="Enter available until" autofocus>
-                                        @error('available_until')
+                                        <label for="start_date" class="@error('start_date') text-danger @enderror">Start Date</label>
+                                        <input id="start_date" name="start_date" value="{{ old('start_date') ?: $campaign->start_date }}" type="text" class="form-control datepicker @error('start_date') is-invalid @enderror" placeholder="Enter start date" autofocus>
+                                        @error('start_date')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="first_content_online" class="@error('first_content_online') text-danger @enderror">First Content Online</label>
+                                        <input id="first_content_online" name="first_content_online" value="{{ old('first_content_online') ?: $campaign->first_content_online }}" type="text" class="form-control datepicker @error('first_content_online') is-invalid @enderror" placeholder="Enter first content online" autofocus>
+                                        @error('first_content_online')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="cycle_count" class="@error('cycle_count') text-danger @enderror">Cycle Count</label>
+                                        <input id="cycle_count" name="cycle_count" value="{{ old('cycle_count') ?? $campaign->cycle_count }}" type="number" min="0" class="form-control @error('cycle_count') is-invalid @enderror" placeholder="Enter cycle count" autofocus>
+                                        @error('cycle_count')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+{{--                                        <label for="cycle_time_unit" class="d-block @error('cycle_time_unit') text-danger @enderror">--}}
+{{--                                            Cycle Time Unit--}}
+{{--                                        </label>--}}
+                                        <div class="custom-control custom-radio d-inline-" style="margin-top: 22px">
+                                            <input class="custom-control-input" type="radio" id="customRadio1" name="cycle_time_unit" value="1" {{ $campaign->cycle_time_unit == 1 ? 'checked' : '' }}>
+                                            <label for="customRadio1" class="custom-control-label">Monthly</label>
+                                        </div>
+                                        <div class="custom-control custom-radio d-inline- ml-3-">
+                                            <input class="custom-control-input" type="radio" id="customRadio2" name="cycle_time_unit" value="2" {{ $campaign->cycle_time_unit == 2 ? 'checked' : '' }}>
+                                            <label for="customRadio2" class="custom-control-label">Weekly</label>
+                                        </div>
+                                        @error('cycle_time_unit')
                                         <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                         @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="brand_ids" class="@error('brand_ids') text-danger @enderror">Brands</label>
-                                        <select id="brand_ids" name="brand_ids[]"
-                                                class="form-control select2 @error('brand_ids') is-invalid @enderror" data-placeholder="Select Brands" multiple>
-                                            @foreach($brands as $brand)
-                                                <option value="{{ $brand->id }}" {{ in_array($brand->id, $campaign->brand_ids) ? 'selected' : '' }}>{{ $brand->title }}</option>
+                                        <label for="target_influencer_category_ids" class="@error('target_influencer_category_ids') text-danger @enderror">
+                                            Influencer Target Group Category
+                                        </label>
+                                        <select id="target_influencer_category_ids" name="target_influencer_category_ids[]"
+                                                class="form-control select2 @error('target_influencer_category_ids') is-invalid @enderror" data-placeholder="Select Categories" multiple>
+                                            @foreach($influencerCategories as $influencerCategorie)
+                                                <option value="{{ $influencerCategorie->id }}" {{ in_array($influencerCategorie->id, $campaign->target_influencer_category_ids ?? []) ? 'selected' : '' }}>{{ $influencerCategorie->title }}</option>
                                             @endforeach
                                         </select>
-                                        @error('brand_ids')
-                                        <span class="invalid-feedback"
+                                        @error('target_influencer_category_ids')
+                                        <span class="invalid-feedback d-block"
+                                              role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="target_influencer_genders" class="d-block @error('target_influencer_genders') text-danger @enderror">
+                                            Influencer Target Group Gender
+                                        </label>
+                                        @foreach(config('core.genders') as $gender_key => $gender)
+                                            <div class="custom-control custom-checkbox d-inline">
+                                                <input class="custom-control-input" type="checkbox" id="customCheckbox{{ $gender_key }}" name="target_influencer_genders[]" value="{{ $gender_key }}" {{ in_array($gender_key, $campaign->target_influencer_genders) ? 'checked' : '' }}>
+                                                <label for="customCheckbox{{ $gender_key }}" class="custom-control-label ml-3 font-weight-normal">{{ $gender }}</label>
+                                            </div>
+                                        @endforeach
+                                        @error('target_influencer_genders')
+                                        <span class="invalid-feedback d-block"
+                                              role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="target_influencer_lower_age" class="@error('target_influencer_lower_age') text-danger @enderror">Age From</label>
+                                        <input id="target_influencer_lower_age" name="target_influencer_lower_age" value="{{ old('target_influencer_lower_age') ?? $campaign->target_influencer_lower_age }}" type="number" min="0" class="form-control @error('target_influencer_lower_age') is-invalid @enderror" placeholder="Enter age from" autofocus>
+                                        @error('target_influencer_lower_age')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="target_influencer_upper_age" class="@error('target_influencer_upper_age') text-danger @enderror">Age To</label>
+                                        <input id="target_influencer_upper_age" name="target_influencer_upper_age" value="{{ old('target_influencer_upper_age') ?? $campaign->target_influencer_lower_age }}" type="number" min="0" class="form-control @error('target_influencer_upper_age') is-invalid @enderror" placeholder="Enter age to" autofocus>
+                                        @error('target_influencer_upper_age')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="target_influencer_details" class="@error('target_influencer_details') text-danger @enderror">Influencer Target Group Details</label>
+                                        <textarea id="target_influencer_details" name="target_influencer_details" class="form-control" rows="3" placeholder="Enter target influencer details">{{ old('target_influencer_details') ?? $campaign->target_influencer_details }}</textarea>
+                                        @error('target_influencer_details')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="amount_of_influencer_per_cycle" class="@error('amount_of_influencer_per_cycle') text-danger @enderror">Amount of Influencer Per Cycle</label>
+                                        <input id="amount_of_influencer_per_cycle" name="amount_of_influencer_per_cycle" value="{{ old('amount_of_influencer_per_cycle') ?? $campaign->amount_of_influencer_per_cycle }}" type="number" min="0" class="form-control @error('amount_of_influencer_per_cycle') is-invalid @enderror" placeholder="Enter amount of influencer per cycle" autofocus>
+                                        @error('amount_of_influencer_per_cycle')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="amount_of_influencer_follower_per_cycle" class="@error('amount_of_influencer_follower_per_cycle') text-danger @enderror">Amount of Influencer Follower Per Cycle</label>
+                                        <input id="amount_of_influencer_follower_per_cycle" name="amount_of_influencer_follower_per_cycle" value="{{ old('amount_of_influencer_follower_per_cycle') ?? $campaign->amount_of_influencer_follower_per_cycle }}" type="number" min="0" class="form-control @error('amount_of_influencer_follower_per_cycle') is-invalid @enderror" placeholder="Enter amount of influencer follower per cycle" autofocus>
+                                        @error('amount_of_influencer_follower_per_cycle')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="extra_agreements" class="@error('extra_agreements') text-danger @enderror">Extra Agreements</label>
+                                        <textarea id="extra_agreements" name="extra_agreements" class="form-control" rows="3" placeholder="Enter extra agreements">{{ old('extra_agreements') ?? $campaign->extra_agreements }}</textarea>
+                                        @error('extra_agreements')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="d-block">
+                                            Individual Coupon Codes
+                                        </label>
+                                        <div class="custom-control custom-checkbox d-inline">
+                                            <input class="custom-control-input" type="checkbox" id="IcustomCheckbox1" name="individual_coupon_code_internal" value="{{ 1 }}" {{ $campaign->individual_coupon_code_internal == 1 ? 'checked' : '' }}>
+                                            <label for="IcustomCheckbox1" class="custom-control-label ml-3 font-weight-normal">Internal</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox d-inline">
+                                            <input class="custom-control-input" type="checkbox" id="IcustomCheckbox2" name="individual_coupon_code_brand" value="{{ 1 }}" {{ $campaign->individual_coupon_code_brand == 1 ? 'checked' : '' }}>
+                                            <label for="IcustomCheckbox2" class="custom-control-label ml-3 font-weight-normal">Brand</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="d-block">
+                                            Individual Swipe-Up Links
+                                        </label>
+                                        <div class="custom-control custom-checkbox d-inline">
+                                            <input class="custom-control-input" type="checkbox" id="IcustomCheckbox3" name="individual_swipe_up_link_internal" value="{{ 1 }}" {{ $campaign->individual_swipe_up_link_internal == 1 ? 'checked' : '' }}>
+                                            <label for="IcustomCheckbox3" class="custom-control-label ml-3 font-weight-normal">Internal</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox d-inline">
+                                            <input class="custom-control-input" type="checkbox" id="IcustomCheckbox4" name="individual_swipe_up_link_brand" value="{{ 1 }}" {{ $campaign->individual_swipe_up_link_brand == 1 ? 'checked' : '' }}>
+                                            <label for="IcustomCheckbox4" class="custom-control-label ml-3 font-weight-normal">Brand</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="d-block">
+                                            Influencer Shipping Address
+                                        </label>
+                                        <div class="custom-control custom-checkbox d-inline">
+                                            <input class="custom-control-input" type="checkbox" id="IcustomCheckbox5" name="influencer_shipping_address_brand" value="{{ 1 }}" {{ $campaign->influencer_shipping_address_brand == 1 ? 'checked' : '' }}>
+                                            <label for="IcustomCheckbox5" class="custom-control-label ml-3 font-weight-normal">Brand</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="campaign_goals" class="d-block @error('campaign_goals') text-danger @enderror">
+                                            Campaign Goals
+                                        </label>
+                                        @foreach(config('core.campaign_goals') as $goal_key => $campaign_goal)
+                                            <div class="custom-control custom-checkbox d-inline">
+                                                <input class="custom-control-input" type="checkbox" id="customCheckbox{{ $goal_key }}" name="campaign_goals[]" value="{{ $goal_key }}" {{ in_array($goal_key, $campaign->campaign_goals) ? 'checked' : '' }}>
+                                                <label for="customCheckbox{{ $goal_key }}" class="custom-control-label ml-3 font-weight-normal">{{ $campaign_goal }}</label>
+                                            </div>
+                                        @endforeach
+                                        @error('campaign_goals')
+                                        <span class="invalid-feedback d-block"
                                               role="alert"><strong>{{ $message }}</strong></span>
                                         @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="details" class="@error('details') text-danger @enderror">Description</label>
-                                        <textarea id="description" name="details" class="form-control" rows="3" placeholder="Enter details">{{ old('details') ?: $campaign->details }}</textarea>
-                                        @error('details')
+                                        <label for="desired_content_notes" class="@error('desired_content_notes') text-danger @enderror">Desired Content Notes</label>
+                                        <textarea id="desired_content_notes" name="desired_content_notes" class="form-control" rows="3" placeholder="Enter extra agreements">{{ old('desired_content_notes') ?? $campaign->desired_content_notes }}</textarea>
+                                        @error('desired_content_notes')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="personal_notes" class="@error('personal_notes') text-danger @enderror">Personal Notes</label>
+                                        <textarea id="personal_notes" name="personal_notes" class="form-control" rows="3" placeholder="Enter extra agreements">{{ old('personal_notes') ?? $campaign->personal_notes }}</textarea>
+                                        @error('personal_notes')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="offer_signed" class="d-block @error('offer_signed') text-danger @enderror">Offer Signed</label>
+                                        <div class="custom-control custom-radio d-inline">
+                                            <input class="custom-control-input" type="radio" id="customRadio11" name="offer_signed" value="1" {{ $campaign->offer_signed == 1 ? 'checked' : '' }}>
+                                            <label for="customRadio11" class="custom-control-label">Yes</label>
+                                        </div>
+                                        <div class="custom-control custom-radio d-inline ml-3">
+                                            <input class="custom-control-input" type="radio" id="customRadio12" name="offer_signed" value="0" {{ $campaign->offer_signed == 0 ? 'checked' : '' }}>
+                                            <label for="customRadio12" class="custom-control-label">No</label>
+                                        </div>
+                                        @error('offer_signed')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="start_of_recurring_bill" class="@error('start_of_recurring_bill') text-danger @enderror">Start of Recurring Bill</label>
+                                        <input id="start_of_recurring_bill" name="start_of_recurring_bill" value="{{ old('start_of_recurring_bill') ?? $campaign->start_of_recurring_bill }}" type="text" class="form-control datepicker @error('start_of_recurring_bill') is-invalid @enderror" placeholder="Enter start of recurring bill" autofocus>
+                                        @error('start_of_recurring_bill')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="billing_cycle_count" class="@error('billing_cycle_count') text-danger @enderror">Billing Cycle</label>
+                                        <input id="billing_cycle_count" name="billing_cycle_count" value="{{ old('billing_cycle_count') ?? $campaign->billing_cycle_count }}" type="number" min="0" class="form-control @error('billing_cycle_count') is-invalid @enderror" placeholder="Enter billing cycle count" autofocus>
+                                        @error('billing_cycle_count')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        {{--                                            <label for="billing_cycle_time_unit" class="d-block @error('billing_cycle_time_unit') text-danger @enderror">--}}
+                                        {{--                                                Billing Cycle Time Unit--}}
+                                        {{--                                            </label>--}}
+                                        <div class="custom-control custom-radio d-inline- mt-4-" style="margin-top: 22px">
+                                            <input class="custom-control-input" type="radio" id="customRadio21" name="billing_cycle_time_unit" value="1" {{ $campaign->billing_cycle_time_unit == 1 ? 'checked' : '' }}>
+                                            <label for="customRadio21" class="custom-control-label">Monthly</label>
+                                        </div>
+                                        <div class="custom-control custom-radio d-inline- ml-3-">
+                                            <input class="custom-control-input" type="radio" id="customRadio22" name="billing_cycle_time_unit" value="2" {{ $campaign->billing_cycle_time_unit == 2 ? 'checked' : '' }}>
+                                            <label for="customRadio22" class="custom-control-label">Weekly</label>
+                                        </div>
+                                        @error('billing_cycle_time_unit')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="euros_total" class="@error('euros_total') text-danger @enderror">Euros Total</label>
+                                        <input id="euros_total" name="euros_total" value="{{ old('euros_total') ?? $campaign->euros_total }}" type="number" min="0" step="any" class="form-control @error('euros_total') is-invalid @enderror" placeholder="Enter euros total" autofocus>
+                                        @error('euros_total')
                                         <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                         @enderror
                                     </div>

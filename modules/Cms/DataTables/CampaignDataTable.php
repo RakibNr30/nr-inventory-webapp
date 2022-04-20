@@ -71,7 +71,7 @@ class CampaignDataTable extends DataTable
             Column::computed('DT_RowIndex')
                 ->title('Sl'),
             Column::make('title'),
-            Column::make('available_until'),
+            Column::make('start_date'),
             Column::computed('action')
                 ->exportable(false)
                 ->printable(false)

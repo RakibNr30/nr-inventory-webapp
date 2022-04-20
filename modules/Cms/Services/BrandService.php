@@ -88,4 +88,15 @@ class BrandService
     {
         return $this->brandRepository->findBy($attribute, $value);
     }
+
+    /**
+     * Find data
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function brandsIn($value)
+    {
+        return $this->brandRepository->model->with(['user'])->withCount(['products'])->whereIn('id', $value)->get();
+    }
 }

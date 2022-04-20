@@ -16,7 +16,7 @@
             </div>
             <div class="info">
                 <a href="{{ url('/backend/profile/social-account-info') }}" class="d-block">
-                    {{ $user->additionalInfo->first_name }} {{ $user->additionalInfo->last_name }}
+                    {{ $user->additionalInfo->first_name ?? '' }} {{ $user->additionalInfo->last_name ?? '' }}
                 </a>
             </div>
         </div>

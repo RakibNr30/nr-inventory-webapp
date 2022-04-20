@@ -3,8 +3,18 @@
         <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
         </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a class="nav-link">
+                {{ \App\Helpers\AuthManager::getRole()[0] }}
+            </a>
+        </li>
     </ul>
     <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+                <i class="far fa-bell"></i>
+                <span class="badge badge-warning navbar-badge">3</span>
+            </a>
         {{--<li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
                 <i class="far fa-bell"></i>
@@ -47,7 +57,7 @@
                  config('core.image.default.avatar_female')) }})">
 
                         </div>
-                        <span style="float: left; padding: 6px 10px; font-size: 16px; font-weight: bold;">{{ $user->additionalInfo->first_name }} {{ $user->additionalInfo->last_name }}</span>
+                        <span style="float: left; padding: 6px 10px; font-size: 16px; font-weight: bold;">{{ $user->additionalInfo->first_name ?? '' }} {{ $user->additionalInfo->last_name ?? '' }}</span>
                     </div>
                 </div>
                 <div class="dropdown-divider"></div>

@@ -15,6 +15,7 @@
                 </a>
             </div>
             <div class="card-body login-card-body">
+                @include('admin.partials._alert')
                 <p class="login-box-msg">
                     Welcome back! Log in to your account to view your dashboard
                 </p>

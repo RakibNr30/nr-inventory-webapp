@@ -4,9 +4,9 @@
         "roles": [
             "Super Admin",
             "Admin",
-            "Influencer",
             "Influencer Manager",
-            "Campaign Manager"
+            "Influencer",
+            "Brand"
         ]
     },
     {
@@ -14,9 +14,9 @@
         "roles": [
             "Super Admin",
             "Admin",
-            "Influencer",
             "Influencer Manager",
-            "Campaign Manager"
+            "Influencer",
+            "Brand"
         ]
     },
     {
@@ -24,9 +24,8 @@
         "roles": [
             "Super Admin",
             "Admin",
-            "Influencer",
             "Influencer Manager",
-            "Campaign Manager"
+            "Brand"
         ]
     },
     {
@@ -34,39 +33,30 @@
         "roles": [
             "Super Admin",
             "Admin",
-            "Influencer",
             "Influencer Manager",
-            "Campaign Manager"
+            "Influencer",
+            "Brand"
         ]
     },
     {
         "name": "Brands",
         "roles": [
             "Super Admin",
-            "Admin",
-            "Influencer",
-            "Influencer Manager",
-            "Campaign Manager"
+            "Admin"
         ]
     },
     {
         "name": "Products",
         "roles": [
             "Super Admin",
-            "Admin",
-            "Influencer",
-            "Influencer Manager",
-            "Campaign Manager"
+            "Admin"
         ]
     },
     {
         "name": "Logistics",
         "roles": [
             "Super Admin",
-            "Admin",
-            "Influencer",
-            "Influencer Manager",
-            "Campaign Manager"
+            "Admin"
         ]
     },
     {
@@ -74,9 +64,7 @@
         "roles": [
             "Super Admin",
             "Admin",
-            "Influencer",
-            "Influencer Manager",
-            "Campaign Manager"
+            "Influencer Manager"
         ]
     },
     {
@@ -118,9 +106,9 @@
         "roles": [
             "Super Admin",
             "Admin",
-            "Influencer",
             "Influencer Manager",
-            "Campaign Manager"
+            "Influencer",
+            "Brand"
         ]
     }
 ]

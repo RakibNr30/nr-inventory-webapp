@@ -44,8 +44,25 @@ class BaseModel extends Model
     {
         return \Carbon\Carbon::parse($value)->format($this->format);
     }
-    public function getAvailableUntilAttribute($value)
+
+    public function getFirstContentOnlineAttribute($value)
     {
-        return \Carbon\Carbon::parse($value)->format($this->format2);
+        return \Carbon\Carbon::parse($value)->format($this->format);
+    }
+
+    public function getStartOfRecurringBillAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->format($this->format);
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function($model)
+        {
+            $userId = auth()->user()->id ?? null;
+            $model->created_by = $userId;
+            $model->updated_by = $userId;
+        });
     }
 }

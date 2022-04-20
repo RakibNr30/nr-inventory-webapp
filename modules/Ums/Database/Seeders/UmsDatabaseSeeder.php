@@ -81,6 +81,7 @@ class UmsDatabaseSeeder extends Seeder
                 "profile_grade" => 10,
                 "approved_at" => Carbon::now(),
                 "approved_by" => 1,
+                "is_influencer" => $datum["account_info"]["is_influencer"],
             ]);
 
             // assign role
@@ -101,6 +102,8 @@ class UmsDatabaseSeeder extends Seeder
             // create additional info
             $datum["additional_info"]["user_id"] = $user->id;
             $user->additionalInfo()->create($datum["additional_info"]);
+            // create shipping info
+            $user->shippingInfo()->create(['user_id' => $user->id]);
 
             if (isset($datum["social_account_info"])) {
                 $user->socialAccountInfo()->create($datum["social_account_info"]);

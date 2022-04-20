@@ -18,6 +18,7 @@ class CreateBrandsTable extends Migration
             $table->string('title');
             $table->string('slug');
             $table->longText('details')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->commonFields();
         });
     }

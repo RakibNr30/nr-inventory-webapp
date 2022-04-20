@@ -3,6 +3,9 @@
     "name": "Abdur Rakib",
     "account_info": {
       "email": "abdurrakib.cs@gmail.com",
+        "is_influencer": false,
+        "is_influencer_accepted": false,
+        "is_influencer_add_to_favourite": false,
       "roles": ["Super Admin"]
     },
     "additional_info": {
@@ -17,6 +20,9 @@
         "name": "Mr Admin One",
         "account_info": {
             "email": "admin1@example.com",
+            "is_influencer": false,
+            "is_influencer_accepted": false,
+            "is_influencer_add_to_favourite": false,
             "roles": ["Admin"]
         },
         "additional_info": {
@@ -31,6 +37,9 @@
         "name": "Mrs Admin Two",
         "account_info": {
             "email": "admin2@example.com",
+            "is_influencer": false,
+            "is_influencer_accepted": false,
+            "is_influencer_add_to_favourite": false,
             "roles": ["Admin"]
         },
         "additional_info": {
@@ -45,6 +54,9 @@
         "name": "Mr Influencer One",
         "account_info": {
             "email": "influencer1@example.com",
+            "is_influencer": true,
+            "is_influencer_accepted": false,
+            "is_influencer_add_to_favourite": false,
             "roles": ["Influencer"]
         },
         "additional_info": {
@@ -65,6 +77,9 @@
         "name": "Mrs Influencer Two",
         "account_info": {
             "email": "influencer2@example.com",
+            "is_influencer": true,
+            "is_influencer_accepted": false,
+            "is_influencer_add_to_favourite": false,
             "roles": ["Influencer"]
         },
         "additional_info": {
@@ -85,6 +100,9 @@
         "name": "Mr Influencer Manager One",
         "account_info": {
             "email": "influencer-manager1@example.com",
+            "is_influencer": false,
+            "is_influencer_accepted": false,
+            "is_influencer_add_to_favourite": false,
             "roles": ["Influencer Manager"]
         },
         "additional_info": {
@@ -99,38 +117,13 @@
         "name": "Mrs Influencer Manager Two",
         "account_info": {
             "email": "influencer-manager2@example.com",
+            "is_influencer": false,
+            "is_influencer_accepted": false,
+            "is_influencer_add_to_favourite": false,
             "roles": ["Influencer Manager"]
         },
         "additional_info": {
             "first_name": "Mrs Influencer Manager",
-            "last_name": "Two",
-            "designation": "Software Engineer",
-            "blood_group": "B (+ve)",
-            "gender": 2
-        }
-    },
-    {
-        "name": "Mr Campaign Manager One",
-        "account_info": {
-            "email": "campaign-manager1@example.com",
-            "roles": ["Campaign Manager"]
-        },
-        "additional_info": {
-            "first_name": "Mr Campaign Manager",
-            "last_name": "One",
-            "designation": "Software Engineer",
-            "blood_group": "B (+ve)",
-            "gender": 1
-        }
-    },
-    {
-        "name": "Mrs Campaign Manager Two",
-        "account_info": {
-            "email": "campaign-manager2@example.com",
-            "roles": ["Campaign Manager"]
-        },
-        "additional_info": {
-            "first_name": "Mrs Campaign Manager",
             "last_name": "Two",
             "designation": "Software Engineer",
             "blood_group": "B (+ve)",

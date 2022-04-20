@@ -14,63 +14,65 @@
                     </b>
                 </a>
             </div>
-            <div class="card-body login-card-body">
+            <div class="card-body login-card-body" id="vue_app">
                 <p class="register-box-msg">
                     Welcome! Create your free New Fluence Account to get started.
                 </p>
                 {!! Form::open(['route' => 'register', 'method' => 'post']) !!}
-                <div class="input-group mb-3">
-                    <input id="first_name" name="first_name" placeholder="First Name" value="{{ old('first_name') }}" type="text" class="form-control @error('first_name') is-invalid @enderror" required autofocus>
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-user"></span>
+                <label class="d-block font-weight-bold">Registered as</label>
+                <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
+                    <label class="btn btn-secondary {{ old('login_as') ? (old('login_as') == 1 ? 'active' : '') : 'active' }}" v-on:click="changeValue(1)">
+                        <input type="radio" name="login_as" id="option_a1" autocomplete="off" value="{{ 1 }}"
+                            {{ old('login_as') ? (old('login_as') == 1 ? 'checked' : '') : 'checked' }}> Influencer
+                    </label>
+                    <label class="btn btn-secondary {{ old('login_as') ? (old('login_as') == 2 ? 'active' : '') : '' }}" v-on:click="changeValue(2)">
+                        <input type="radio" name="login_as" id="option_a2" autocomplete="off" value="{{ 2 }}"
+                            {{ old('login_as') ? (old('login_as') == 2 ? 'checked' : '') : '' }}> Brand
+                    </label>
+                </div>
+                <template v-if="nameToggle == 1">
+                    <div class="input-group mb-3">
+                        <input id="first_name" name="first_name" placeholder="First Name" value="{{ old('first_name') }}" type="text" class="form-control @error('first_name') is-invalid @enderror" required autofocus>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
                         </div>
-                    </div>
-                    @error('first_name')
-                    <span class="invalid-feedback" role="alert">
+                        @error('first_name')
+                        <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
                     </span>
-                    @enderror
-                </div>
-                <div class="input-group mb-3">
-                    <input id="last_name" name="last_name" placeholder="Last Name" value="{{ old('last_name') }}" type="text" class="form-control @error('last_name') is-invalid @enderror" required>
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-user"></span>
-                        </div>
+                        @enderror
                     </div>
-                    @error('last_name')
-                    <span class="invalid-feedback" role="alert">
+                    <div class="input-group mb-3">
+                        <input id="last_name" name="last_name" placeholder="Last Name" value="{{ old('last_name') }}" type="text" class="form-control @error('last_name') is-invalid @enderror" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                        @error('last_name')
+                        <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
                     </span>
-                    @enderror
-                </div>
-                {{--<div class="input-group mb-3">
-                    <input id="username" name="username" placeholder="Enter username" value="{{ old('username') }}" type="text" class="form-control @error('username') is-invalid @enderror" required>
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-key"></span>
-                        </div>
+                        @enderror
                     </div>
-                    @error('username')
-                    <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-                <div class="input-group mb-3">
-                    <input id="phone" name="phone" placeholder="Enter phone" value="{{ old('phone') }}" type="text" class="form-control @error('phone') is-invalid @enderror" required>
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-phone"></span>
+                </template>
+                <template v-if="nameToggle == 2">
+                    <div class="input-group mb-3">
+                        <input id="name" name="name" placeholder="Name" value="{{ old('name') }}" type="text" class="form-control @error('name') is-invalid @enderror" required autofocus>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
                         </div>
+                        @error('name')
+                        <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                        @enderror
                     </div>
-                    @error('phone')
-                    <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>--}}
+                </template>
                 <div class="input-group mb-3">
                     <input id="email" name="email" placeholder="E-mail" value="{{ old('email') }}" type="email" class="form-control @error('email') is-invalid @enderror" required>
                     <div class="input-group-append">
@@ -152,4 +154,30 @@
             </div>
         </div>
     </div>
+@stop
+
+
+@section('style')
+    <style>
+        .active {
+            background: #007bff !important;
+            border-color: #fff !important;
+        }
+    </style>
+@stop
+
+@section('script')
+    <script>
+        new Vue({
+            el: '#vue_app',
+            data: {
+                nameToggle: '{{ old('login_as') ? old('login_as') : 1 }}'
+            },
+            methods: {
+                changeValue(value) {
+                    this.nameToggle = value;
+                }
+            }
+        });
+    </script>
 @stop

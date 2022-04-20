@@ -174,3 +174,8 @@ input[type=file] {
 .checkbox-label {
     /line-height: 17px !important;
 }
+
+.table-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+}

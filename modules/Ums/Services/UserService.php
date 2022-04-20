@@ -2,6 +2,7 @@
 
 namespace Modules\Ums\Services;
 
+use Modules\Cms\Entities\CampaignInfluencer;
 use Modules\Ums\Repositories\UserRepository;
 
 class UserService
@@ -104,8 +105,48 @@ class UserService
     public function influencers($limit = 0)
     {
         return $this->userRepository->model->with(['additionalInfo', 'shippingInfo', 'socialAccountInfo'])
+            ->where('is_process_completed', 1)
             ->whereHas("roles", function ($query) {
                 $query->where("name", "Influencer");
             })->paginate($limit);
+    }
+
+    public function campaignInfluencers($limit = 0)
+    {
+        $campaign_influencer_ids = CampaignInfluencer::query()
+            ->where('campaign_id', \request()->id)->get()->pluck('influencer_id')->toArray();
+
+        return $this->userRepository->model->with(['additionalInfo', 'shippingInfo', 'socialAccountInfo'])
+            ->where('is_process_completed', 1)
+            ->whereNotIn('id', $campaign_influencer_ids)
+            ->whereHas("roles", function ($query) {
+                $query->where("name", "Influencer");
+            })->paginate($limit);
+    }
+
+    /**
+     * First or create data
+     *
+     * @param int $limit
+     * @return mixed
+     */
+    public function brands($limit = 0)
+    {
+        return $this->userRepository->model->with(['additionalInfo', 'businessInfo'])
+            ->where('is_process_completed', 1)
+            ->whereHas("roles", function ($query) {
+                $query->where("name", "Brand");
+            })->paginate($limit);
+    }
+
+    /**
+     * Find data
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function usersIn($value)
+    {
+        return $this->userRepository->model->whereIn('id', $value)->get();
     }
 }

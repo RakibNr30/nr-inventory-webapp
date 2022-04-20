@@ -6,12 +6,12 @@
         "name": "Admin"
     },
     {
-        "name": "Influencer"
-    },
-    {
         "name": "Influencer Manager"
     },
     {
-        "name": "Campaign Manager"
+        "name": "Influencer"
+    },
+    {
+        "name": "Brand"
     }
 ]

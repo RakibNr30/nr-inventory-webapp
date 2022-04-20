@@ -26,7 +26,11 @@ class BrandStoreRequest extends FormRequest
         return [
             'title' => 'required|max:255',
 			'details' => "max:4294967295",
-            'logo' => 'sometimes|image|max:1024'
+            'logo' => 'sometimes|image|max:1024',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
         ];
     }
 }

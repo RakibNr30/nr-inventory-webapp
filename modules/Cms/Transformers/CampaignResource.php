@@ -20,7 +20,8 @@ class CampaignResource extends JsonResource
 			'slug' => $this->slug,
 			'details' => $this->details,
 			'brand_ids' => $this->brand_ids,
-			'available_until' => $this->available_until->format('d/m/Y'),
+			'start_date' => $this->start_date->format('d/m/Y'),
+			'end_date' => $this->end_date->format('d/m/Y'),
             'created_at' => $this->created_at->format('d/m/Y'),
             'updated_at' => $this->updated_at->format('d/m/Y')
         ];

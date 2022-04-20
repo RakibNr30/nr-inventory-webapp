@@ -87,4 +87,16 @@ class UserShippingInfoService
     {
         return $this->userShippingInfoRepository->model->firstOrCreate($data);
     }
+
+    /**
+     * Update or create additional info
+     *
+     * @param $attribute
+     * @param $value
+     * @return mixed
+     */
+    public function updateOrCreate($attribute, $value)
+    {
+        return $this->userShippingInfoRepository->model->updateOrCreate($attribute, $value);
+    }
 }

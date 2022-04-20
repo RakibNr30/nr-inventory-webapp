@@ -27,7 +27,29 @@ class AuthManager
         return false;
     }
 
+    public static function isInfluencerManager() {
+        $user = User::query()->findOrFail(auth()->user()->id);
+
+        if ($user->hasRole('Influencer Manager')) return true;
+        return false;
+    }
+
+    public static function isBrand() {
+        $user = User::query()->findOrFail(auth()->user()->id);
+
+        if ($user->hasRole('Brand')) return true;
+        return false;
+    }
+
     public static function isProcessCompleted($user) {
         return $user->is_process_completed ?? null;
+    }
+
+    public static function getRole() {
+        $user = User::query()->findOrFail(auth()->user()->id);
+        if ($user) {
+            return $user->getRoleNames();
+        }
+        return null;
     }
 }

@@ -10,8 +10,8 @@
                  config('core.image.default.avatar_female')) }})">
             </div>
         </div>
-        <h3 class="profile-username text-center">{{ $user->additionalInfo->first_name }} {{ $user->additionalInfo->last_name }}</h3>
-        <p class="text-muted text-center">{{ $user->additionalInfo->designation }}</p>
+        <h3 class="profile-username text-center">{{ $user->additionalInfo->first_name ?? '' }} {{ $user->additionalInfo->last_name ?? '' }}</h3>
+        <p class="text-muted text-center">{{ $user->additionalInfo->designation ?? '' }}</p>
         <ul class="nav nav-pills flex-column">
             @foreach(json_decode(json_encode(config('core.profile_menu'))) as $profile_menu_key => $profile_menu)
                 <li class="nav-item {{ $profile_menu_key == ($active ?? '') ? 'bg-light' : '' }}">

@@ -125,6 +125,13 @@ return [
                             "url" => "/backend/page-category",
                             "permission" => "Page Category",
                         ],
+                        [
+                            "name" => "Influencer Category",
+                            "id" => "influencer_category",
+                            "icon" => "fa-arrow-right",
+                            "url" => "/backend/influencer-category",
+                            "permission" => "Influencer Category",
+                        ],
                     ]
                 ],
                 [
@@ -248,6 +255,30 @@ return [
         "3" => "Professional Working Proficiency",
         "4" => "Full Professional Proficiency",
         "5" => "Native / Bilingual Proficiency",
+    ],
+    "profile_grades" => [
+        "1" => "Grade 1",
+        "2" => "Grade 2",
+        "3" => "Grade 3",
+        "4" => "Grade 4",
+        "5" => "Grade 5",
+    ],
+    "campaign_goals" => [
+        "Branding" => "Branding",
+        "Content Creation" => "Content Creation",
+        "Online-Store-Sales" => "Online-Store-Sales",
+        "Offline-Store-Sales" => "Offline-Store-Sales",
+        "Link-Clicks" => "Link-Clicks",
+        "Follower Generation" => "Follower Generation",
+        "App Download" => "App Download",
+        "Lead Generation" => "Lead Generation",
+    ],
+    "content_types" => [
+        "Instagram Story" => "Instagram Story",
+        "Instagram Feed" => "Instagram Feed",
+        "Instagram Reel" => "Instagram Reel",
+        "Instagram IGTV" => "Instagram IGTV",
+        "TikTok Video" => "TikTok Video"
     ],
     "social_sites" => [
         "Facebook" => "Facebook",

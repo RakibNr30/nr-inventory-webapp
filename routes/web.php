@@ -27,7 +27,7 @@ Route::get('/', function () {
 
 // register almost ready
 Route::get('/register/almost-ready', 'Auth\RegisterController@showAlmostReady')->name('register.almost-ready');
-Route::post('/register/almost-ready', 'Auth\RegisterController@storeAlmostReady')->name('register.almost-ready.store');
+Route::post('/register/almost-ready/store', 'Auth\RegisterController@storeAlmostReady')->name('register.almost-ready.store');
 
 /*Route::get('oc', function() {
     \Illuminate\Support\Facades\Artisan::call('cache:clear');

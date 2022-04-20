@@ -19,6 +19,11 @@ class User extends \App\User implements hasMedia
         return $this->hasOne(UserShippingInfo::class, 'user_id', 'id');
     }
 
+    public function businessInfo()
+    {
+        return $this->hasOne(UserBusinessInfo::class, 'user_id', 'id');
+    }
+
     public function socialAccountInfo()
     {
         return $this->hasOne(UserSocialAccountInfo::class, 'user_id', 'id');

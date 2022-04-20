@@ -8,8 +8,8 @@
         $user = \Modules\Ums\Entities\User::find(auth()->user()->id);
     @endphp
 
-    <title>{{ $user->additionalInfo->first_name }} {{ $user->additionalInfo->last_name }}</title>
-    <link rel="icon" type="image/png" href="{{ $global_site->favicon->file_url ?? config('core.image.' . config('core.theme') . '.default.favicon') }}">
+    <title>{{ $user->additionalInfo->first_name ?? '' }} {{ $user->additionalInfo->last_name ?? '' }}</title>
+    <link rel="icon" type="image/png" href="{{ $global_site->favicon->file_url ?? config('core.image.default.favicon') }}">
     {{--{!! SEO::generate(true) !!}--}}
     <link rel="stylesheet" href="{{ asset('common/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('common/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">

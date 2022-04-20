@@ -2,9 +2,12 @@
 
 namespace Modules\Cms\Http\Controllers;
 
+use App\Helpers\AuthManager;
 use App\Http\Controllers\Controller;
 
 // requests...
+use Illuminate\Http\Request;
+use Modules\Cms\Entities\Campaign;
 use Modules\Cms\Http\Requests\CampaignStoreRequest;
 use Modules\Cms\Http\Requests\CampaignUpdateRequest;
 
@@ -14,6 +17,9 @@ use Modules\Cms\DataTables\CampaignDataTable;
 // services...
 use Modules\Cms\Services\BrandService;
 use Modules\Cms\Services\CampaignService;
+use Modules\Cms\Services\InfluencerCategoryService;
+use Modules\Cms\Services\ProductService;
+use Modules\Ums\Services\UserService;
 
 class CampaignController extends Controller
 {
@@ -28,14 +34,42 @@ class CampaignController extends Controller
     protected $brandService;
 
     /**
+     * @var $productService
+     */
+    protected $productService;
+
+    /**
+     * @var $influencerCategoryService
+     */
+    protected $influencerCategoryService;
+
+    /**
+     * @var $userService
+     */
+    protected $userService;
+
+    /**
      * Constructor
      *
      * @param CampaignService $campaignService
+     * @param BrandService $brandService
+     * @param InfluencerCategoryService $influencerCategoryService
+     * @param UserService $userService
      */
-    public function __construct(CampaignService $campaignService, BrandService $brandService)
+    public function __construct
+    (
+        CampaignService $campaignService,
+        BrandService $brandService,
+        ProductService $productService,
+        InfluencerCategoryService $influencerCategoryService,
+        UserService $userService
+    )
     {
         $this->campaignService = $campaignService;
         $this->brandService = $brandService;
+        $this->productService = $productService;
+        $this->influencerCategoryService = $influencerCategoryService;
+        $this->userService = $userService;
         //$this->middleware(['permission:Cms']);
     }
 
@@ -45,9 +79,17 @@ class CampaignController extends Controller
      * @param CampaignDataTable $datatable
      * @return \Illuminate\View\View
      */
-    public function index(CampaignDataTable $datatable)
+    public function index()
     {
-        return $datatable->render('cms::campaign.index');
+        $campaigns = $this->campaignService->all();
+        if (AuthManager::isInfluencer()) {
+            $campaigns = $this->campaignService->campaigns();
+        }
+        if (AuthManager::isBrand()) {
+            $campaigns = $this->campaignService->brandCampaigns();
+        }
+
+        return view('cms::campaign.index', compact('campaigns'));
     }
 
     /**
@@ -58,10 +100,14 @@ class CampaignController extends Controller
     public function create()
     {
         // brand lists
-        $brands = $this->brandService->all();
+        $brands = $this->userService->brands();
+        // product lists
+        $products = $this->productService->all();
+        // influencer category lists
+        $influencerCategories = $this->influencerCategoryService->all();
 
         // return view
-        return view('cms::campaign.create', compact('brands'));
+        return view('cms::campaign.create', compact('brands', 'products', 'influencerCategories'));
     }
 
 
@@ -75,7 +121,12 @@ class CampaignController extends Controller
     {
         $data = $request->all();
 
-        $data['brand_ids'] = array_map('intval', $data['brand_ids']);
+        if (isset($data['target_influencer_category_ids']))
+            $data['target_influencer_category_ids'] = array_map('intval', $data['target_influencer_category_ids']);
+        if (isset($data['target_influencer_genders']))
+            $data['target_influencer_genders'] = array_map('intval', $data['target_influencer_genders']);
+        if (isset($data['product_ids']))
+            $data['product_ids'] = array_map('intval', $data['product_ids']);
 
         // create campaign
         $campaign = $this->campaignService->create($data);
@@ -103,6 +154,7 @@ class CampaignController extends Controller
     {
         // get campaign
         $campaign = $this->campaignService->find($id);
+
         // check if campaign doesn't exists
         if (empty($campaign)) {
             // flash notification
@@ -110,8 +162,11 @@ class CampaignController extends Controller
             // redirect back
             return redirect()->back();
         }
+
+        $brands = []; //$this->brandService->brandsIn($campaign->brand_ids ?? []);
+
         // return view
-        return view('cms::campaign.show', compact('campaign'));
+        return view('cms::campaign.show', compact('campaign', 'brands'));
     }
 
     /**
@@ -123,7 +178,9 @@ class CampaignController extends Controller
     public function edit($id)
     {
         // brand lists
-        $brands = $this->brandService->all();
+        $brands = $this->userService->brands();
+        // influencer category lists
+        $influencerCategories = $this->influencerCategoryService->all();
 
         // get campaign
         $campaign = $this->campaignService->find($id);
@@ -135,7 +192,7 @@ class CampaignController extends Controller
             return redirect()->back();
         }
         // return view
-        return view('cms::campaign.edit', compact('campaign', 'brands'));
+        return view('cms::campaign.edit', compact('campaign', 'brands', 'influencerCategories'));
     }
 
     /**
@@ -159,7 +216,12 @@ class CampaignController extends Controller
             return redirect()->back();
         }
 
-        $data['brand_ids'] = array_map('intval', $data['brand_ids']);
+        if (isset($data['brand_ids']))
+            $data['brand_ids'] = array_map('intval', $data['brand_ids']);
+        if (isset($data['target_influencer_category_ids']))
+            $data['target_influencer_category_ids'] = array_map('intval', $data['target_influencer_category_ids']);
+        if (isset($data['target_influencer_genders']))
+            $data['target_influencer_genders'] = array_map('intval', $data['target_influencer_genders']);
 
         // update campaign
         $campaign = $this->campaignService->update($data, $id);

@@ -7,18 +7,18 @@ use Modules\Cms\Repositories\CampaignRepository;
 class CampaignService
 {
     /**
-     * @var $brandRepository
+     * @var $campaignRepository
      */
-    protected $brandRepository;
+    protected $campaignRepository;
 
     /**
      * Constructor
      *
-     * @param CampaignRepository $brandRepository
+     * @param CampaignRepository $campaignRepository
      */
-    public function __construct(CampaignRepository $brandRepository)
+    public function __construct(CampaignRepository $campaignRepository)
     {
-        $this->brandRepository = $brandRepository;
+        $this->campaignRepository = $campaignRepository;
     }
 
     /**
@@ -29,7 +29,7 @@ class CampaignService
      */
     public function all($limit = 0)
     {
-        return $this->brandRepository->paginate($limit);
+        return $this->campaignRepository->paginate($limit);
     }
 
     /**
@@ -40,7 +40,7 @@ class CampaignService
      */
     public function create($data)
     {
-        return $this->brandRepository->create($data);
+        return $this->campaignRepository->create($data);
     }
 
     /**
@@ -51,7 +51,7 @@ class CampaignService
      */
     public function find($id)
     {
-        return $this->brandRepository->find($id);
+        return $this->campaignRepository->find($id);
     }
 
     /**
@@ -63,7 +63,7 @@ class CampaignService
      */
     public function update($data, $id)
     {
-        return $this->brandRepository->update($data, $id);
+        return $this->campaignRepository->update($data, $id);
     }
 
     /**
@@ -74,7 +74,7 @@ class CampaignService
      */
     public function delete($id)
     {
-        return $this->brandRepository->delete($id);
+        return $this->campaignRepository->delete($id);
     }
 
     /**
@@ -86,6 +86,26 @@ class CampaignService
      */
     public function findBy($attribute, $value)
     {
-        return $this->brandRepository->findBy($attribute, $value);
+        return $this->campaignRepository->findBy($attribute, $value);
+    }
+
+    /**
+     * Get all campaign
+     *
+     * @return mixed
+     */
+    public function campaigns($limit = 0)
+    {
+        return $this->campaignRepository->model->whereJsonContains('influencer_ids', auth()->user()->id)->get();
+    }
+
+    /**
+     * Get all campaign
+     *
+     * @return mixed
+     */
+    public function brandCampaigns($limit = 0)
+    {
+        return $this->campaignRepository->model->where('brand_id', auth()->user()->id)->get();
     }
 }

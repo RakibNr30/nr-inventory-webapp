@@ -3,6 +3,7 @@
 namespace Modules\Cms\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Modules\Ums\Entities\User;
 
 class BrandUpdateRequest extends FormRequest
 {
@@ -23,10 +24,17 @@ class BrandUpdateRequest extends FormRequest
      */
     public function rules()
     {
+        $id = request()->route()->parameters()[request()->route()->parameterNames[0]];
+
+        $user = User::query()->where('user_brand_id', $id)->first();
+
         return [
             'title' => 'required|max:255',
-			'details' => "max:4294967295",
-            'logo' => 'sometimes|image|max:1024'
+            'details' => "max:4294967295",
+            'logo' => 'sometimes|image|max:1024',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id ?? '',
         ];
     }
 }
