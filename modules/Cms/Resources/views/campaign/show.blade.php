@@ -226,29 +226,260 @@
                                                     <tr>
                                                         @php
                                                             $influencer = $campaignInfluencer->user ?? null;
+                                                            $campaign = $campaignInfluencer->campaign ?? null;
                                                         @endphp
 
                                                         <td>
                                                             <ul class="list-inline">
                                                                 <li class="list-inline-item">
-                                                                    <img alt="Avatar" class="table-avatar" src="{{ config('core.image.default.avatar_male') }}">
+                                                                    <a class="font-weight-bold text-dark" data-toggle="modal" href="#modal-xl-{{ $index }}">
+                                                                        <img alt="Avatar" class="table-avatar" src="{{ $influencer->avatar->file_url ??
+                                                                            ($influencer->additionalInfo->gender == 2 ?
+                                                                            config('core.image.default.avatar_female') :
+                                                                            config('core.image.default.avatar_male')) }}"
+                                                                        >
+                                                                    </a>
                                                                 </li>
                                                             </ul>
                                                         </td>
                                                         <td>
-                                                            <a class="font-weight-bold">
+                                                            <a class="font-weight-bold text-dark" data-toggle="modal" href="#modal-xl-{{ $index }}">
                                                                 {{ $influencer->additionalInfo->first_name ?? '' }}
                                                                 {{ $influencer->additionalInfo->last_name ?? '' }}
                                                             </a>
                                                             <br>
                                                             <small class="text-primary font-weight-bold">
-                                                                @foreach($campaignInfluencer->content_types as $index => $content_type)
+                                                                @foreach($campaignInfluencer->content_types as $c_index => $content_type)
                                                                     {{ $content_type }}
-                                                                    @if($index + 1 < count($campaignInfluencer->content_types))
-                                                                        ,
+                                                                    @if($c_index + 1 < count($campaignInfluencer->content_types))
+                                                                        {{ ',' }}
                                                                     @endif
                                                                 @endforeach
                                                             </small>
+
+                                                            {{-- modal --}}
+                                                            <div class="modal fade" id="modal-xl-{{ $index }}" style="display: none;" aria-hidden="true">
+                                                                <div class="modal-dialog modal-xl">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <div class="row w-100">
+                                                                                <div class="col-md-6">
+                                                                                    <div class="d-inline-block position-relative" style="top: -30px">
+                                                                                        <img alt="Avatar" class="table-avatar" style="border: 1px solid #d5d5d5; height: 80px; width: 80px" src="{{ $influencer->avatar->file_url ??
+                                                                                            ($influencer->additionalInfo->gender == 2 ?
+                                                                                            config('core.image.default.avatar_female') :
+                                                                                            config('core.image.default.avatar_male')) }}"
+                                                                                        >
+                                                                                    </div>
+
+                                                                                    <div class="ml-1 d-inline-block">
+                                                                                        <h4 class="modal-title">
+                                                                                            <span class="d-block font-weight-bold text-md">
+                                                                                                {{ $influencer->additionalInfo->first_name ?? '' }}
+                                                                                                    {{ $influencer->additionalInfo->last_name ?? '' }}
+                                                                                            </span>
+                                                                                        </h4>
+                                                                                        <span class="d-block text-sm text-gray">
+                                                                                            {{ $influencer->email ?? '' }}
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm">
+                                                                                            <i class="fab fa-instagram mr-2"></i> {{ $influencer->socialAccountInfo->instagram_username }}
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm">
+                                                                                            <i class="fab fa-tiktok mr-2"></i> {{ $influencer->socialAccountInfo->tiktok_username }}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <div class="ml-4 d-inline-block">
+                                                                                        <span class="d-block font-weight-bold text-md">
+
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm font-weight-bold">
+                                                                                            Follower
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm">
+                                                                                            {{ $influencer->socialAccountInfo->instagram_followers }}
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm">
+                                                                                            {{ $influencer->socialAccountInfo->tiktok_followers }}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    {!! Form::open(['url' => route('backend.cms.campaign-influencer.reminder', [$campaignInfluencer->id]), 'method' => 'put']) !!}
+                                                                                    <div class="d-inline-block text-center">
+                                                                                        <span class="d-block font-weight-bold text-md">
+                                                                                            &nbsp;
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm font-weight-bold">
+                                                                                            Briefing Reminder
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm">
+                                                                                            {{ $campaignInfluencer->briefing_reminder == 0 ? 'none' : $campaignInfluencer->briefing_reminder_at }}
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm mt-1">
+                                                                                            <button name="briefing_reminder" value="{{ 1 }}" class="btn btn-primary btn-sm"
+                                                                                                {{ $campaignInfluencer->briefing_reminder != 0 ? 'disabled' : '' }}
+                                                                                            >
+                                                                                                Send out
+                                                                                            </button>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <div class="d-inline-block ml-4 text-center">
+                                                                                        <span class="d-block font-weight-bold text-md">
+                                                                                            &nbsp;
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm font-weight-bold">
+                                                                                            Content Reminder
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm">
+                                                                                            {{ $campaignInfluencer->content_reminder == 0 ? 'none' : $campaignInfluencer->content_reminder_at }}
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm mt-1">
+                                                                                            <button name="content_reminder" value="{{ 1 }}" class="btn btn-primary btn-sm"
+                                                                                                {{ $campaignInfluencer->content_reminder != 0 ? 'disabled' : '' }}
+                                                                                            >
+                                                                                                Send out
+                                                                                            </button>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <div class="d-inline-block ml-4 text-center">
+                                                                                        <span class="d-block font-weight-bold text-md">
+                                                                                            &nbsp;
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm font-weight-bold">
+                                                                                            Missing Content Reminder
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm">
+                                                                                            {{ $campaignInfluencer->missing_content_reminder == 0 ? 'none' : $campaignInfluencer->missing_content_reminder_at }}
+                                                                                        </span>
+                                                                                        <span class="d-block text-sm mt-1">
+                                                                                            <button name="missing_content_reminder" value="{{ 1 }}" class="btn btn-primary btn-sm"
+                                                                                                {{ $campaignInfluencer->missing_content_reminder != 0 ? 'disabled' : '' }}
+                                                                                            >
+                                                                                                Send out
+                                                                                            </button>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    {!! Form::close() !!}
+                                                                                </div>
+                                                                            </div>
+                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                <span aria-hidden="true">×</span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <div class="row">
+                                                                                <div class="col-md-12 table-responsive">
+                                                                                    <table class="table w-100">
+                                                                                        <tr>
+                                                                                            <th>Campaign</th>
+                                                                                            <th>Start Date</th>
+                                                                                            <th>Deadline, Time Left</th>
+                                                                                            <th>Briefing Reminder</th>
+                                                                                            <th>Content Reminder</th>
+                                                                                            <th>Missing Content Reminder</th>
+                                                                                            <th>Duration</th>
+                                                                                            <th>Content</th>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            @php
+                                                                                                $start_date = \Carbon\Carbon::parse($campaign->start_date);
+                                                                                                if ($campaign->cycle_time_unit == 1)
+                                                                                                    $next_deadline = $start_date->addMonths($campaign->cycle_count);
+                                                                                                else if ($campaign->cycle_time_unit == 2)
+                                                                                                    $next_deadline = $start_date->addWeeks($campaign->cycle_count);
+                                                                                            @endphp
+
+                                                                                            <td>{{ $campaign->title ?? '' }}</td>
+                                                                                            <td>{{ $campaignInfluencer->campaign->start_date ?? '' }}</td>
+                                                                                            <td>{{ $next_deadline->format('d.m.Y') ?? '' }}, {{ $next_deadline->diffInDays() }} days</td>
+                                                                                            <td>
+                                                                                                {{ $campaignInfluencer->briefing_reminder == 0 ? 'none' : $campaignInfluencer->briefing_reminder_at }}
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                {{ $campaignInfluencer->content_reminder == 0 ? 'none' : $campaignInfluencer->content_reminder_at }}
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                {{ $campaignInfluencer->missing_content_reminder == 0 ? 'none' : $campaignInfluencer->missing_content_reminder_at }}
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                {{ $campaign->cycle_count }}
+                                                                                                @if ($campaign->cycle_time_unit == 1)
+                                                                                                    Months
+                                                                                                @elseif ($campaign->cycle_time_unit == 2)
+                                                                                                    Weeks
+                                                                                                @endif
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                @php
+                                                                                                    $uploaded_content = 0;
+                                                                                                    foreach($campaignInfluencer->content_types as $index => $content_type) {
+                                                                                                        $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . \Str::snake($content_type);
+                                                                                                        $uploaded_content += isset($campaignInfluencer->getMedia($media_collection)[0]);
+                                                                                                    }
+                                                                                                @endphp
+
+                                                                                                {{ $uploaded_content }} / {{ count($campaignInfluencer->content_types) }}
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                </div>
+                                                                                <div class="col-md-12">
+                                                                                    <div class="row">
+                                                                                        @foreach($campaignInfluencer->content_types as $index => $content_type)
+                                                                                            @php
+                                                                                                $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . \Str::snake($content_type);
+                                                                                            @endphp
+                                                                                            <div class="col-md-4">
+                                                                                                <div class="card">
+                                                                                                    <div class="card-header">
+                                                                                                        <div class="card-title">
+                                                                                                            {{ $content_type }}
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div class="card-body">
+                                                                                                        <div class="form-group text-center">
+                                                                                                            @error($media_collection)
+                                                                                                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                                                                            @enderror
+                                                                                                            @if(isset($campaignInfluencer->getMedia($media_collection)[0]))
+                                                                                                                {!! Form::open(['url' => route('backend.cms.campaign-influencer.feedback', [$campaignInfluencer->id]), 'method' => 'put']) !!}
+                                                                                                                <div class="image-output" style="border: 1px solid #bebebe">
+                                                                                                                    <img src="{{ $campaignInfluencer->getMedia($media_collection)[0]->getUrl() }}" class="w-100" style="height: 100px" />
+                                                                                                                </div>
+                                                                                                                <div class="form-group text-left mt-2">
+                                                                                                                    <label>Grade</label>
+                                                                                                                    <input name="grade_{{ \Str::snake($content_type) }}" value="{{ old('grade_' . \Str::snake($content_type)) ?? $campaignInfluencer->feedback['grade_' . \Str::snake($content_type)] ?? '' }}" type="number" min="0" placeholder="Grade" class="form-control" required />
+                                                                                                                </div>
+                                                                                                                <div class="form-group text-left mt-2">
+                                                                                                                    <label>Feedback</label>
+                                                                                                                    <textarea name="feedback_{{ \Str::snake($content_type) }}" rows="3" class="form-control" required>
+                                                                                                                    {{ old('feedback_' . \Str::snake($content_type)) ?? $campaignInfluencer->feedback['feedback_' . \Str::snake($content_type)] ?? '' }}
+                                                                                                                </textarea>
+                                                                                                                </div>
+                                                                                                                <div class="form-group text-left mt-2">
+                                                                                                                    <button class="btn btn-primary btn-sm">Send</button>
+                                                                                                                </div>
+                                                                                                                {!! Form::close() !!}
+                                                                                                            @else
+                                                                                                                <div class="m-auto pt-3 text-center">
+                                                                                                                    <i class="fa fa-exclamation-circle text-danger"></i>
+                                                                                                                    <span class="d-block text-danger">Content Not Uploaded</span>
+                                                                                                                </div>
+                                                                                                            @endif
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        @endforeach
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
                                                         </td>
                                                         <td>
                                                             <a class="font-weight-bold">
@@ -256,14 +487,14 @@
                                                             </a>
                                                             <br>
                                                             <div class="mt-1">
-                                                                <i class="fas fa-check">
+                                                                <i class="fab fa-instagram mr-1">
                                                                 </i>
                                                                 <a class="" href="javascript:void(0)">
                                                                     {{ $influencer->socialAccountInfo->instagram_username ?? '' }}
                                                                 </a>
                                                             </div>
                                                             <div class="mt-1">
-                                                                <i class="fas fa-check">
+                                                                <i class="fab fa-tiktok mr-1">
                                                                 </i>
                                                                 <a class="" href="javascript:void(0)">
                                                                     {{ $influencer->socialAccountInfo->tiktok_username ?? '' }}
@@ -301,52 +532,88 @@
                             </div>
                         </div>
                     @endif
-                    {{--<div class="card">
-                        <div class="card-header font-weight-bold">
-                            Brands
-                        </div>
-                        <div class="card-body">
-                            @if(count($brands))
-                                <div class="brand-list">
-                                    <div class="row">
-                                        @foreach($brands as $index => $brand)
-                                            <div class="col-lg-6 col-6">
-                                                <div class="small-box bg-gradient-secondary">
-                                                    <div class="inner text-justify">
-                                                        <h5 class="font-weight-bold text-center">{{ $brand->title }}</h5>
-                                                        <hr>
-                                                        <div class="row" style="font-size: 12px">
-                                                            <div class="col-6">
-                                                                <span>Products:</span>
+
+                    @if(\App\Helpers\AuthManager::isInfluencer())
+                        <div class="card">
+                            <div class="card-header font-weight-bold">
+                                Brands
+                            </div>
+                            <div class="card-body">
+                                @if(count($brands))
+                                    <div class="brand-list">
+                                        <div class="row">
+                                            @foreach($brands as $index => $brand)
+                                                <div class="col-lg-4 col-6">
+                                                    <div class="small-box bg-gradient-secondary">
+                                                        <div class="inner text-justify">
+                                                            <img alt="Avatar" class="table-avatar" style="border: 1px solid #d5d5d5; height: 80px; width: 80px; margin-left: calc(50% - 40px);"
+                                                                 src="{{ $brand->avatar->file_url ?? config('core.image.default.logo_preview') }}"
+                                                            >
+                                                        </div>
+
+                                                        <a class="small-box-footer"
+                                                           data-toggle="modal" href="#modal-lg-{{ $index }}"
+                                                        >
+                                                            More Info <i class="fas fa-arrow-circle-right"></i>
+                                                        </a>
+
+                                                        <div class="modal fade" id="modal-lg-{{ $index }}" style="display: none;" aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg text-dark">
+                                                                <div class="modal-content text-left">
+                                                                    <div class="modal-header">
+                                                                        <div class="d-inline-block position-relative" style="top: 14px">
+                                                                            <img alt="Avatar" class="table-avatar" style="border: 1px solid #d5d5d5; height: 60px; width: 60px"
+                                                                                 src="{{ $brand->avatar->file_url ?? config('core.image.default.logo_preview') }}"
+                                                                            >
+                                                                        </div>
+                                                                        <div class="ml-2">
+                                                                            <h4 class="modal-title">
+                                                                                <span class="font-weight-bold text-md">
+                                                                                    {{ $brand->additionalInfo->first_name ?? '' }}
+                                                                                </span>
+                                                                            </h4>
+                                                                            <span class="text-sm font-weight-normal">
+                                                                                Here you‘ll find all relevant information about the brand {{ $brand->additionalInfo->first_name ?? '' }}. You will recieve further information when your package has been sent out.
+                                                                            </span>
+                                                                        </div>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">×</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <span class="d-block font-weight-bold">Additional Info</span>
+                                                                                <div class="form-group">
+                                                                                    <textarea rows="3" class="form-control" readonly>
+                                                                                        {{ $brand->additionalInfo->about ?? 'N/A' }}
+                                                                                    </textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer justify-content-between">
+                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                                                    </div>
+                                                                </div>
+
                                                             </div>
-                                                            <div class="col-6">
-                                                                <span>{{ $brand->products_count }}</span>
-                                                            </div>
-                                                            <div class="col-6">
-                                                                <span>Contact:</span>
-                                                            </div>
-                                                            <div class="col-6">
-                                                                <span>{{ $brand->user->email ?? '' }}</span>
-                                                            </div>
+
                                                         </div>
                                                     </div>
-
-                                                    <a href="{{ route('backend.cms.brand.show', [$brand->id]) }}" class="small-box-footer">
-                                                        More Info <i class="fas fa-arrow-circle-right"></i>
-                                                    </a>
                                                 </div>
-                                            </div>
-                                        @endforeach
+                                            @endforeach
+                                        </div>
                                     </div>
-                                </div>
-                            @else
-                                <div class="text-center">
-                                    <i class="fa fa-product-hunt"></i>
-                                    <span class="d-block">No Brand Here</span>
-                                </div>
-                            @endif
+                                @else
+                                    <div class="text-center">
+                                        <i class="fa fa-product-hunt"></i>
+                                        <span class="d-block">No Brand Here</span>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                    </div>--}}
+                    @endif
                 </div>
             </div>
         </div>

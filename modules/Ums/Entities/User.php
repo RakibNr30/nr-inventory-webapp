@@ -2,6 +2,7 @@
 
 namespace Modules\Ums\Entities;
 
+use Modules\Cms\Entities\Product;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 
 class User extends \App\User implements hasMedia
@@ -37,6 +38,10 @@ class User extends \App\User implements hasMedia
     public function socialAccount()
     {
         return $this->hasMany(UserSocialAccountInfo::class, 'user_id', 'id')->orderByDesc('created_at');
+    }
+
+    public function products () {
+        return $this->hasMany(Product::class, 'brand_id', 'id');
     }
 
     // get avatar attribute

@@ -42,7 +42,8 @@
         "name": "Brands",
         "roles": [
             "Super Admin",
-            "Admin"
+            "Admin",
+            "Influencer"
         ]
     },
     {
@@ -103,6 +104,55 @@
     },
     {
         "name": "Sign Out",
+        "roles": [
+            "Super Admin",
+            "Admin",
+            "Influencer Manager",
+            "Influencer",
+            "Brand"
+        ]
+    },
+
+    {
+        "name": "profile_social_account_info",
+        "roles": [
+            "Influencer"
+        ]
+    },
+    {
+        "name": "profile_business_info",
+        "roles": [
+            "Brand"
+        ]
+    },
+    {
+        "name": "profile_shipping_info",
+        "roles": [
+            "Influencer"
+        ]
+    },
+    {
+        "name": "profile_additional_info",
+        "roles": [
+            "Super Admin",
+            "Admin",
+            "Influencer Manager",
+            "Influencer",
+            "Brand"
+        ]
+    },
+    {
+        "name": "profile_account_info",
+        "roles": [
+            "Super Admin",
+            "Admin",
+            "Influencer Manager",
+            "Influencer",
+            "Brand"
+        ]
+    },
+    {
+        "name": "profile_password_change",
         "roles": [
             "Super Admin",
             "Admin",

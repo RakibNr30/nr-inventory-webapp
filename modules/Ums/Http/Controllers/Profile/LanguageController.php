@@ -71,10 +71,10 @@ class LanguageController extends Controller
         // check if userLanguage created
         if ($userLanguage) {
             // flash notification
-            notifier()->success('UserLanguage created successfully.');
+            notifier()->success('Your language added successfully.');
         } else {
             // flash notification
-            notifier()->error('UserLanguage cannot be created successfully.');
+            notifier()->error('Your language cannot be added successfully.');
         }
         // redirect back
         return redirect()->back();
@@ -93,7 +93,7 @@ class LanguageController extends Controller
         // check if userLanguage doesn't exists
         if (empty($userLanguage)) {
             // flash notification
-            notifier()->error('UserLanguage not found!');
+            notifier()->error('Language not found!');
             // redirect back
             return redirect()->back();
         }
@@ -114,7 +114,7 @@ class LanguageController extends Controller
         // check if userLanguage doesn't exists
         if (empty($userLanguage)) {
             // flash notification
-            notifier()->error('UserLanguage not found!');
+            notifier()->error('Language not found!');
             // redirect back
             return redirect()->back();
         }
@@ -136,7 +136,7 @@ class LanguageController extends Controller
         // check if userLanguage doesn't exists
         if (empty($userLanguage)) {
             // flash notification
-            notifier()->error('UserLanguage not found!');
+            notifier()->error('Language not found!');
             // redirect back
             return redirect()->back();
         }
@@ -145,10 +145,10 @@ class LanguageController extends Controller
         // check if userLanguage updated
         if ($userLanguage) {
             // flash notification
-            notifier()->success('UserLanguage updated successfully.');
+            notifier()->success('Your language updated successfully.');
         } else {
             // flash notification
-            notifier()->error('UserLanguage cannot be updated successfully.');
+            notifier()->error('Your language cannot be updated successfully.');
         }
         // redirect back
         return redirect()->back();
@@ -167,17 +167,17 @@ class LanguageController extends Controller
         // check if userLanguage doesn't exists
         if (empty($userLanguage)) {
             // flash notification
-            notifier()->error('UserLanguage not found!');
+            notifier()->error('Language not found!');
             // redirect back
             return redirect()->back();
         }
         // delete userLanguage
         if ($this->userLanguageService->delete($id)) {
             // flash notification
-            notifier()->success('UserLanguage deleted successfully.');
+            notifier()->success('Your language deleted successfully.');
         } else {
             // flash notification
-            notifier()->success('UserLanguage cannot be deleted successfully.');
+            notifier()->success('Your language cannot be deleted successfully.');
         }
         // redirect back
         return redirect()->back();

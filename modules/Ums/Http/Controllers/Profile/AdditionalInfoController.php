@@ -58,10 +58,10 @@ class AdditionalInfoController extends Controller
         // check if userAdditionalInfo created
         if ($userAdditionalInfo) {
             // flash notification
-            notifier()->success('UserAdditionalInfo created successfully.');
+            notifier()->success('Your additional info updated successfully.');
         } else {
             // flash notification
-            notifier()->error('UserAdditionalInfo cannot be created successfully.');
+            notifier()->error('Your additional info cannot be updated successfully.');
         }
         // redirect back
         return redirect()->back();

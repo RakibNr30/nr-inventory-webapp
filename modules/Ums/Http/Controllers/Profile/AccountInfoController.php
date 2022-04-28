@@ -47,8 +47,7 @@ class AccountInfoController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'username' => 'required',
-			'avatar' => 'sometimes|image|max:512',
+			'avatar' => 'sometimes|image|max:1024',
 			'email' => 'required',
 			'phone' => 'required',
         ]);
@@ -59,10 +58,10 @@ class AccountInfoController extends Controller
         // check if user created
         if ($user) {
             // flash notification
-            notifier()->success('Account info updated successfully.');
+            notifier()->success('Your account info updated successfully.');
         } else {
             // flash notification
-            notifier()->error('Account info cannot be Updated.');
+            notifier()->error('Your account info cannot be Updated.');
         }
         // redirect back
         return redirect()->back();

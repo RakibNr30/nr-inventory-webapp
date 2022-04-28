@@ -15,7 +15,7 @@ use Modules\Cms\Http\Requests\CampaignUpdateRequest;
 use Modules\Cms\DataTables\CampaignDataTable;
 
 // services...
-use Modules\Cms\Services\BrandService;
+use Modules\Cms\Services\CampaignInfluencerService;
 use Modules\Cms\Services\CampaignService;
 use Modules\Cms\Services\InfluencerCategoryService;
 use Modules\Cms\Services\ProductService;
@@ -29,9 +29,9 @@ class CampaignController extends Controller
     protected $campaignService;
 
     /**
-     * @var $brandService
+     * @var $campaignInfluencerService
      */
-    protected $brandService;
+    protected $campaignInfluencerService;
 
     /**
      * @var $productService
@@ -52,21 +52,21 @@ class CampaignController extends Controller
      * Constructor
      *
      * @param CampaignService $campaignService
-     * @param BrandService $brandService
+     * @param ProductService $productService
      * @param InfluencerCategoryService $influencerCategoryService
      * @param UserService $userService
      */
     public function __construct
     (
         CampaignService $campaignService,
-        BrandService $brandService,
+        CampaignInfluencerService $campaignInfluencerService,
         ProductService $productService,
         InfluencerCategoryService $influencerCategoryService,
         UserService $userService
     )
     {
         $this->campaignService = $campaignService;
-        $this->brandService = $brandService;
+        $this->campaignInfluencerService = $campaignInfluencerService;
         $this->productService = $productService;
         $this->influencerCategoryService = $influencerCategoryService;
         $this->userService = $userService;
@@ -82,14 +82,15 @@ class CampaignController extends Controller
     public function index()
     {
         $campaigns = $this->campaignService->all();
+        $campaign_influencers = [];
         if (AuthManager::isInfluencer()) {
-            $campaigns = $this->campaignService->campaigns();
+            $campaign_influencers = $this->campaignService->influencerCampaigns();
         }
         if (AuthManager::isBrand()) {
             $campaigns = $this->campaignService->brandCampaigns();
         }
 
-        return view('cms::campaign.index', compact('campaigns'));
+        return view('cms::campaign.index', compact('campaigns', 'campaign_influencers'));
     }
 
     /**
@@ -163,7 +164,11 @@ class CampaignController extends Controller
             return redirect()->back();
         }
 
-        $brands = []; //$this->brandService->brandsIn($campaign->brand_ids ?? []);
+        $brands = [];
+
+        if (AuthManager::isInfluencer()) {
+            $brands = $this->campaignInfluencerService->campaignInfluencerBrands($campaign->id);
+        }
 
         // return view
         return view('cms::campaign.show', compact('campaign', 'brands'));

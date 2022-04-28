@@ -2,6 +2,7 @@
 
 namespace Modules\Cms\Services;
 
+use Carbon\Carbon;
 use Modules\Cms\Entities\Campaign;
 use Modules\Cms\Repositories\CampaignInfluencerRepository;
 use Modules\Cms\Repositories\CampaignRepository;
@@ -56,17 +57,6 @@ class DashboardService
     }
 
     /**
-     * Get all campaign
-     *
-     * @return mixed
-     */
-    public function campaigns($limit = 0)
-    {
-        return [];
-        return $this->campaignRepository->model->whereJsonContains('influencer_ids', auth()->user()->id)->get();
-    }
-
-    /**
      * Get all data
      *
      * @return mixed
@@ -93,6 +83,39 @@ class DashboardService
         $statistics->favourite_influencers = $influencers
                                             ->where('is_influencer_add_to_favourite', 1)
                                             ->where('is_process_completed', 1)->count();
+
+        return $statistics;
+    }
+
+    /**
+     * Get all data
+     *
+     * @return mixed
+     */
+    public function statisticsInfluencer()
+    {
+        $statistics = new \stdClass();
+        $campaign_influencers = $this->campaignInfluencerRepository->model
+            ->with(['campaign'])
+            ->where('influencer_id', auth()->user()->id)->get();
+
+        $statistics->overall_campaigns = $campaign_influencers
+            ->count();
+        $statistics->pending_campaigns = $campaign_influencers
+            ->where('accept_status', 0)
+            ->count();
+        $statistics->accepted_campaigns = $campaign_influencers
+            ->where('accept_status', 1)
+            ->count();
+        $statistics->denied_campaigns = $campaign_influencers
+            ->where('accept_status', -1)
+            ->count();
+        $statistics->active_campaigns = $campaign_influencers
+            ->where('available_until', '>', Carbon::now())
+            ->count();
+        $statistics->expired_campaigns = $campaign_influencers
+            ->where('available_until', '<=', Carbon::now())
+            ->count();
 
         return $statistics;
     }

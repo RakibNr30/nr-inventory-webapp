@@ -2,6 +2,7 @@
 
 namespace Modules\Cms\Services;
 
+use Modules\Cms\Repositories\CampaignInfluencerRepository;
 use Modules\Cms\Repositories\CampaignRepository;
 
 class CampaignService
@@ -12,13 +13,24 @@ class CampaignService
     protected $campaignRepository;
 
     /**
+     * @var $campaignInfluencerRepository
+     */
+    protected $campaignInfluencerRepository;
+
+    /**
      * Constructor
      *
      * @param CampaignRepository $campaignRepository
+     * @param CampaignInfluencerRepository $campaignInfluencerRepository
      */
-    public function __construct(CampaignRepository $campaignRepository)
+    public function __construct
+    (
+        CampaignRepository $campaignRepository,
+        CampaignInfluencerRepository $campaignInfluencerRepository
+    )
     {
         $this->campaignRepository = $campaignRepository;
+        $this->campaignInfluencerRepository = $campaignInfluencerRepository;
     }
 
     /**
@@ -107,5 +119,19 @@ class CampaignService
     public function brandCampaigns($limit = 0)
     {
         return $this->campaignRepository->model->where('brand_id', auth()->user()->id)->get();
+    }
+
+    /**
+     * Get all campaign
+     *
+     * @return mixed
+     */
+    public function influencerCampaigns($limit = 0)
+    {
+        return $this->campaignInfluencerRepository->model
+            ->with(['campaign'])
+            ->where('influencer_id', auth()->user()->id)
+            ->orderByDesc('start_date')
+            ->get();
     }
 }

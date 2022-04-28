@@ -24,9 +24,9 @@ class InfluencerStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'instagram_username' => 'required|max:255',
+            'instagram_username' => 'required|max:255|unique:user_social_account_infos',
             'instagram_followers' => 'required|numeric',
-            'tiktok_username' => 'max:255',
+            'tiktok_username' => 'max:255|unique:user_social_account_infos',
             'tiktok_followers' => 'numeric',
             'first_name' => 'required|max:30',
             'last_name' => 'required|max:30',

@@ -6,7 +6,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-3">
-                    @include('admin.partials._profile_menu', ['active' => 1])
+                    @include('admin.partials._profile_menu', ['active' => 2])
                 </div>
                 <div class="col-md-9">
                     @include('admin.partials._alert')
@@ -19,15 +19,45 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="present_country"
-                                               class="@error('present_country') text-danger @enderror">Present
-                                            Country</label>
-                                        <input id="present_country" name="present_country"
-                                               value="{{ old('present_country') ?: $userShippingInfo->present_country }}"
+                                        <label for="phone"
+                                               class="@error('phone') text-danger @enderror">
+                                            Phone Number
+                                        </label>
+                                        <input id="phone" name="phone"
+                                               value="{{ old('phone') ?: $userShippingInfo->phone }}"
                                                type="text"
-                                               class="form-control @error('present_country') is-invalid @enderror"
-                                               placeholder="Enter present country" autofocus>
-                                        @error('present_country')
+                                               class="form-control @error('phone') is-invalid @enderror"
+                                               placeholder="Enter email" autofocus>
+                                        @error('phone')
+                                        <span class="invalid-feedback"
+                                              role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="first_name" class="@error('first_name') text-danger @enderror">First
+                                            Name</label>
+                                        <input id="first_name" name="first_name"
+                                               value="{{ old('first_name') ?: $userShippingInfo->first_name }}"
+                                               type="text"
+                                               class="form-control @error('first_name') is-invalid @enderror"
+                                               placeholder="Enter first name" autofocus>
+                                        @error('first_name')
+                                        <span class="invalid-feedback"
+                                              role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="last_name" class="@error('last_name') text-danger @enderror">Last
+                                            Name</label>
+                                        <input id="last_name" name="last_name"
+                                               value="{{ old('last_name') ?: $userShippingInfo->last_name }}"
+                                               type="text" class="form-control @error('last_name') is-invalid @enderror"
+                                               placeholder="Enter last name" autofocus>
+                                        @error('last_name')
                                         <span class="invalid-feedback"
                                               role="alert"><strong>{{ $message }}</strong></span>
                                         @enderror
@@ -35,14 +65,16 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="present_city" class="@error('present_city') text-danger @enderror">Present
-                                            City</label>
-                                        <input id="present_city" name="present_city"
-                                               value="{{ old('present_city') ?: $userShippingInfo->present_city }}"
+                                        <label for="address"
+                                               class="@error('address') text-danger @enderror">
+                                            Address
+                                        </label>
+                                        <input id="address" name="address"
+                                               value="{{ old('address') ?: $userShippingInfo->address }}"
                                                type="text"
-                                               class="form-control @error('present_city') is-invalid @enderror"
-                                               placeholder="Enter present city" autofocus>
-                                        @error('present_city')
+                                               class="form-control @error('address') is-invalid @enderror"
+                                               placeholder="Enter address" autofocus>
+                                        @error('address')
                                         <span class="invalid-feedback"
                                               role="alert"><strong>{{ $message }}</strong></span>
                                         @enderror
@@ -50,172 +82,66 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="present_state"
-                                               class="@error('present_state') text-danger @enderror">Present
-                                            State</label>
-                                        <input id="present_state" name="present_state"
-                                               value="{{ old('present_state') ?: $userShippingInfo->present_state }}"
+                                        <label for="extra_info"
+                                               class="@error('extra_info') text-danger @enderror">
+                                            Extra Info
+                                        </label>
+                                        <input id="extra_info" name="extra_info"
+                                               value="{{ old('extra_info') ?: $userShippingInfo->extra_info }}"
                                                type="text"
-                                               class="form-control @error('present_state') is-invalid @enderror"
-                                               placeholder="Enter present state" autofocus>
-                                        @error('present_state')
+                                               class="form-control @error('extra_info') is-invalid @enderror"
+                                               placeholder="Enter extra info" autofocus>
+                                        @error('extra_info')
                                         <span class="invalid-feedback"
                                               role="alert"><strong>{{ $message }}</strong></span>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="present_address_line_1"
-                                               class="@error('present_address_line_1') text-danger @enderror">Present
-                                            Address Line - 1</label>
-                                        <input id="present_address_line_1" name="present_address_line_1"
-                                               value="{{ old('present_address_line_1') ?: $userShippingInfo->present_address_line_1 }}"
+                                        <label for="zip_code"
+                                               class="@error('zip_code') text-danger @enderror">
+                                            Zip Code
+                                        </label>
+                                        <input id="zip_code" name="zip_code"
+                                               value="{{ old('zip_code') ?: $userShippingInfo->zip_code }}"
                                                type="text"
-                                               class="form-control @error('present_address_line_1') is-invalid @enderror"
-                                               placeholder="Enter present address line - 1" autofocus>
-                                        @error('present_address_line_1')
+                                               class="form-control @error('zip_code') is-invalid @enderror"
+                                               placeholder="Enter zip code" autofocus>
+                                        @error('zip_code')
                                         <span class="invalid-feedback"
                                               role="alert"><strong>{{ $message }}</strong></span>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="present_address_line_2"
-                                               class="@error('present_address_line_2') text-danger @enderror">Present
-                                            Address Line - 2</label>
-                                        <input id="present_address_line_2" name="present_address_line_2"
-                                               value="{{ old('present_address_line_2') ?: $userShippingInfo->present_address_line_2 }}"
+                                        <label for="city" class="@error('city') text-danger @enderror">
+                                            City
+                                        </label>
+                                        <input id="city" name="city"
+                                               value="{{ old('city') ?: $userShippingInfo->city }}"
                                                type="text"
-                                               class="form-control @error('present_address_line_2') is-invalid @enderror"
-                                               placeholder="Enter present address line - 2" autofocus>
-                                        @error('present_address_line_2')
+                                               class="form-control @error('city') is-invalid @enderror"
+                                               placeholder="Enter city" autofocus>
+                                        @error('city')
                                         <span class="invalid-feedback"
                                               role="alert"><strong>{{ $message }}</strong></span>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="permanent_country"
-                                               class="@error('permanent_country') text-danger @enderror">Permanent
-                                            Country</label>
-                                        <input id="permanent_country" name="permanent_country"
-                                               value="{{ old('permanent_country') ?: $userShippingInfo->permanent_country }}"
+                                        <label for="country_code"
+                                               class="@error('country_code') text-danger @enderror">
+                                            Country Code
+                                        </label>
+                                        <input id="country_code" name="country_code"
+                                               value="{{ old('country_code') ?: $userShippingInfo->country_code }}"
                                                type="text"
-                                               class="form-control @error('permanent_country') is-invalid @enderror"
-                                               placeholder="Enter permanent country" autofocus>
-                                        @error('permanent_country')
-                                        <span class="invalid-feedback"
-                                              role="alert"><strong>{{ $message }}</strong></span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="permanent_city"
-                                               class="@error('permanent_city') text-danger @enderror">Permanent
-                                            City</label>
-                                        <input id="permanent_city" name="permanent_city"
-                                               value="{{ old('permanent_city') ?: $userShippingInfo->permanent_city }}"
-                                               type="text"
-                                               class="form-control @error('permanent_city') is-invalid @enderror"
-                                               placeholder="Enter permanent city" autofocus>
-                                        @error('permanent_city')
-                                        <span class="invalid-feedback"
-                                              role="alert"><strong>{{ $message }}</strong></span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="permanent_state"
-                                               class="@error('permanent_state') text-danger @enderror">Permanent
-                                            State</label>
-                                        <input id="permanent_state" name="permanent_state"
-                                               value="{{ old('permanent_state') ?: $userShippingInfo->permanent_state }}"
-                                               type="text"
-                                               class="form-control @error('permanent_state') is-invalid @enderror"
-                                               placeholder="Enter permanent state" autofocus>
-                                        @error('permanent_state')
-                                        <span class="invalid-feedback"
-                                              role="alert"><strong>{{ $message }}</strong></span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="permanent_address_line_1"
-                                               class="@error('permanent_address_line_1') text-danger @enderror">Permanent
-                                            Address Line - 1</label>
-                                        <input id="permanent_address_line_1" name="permanent_address_line_1"
-                                               value="{{ old('permanent_address_line_1') ?: $userShippingInfo->permanent_address_line_1 }}"
-                                               type="text"
-                                               class="form-control @error('permanent_address_line_1') is-invalid @enderror"
-                                               placeholder="Enter permanent address line - 1" autofocus>
-                                        @error('permanent_address_line_1')
-                                        <span class="invalid-feedback"
-                                              role="alert"><strong>{{ $message }}</strong></span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="permanent_address_line_2"
-                                               class="@error('permanent_address_line_2') text-danger @enderror">Permanent
-                                            Address Line - 2</label>
-                                        <input id="permanent_address_line_2" name="permanent_address_line_2"
-                                               value="{{ old('permanent_address_line_2') ?: $userShippingInfo->permanent_address_line_2 }}"
-                                               type="text"
-                                               class="form-control @error('permanent_address_line_2') is-invalid @enderror"
-                                               placeholder="Enter permanent address line - 2" autofocus>
-                                        @error('permanent_address_line_2')
-                                        <span class="invalid-feedback"
-                                              role="alert"><strong>{{ $message }}</strong></span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="google_map_url"
-                                               class="@error('google_map_url') text-danger @enderror">Google Map Url</label>
-                                        <input id="google_map_url" name="google_map_url"
-                                               value="{{ old('google_map_url') ?: $userShippingInfo->google_map_url }}"
-                                               type="text"
-                                               class="form-control @error('google_map_url') is-invalid @enderror"
-                                               placeholder="Enter google map url" autofocus>
-                                        @error('google_map_url')
-                                        <span class="invalid-feedback"
-                                              role="alert"><strong>{{ $message }}</strong></span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="longitude"
-                                               class="@error('longitude') text-danger @enderror">Longitude</label>
-                                        <input id="longitude" name="longitude"
-                                               value="{{ old('longitude') ?: $userShippingInfo->longitude }}"
-                                               type="text"
-                                               class="form-control @error('longitude') is-invalid @enderror"
-                                               placeholder="Enter longitude" autofocus>
-                                        @error('longitude')
-                                        <span class="invalid-feedback"
-                                              role="alert"><strong>{{ $message }}</strong></span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="longitude"
-                                               class="@error('latitude') text-danger @enderror">Latitude</label>
-                                        <input id="latitude" name="latitude"
-                                               value="{{ old('latitude') ?: $userShippingInfo->latitude }}"
-                                               type="text"
-                                               class="form-control @error('latitude') is-invalid @enderror"
-                                               placeholder="Enter latitude" autofocus>
-                                        @error('longitude')
+                                               class="form-control @error('country_code') is-invalid @enderror"
+                                               placeholder="Enter country code" autofocus>
+                                        @error('country_code')
                                         <span class="invalid-feedback"
                                               role="alert"><strong>{{ $message }}</strong></span>
                                         @enderror

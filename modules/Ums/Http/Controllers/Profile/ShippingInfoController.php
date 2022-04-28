@@ -61,10 +61,10 @@ class ShippingInfoController extends Controller
         // check if userShippingInfo created
         if ($userShippingInfo) {
             // flash notification
-            notifier()->success('UserShippingInfo created successfully.');
+            notifier()->success('Your shipping info updated successfully.');
         } else {
             // flash notification
-            notifier()->error('UserShippingInfo cannot be created successfully.');
+            notifier()->error('Your shipping info cannot be updated successfully.');
         }
         // redirect back
         return redirect()->back();

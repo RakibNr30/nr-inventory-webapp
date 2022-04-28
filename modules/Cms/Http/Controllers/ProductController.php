@@ -14,6 +14,7 @@ use Modules\Cms\DataTables\ProductDataTable;
 // services...
 use Modules\Cms\Services\BrandService;
 use Modules\Cms\Services\ProductService;
+use Modules\Ums\Services\UserService;
 
 class ProductController extends Controller
 {
@@ -28,14 +29,22 @@ class ProductController extends Controller
     protected $brandService;
 
     /**
+     * @var $userService
+     */
+    protected $userService;
+
+    /**
      * Constructor
      *
      * @param ProductService $productService
+     * @param BrandService $brandService
+     * @param UserService $userService
      */
-    public function __construct(ProductService $productService, BrandService $brandService)
+    public function __construct(ProductService $productService, BrandService $brandService, UserService $userService)
     {
         $this->productService = $productService;
         $this->brandService = $brandService;
+        $this->userService = $userService;
         //$this->middleware(['permission:Cms']);
     }
 
@@ -58,7 +67,7 @@ class ProductController extends Controller
     public function create()
     {
         // brand lists
-        $brands = $this->brandService->all();
+        $brands = $this->userService->brands();
         // return view
         return view('cms::product.create', compact('brands'));
     }
@@ -118,7 +127,7 @@ class ProductController extends Controller
     public function edit($id)
     {
         // brand lists
-        $brands = $this->brandService->all();
+        $brands = $this->userService->brands();
         // get product
         $product = $this->productService->find($id);
         // check if product doesn't exists

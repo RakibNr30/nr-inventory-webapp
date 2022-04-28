@@ -110,24 +110,28 @@
                                 <p class="text-sm text-primary">Choose a campaign you want to take part in.</p>
                             </div>
 
-                            @if(count($campaigns))
+                            @if(count($campaign_influencers))
                                 <div class="table-responsive w-100 p-2">
                                     <table class="table table-striped projects mb-0">
                                         <tbody>
-                                        @foreach($campaigns as $index => $campaign)
+                                        @foreach($campaign_influencers as $index => $campaign_influencer)
                                             <tr>
+                                                @php
+                                                    $available_until = \Carbon\Carbon::parse($campaign_influencer->available_until);
+                                                @endphp
                                                 <td>
                                                     <ul class="list-inline">
                                                         <li class="list-inline-item-">
                                                             <span class="font-weight-bold d-block">Available Until</span>
-                                                            @php
-                                                                $start_date = \Carbon\Carbon::parse($campaign->start_date);
-                                                                if ($campaign->cycle_time_unit == 1)
-                                                                    $next_deadline = $start_date->addMonths($campaign->cycle_count);
-                                                                else if ($campaign->cycle_time_unit == 2)
-                                                                    $next_deadline = $start_date->addWeeks($campaign->cycle_count);
+                                                            {{--@php
+                                                                $start_date = \Carbon\Carbon::parse($campaign_influencer->start_date);
+                                                                if ($campaign_influencer->campaign->cycle_time_unit == 1)
+                                                                    $next_deadline = $start_date->addMonths($campaign_influencer->cycle_count);
+                                                                else if ($campaign_influencer->campaign->cycle_time_unit == 2)
+                                                                    $next_deadline = $start_date->addWeeks($campaign_influencer->cycle_count);
                                                             @endphp
-                                                            <span>{{ $next_deadline->format('M d, Y') }}</span>
+                                                            <span>{{ $next_deadline->format('M d, Y') }}</span>--}}
+                                                            <span>{{ \Carbon\Carbon::now()->lt($available_until) ? $available_until->format('M d, Y') : 'Expired' }}</span>
                                                         </li>
                                                         <li class="list-inline-item- mt-3 font-weight-bold">
                                                             Brands
@@ -139,11 +143,7 @@
                                                 </td>
 
                                                 @php
-                                                    $brands = Modules\Cms\Entities\Brand::query()->whereIn('id', $campaign->brand_ids)->get();
-                                                    $campaign_accept = \Modules\Cms\Entities\CampaignInfluencer::query()
-                                                                                             ->where('influencer_id', auth()->user()->id)
-                                                                                             ->where('campaign_id', $campaign->id)
-                                                                                             ->first();
+                                                    $brands = Modules\Ums\Entities\User::query()->whereIn('id', $campaign_influencer->brand_ids)->get();
                                                 @endphp
 
                                                 @for($index = 0; $index < 5; $index++)
@@ -152,16 +152,62 @@
                                                             <ul class="list-inline text-center">
                                                                 <li class="list-inline-item m-auto">
                                                                     <img alt="Avatar" class="table-avatar"
-                                                                         src="{{ config('core.image.default.avatar_male') }}">
+                                                                         src="{{ $brands[$index]->avatar->file_url ?? config('core.image.default.logo_preview') }}">
                                                                 </li>
                                                                 <li class="list-inline-item- mt-3 font-weight-bold">
                                                                     {{ $brands[$index]->title ?? '' }}
                                                                 </li>
                                                                 <li class="list-inline-item- mt-3 font-weight-bold">
-                                                                    <a class="btn btn-secondary btn-sm {{ isset($campaign_accept->status) ? ($campaign_accept->status == 0 ? 'disabled' : '') : '' }}"
-                                                                       href="{{ route('backend.cms.brand.show', [$brands[$index]->id]) }}">
+                                                                    <a class="btn btn-secondary btn-sm text-white {{ ($campaign_influencer->campaign_accept_status_by_influencer == -1) || (\Carbon\Carbon::now()->gte($available_until)) ? 'disabled' : '' }}"
+                                                                       data-toggle="modal" href="#modal-lg-{{ $index }}"
+                                                                    >
                                                                         Read
                                                                     </a>
+
+                                                                    <div class="modal fade" id="modal-lg-{{ $index }}" style="display: none;" aria-hidden="true">
+                                                                        <div class="modal-dialog modal-lg">
+                                                                            <div class="modal-content text-left">
+                                                                                <div class="modal-header">
+                                                                                    <div class="d-inline-block position-relative">
+                                                                                        <img alt="Avatar" class="table-avatar" style="border: 1px solid #d5d5d5; height: 60px; width: 60px"
+                                                                                             src="{{ $brands[$index]->avatar->file_url ?? config('core.image.default.logo_preview') }}"
+                                                                                        >
+                                                                                    </div>
+                                                                                    <div class="ml-2">
+                                                                                        <h4 class="modal-title">
+                                                                                            <span class="font-weight-bold text-md">
+                                                                                                {{ $brands[$index]->additionalInfo->first_name ?? '' }}
+                                                                                            </span>
+                                                                                        </h4>
+                                                                                        <span class="text-sm font-weight-normal">
+                                                                                            Here you‘ll find all relevant information about the brand {{ $brands[$index]->additionalInfo->first_name ?? '' }}. You will recieve further information when your package has been sent out.
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                        <span aria-hidden="true">×</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-12">
+                                                                                            <span class="d-block font-weight-bold">Additional Info</span>
+                                                                                            <div class="form-group">
+                                                                                                <textarea rows="3" class="form-control" readonly>
+                                                                                                    {{ $brands[$index]->additionalInfo->about ?? 'N/A' }}
+                                                                                                </textarea>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="modal-footer justify-content-between">
+                                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+
+                                                                    </div>
+
                                                                 </li>
                                                             </ul>
                                                         @else
@@ -187,7 +233,7 @@
                                                             {{ count($brands) }} Brands
                                                             <br>
                                                             <a class="btn btn-outline-primary btn-sm pt-0 pb-0"
-                                                               href="{{ route('backend.cms.campaign.show', [$campaign->id]) }}">
+                                                               href="{{ route('backend.cms.campaign.show', [$campaign_influencer->campaign->id]) }}">
                                                                 More
                                                             </a>
                                                         </li>
@@ -200,34 +246,31 @@
                                                     </ul>
 
                                                     <div class="mt-1">
-                                                        @if(!$campaign_accept)
-                                                            {!! Form::open(['url' => route('backend.cms.campaign-accept.store'), 'method' => 'campaign-accept']) !!}
-                                                            <input type="hidden" name="campaign_id"
-                                                                   value="{{ $campaign->id }}">
-                                                            <input type="hidden" name="status" value="{{ 1 }}">
-                                                            <button class="btn btn-primary btn-xs">
+                                                        @if(($campaign_influencer->campaign_accept_status_by_influencer == 0) && (\Carbon\Carbon::now()->lt($available_until)))
+                                                            {!! Form::open(['url' => route('backend.cms.campaign-influencer.update', [$campaign_influencer->id]), 'method' => 'put']) !!}
+                                                            <button class="btn btn-primary btn-xs"
+                                                                name="campaign_accept_status_by_influencer" value="{{ 1 }}"
+                                                            >
                                                                 <i class="fas fa-check">
                                                                 </i>
                                                                 Accept
                                                             </button>
-                                                            {!! Form::close() !!}
-                                                            {!! Form::open(['url' => route('backend.cms.campaign-accept.store'), 'method' => 'campaign-accept']) !!}
-                                                            <input type="hidden" name="campaign_id"
-                                                                   value="{{ $campaign->id }}">
-                                                            <input type="hidden" name="status" value="{{ 0 }}">
-                                                            <button class="btn btn-danger btn-xs" href="#">
+
+                                                            <button class="btn btn-danger btn-xs"
+                                                                name="campaign_accept_status_by_influencer" value="{{ -1 }}"
+                                                            >
                                                                 <i class="fas fa-minus-circle">
                                                                 </i>
                                                                 Deny
                                                             </button>
                                                             {!! Form::close() !!}
                                                         @endif
-                                                        @if(isset($campaign_accept->status) && $campaign_accept->status == 1)
+                                                        @if($campaign_influencer->campaign_accept_status_by_influencer == 1)
                                                             <small class="font-weight-bold text-success">
                                                                 Accepted
                                                             </small>
                                                         @endif
-                                                        @if(isset($campaign_accept->status) && $campaign_accept->status == 0)
+                                                        @if($campaign_influencer->campaign_accept_status_by_influencer == -1)
                                                             <small class="font-weight-bold text-danger">
                                                                 Denied
                                                             </small>

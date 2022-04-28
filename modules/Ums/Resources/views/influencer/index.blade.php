@@ -12,7 +12,7 @@
                             <h3 class="card-title">Influencer List</h3>
                             @if(\App\Helpers\AuthManager::isAdmin() ||
                                 \App\Helpers\AuthManager::isSuperAdmin() ||
-                                \App\Helpers\AuthManager::isInfluencer())
+                                \App\Helpers\AuthManager::isInfluencerManager())
                                 <a href="{{ route('backend.ums.influencer.create') }}" type="button" class="btn btn-success btn-sm text-white float-right">
                                     Add new influencer
                                 </a>
@@ -20,7 +20,7 @@
                         </div>
                         <div class="p-4">
                             <div class="row">
-                                <div class="col-md-5">
+<!--                                <div class="col-md-5">
                                     <div class="form-group mb-0">
                                         <label>Sort by</label>
                                         <select class="form-control d-inline ml-2 w-auto">
@@ -28,8 +28,8 @@
                                             <option>Name</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="col-md-7">
+                                </div>-->
+                                <div class="col-md-12">
                                     <div class="table-responsive shadow w-100">
                                         <table class="table mb-0 text-center">
                                             <tbody>
@@ -159,14 +159,14 @@
                                                 </a>
                                                 <br>
                                                 <div class="mt-1">
-                                                    <i class="fas fa-check">
+                                                    <i class="fab fa-instagram mr-1">
                                                     </i>
                                                     <a class="" href="javascript:void(0)">
                                                         {{ $influencer->user->socialAccountInfo->instagram_username ?? '' }}
                                                     </a>
                                                 </div>
                                                 <div class="mt-1">
-                                                    <i class="fas fa-check">
+                                                    <i class="fab fa-tiktok mr-1">
                                                     </i>
                                                     <a class="" href="javascript:void(0)">
                                                         {{ $influencer->user->socialAccountInfo->tiktok_username ?? '' }}

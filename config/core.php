@@ -190,7 +190,15 @@ return [
             "id" => "social_account_info",
             "icon" => "fa-user",
             "url" => "/backend/profile/social-account-info",
-            "permission" => "social_account_info",
+            "permission" => "profile_social_account_info",
+            "children" => []
+        ],
+        [
+            "name" => "Business Info",
+            "id" => "business_info",
+            "icon" => "fa-user",
+            "url" => "/backend/profile/business-info",
+            "permission" => "profile_business_info",
             "children" => []
         ],
         [
@@ -198,7 +206,7 @@ return [
             "id" => "shipping_info",
             "icon" => "fa-user",
             "url" => "/backend/profile/shipping-info",
-            "permission" => "shipping_info",
+            "permission" => "profile_shipping_info",
             "children" => []
         ],
         [
@@ -206,23 +214,15 @@ return [
             "id" => "additional_info",
             "icon" => "fa-user",
             "url" => "/backend/profile/additional-info",
-            "permission" => "additional_info",
+            "permission" => "profile_additional_info",
             "children" => []
         ],
-       /* [
-            "name" => "Language",
-            "id" => "language",
-            "icon" => "fa-user",
-            "url" => "/backend/profile/language",
-            "permission" => "language",
-            "children" => []
-        ],*/
         [
             "name" => "Account Info",
             "id" => "account_info",
             "icon" => "fa-user",
             "url" => "/backend/profile/account-info",
-            "permission" => "account_info",
+            "permission" => "profile_account_info",
             "children" => []
         ],
         [
@@ -230,7 +230,7 @@ return [
             "id" => "password_change",
             "icon" => "fa-user",
             "url" => "/backend/profile/password-change",
-            "permission" => "password_change",
+            "permission" => "profile_password_change",
             "children" => []
         ]
     ],

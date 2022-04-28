@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BaseModel extends Model
 {
 	//private $format = 'Y-m-d';
-	private $format = 'M d, Y';
+	private $format = 'd.m.Y';
 	private $format2 = 'M d, Y, h:i A';
 
     public function getCreatedAtAttribute($value)
@@ -51,6 +51,18 @@ class BaseModel extends Model
     }
 
     public function getStartOfRecurringBillAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->format($this->format);
+    }
+    public function getBriefingReminderAtAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->format($this->format);
+    }
+    public function getContentReminderAtAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->format($this->format);
+    }
+    public function getMissingContentReminderAtAttribute($value)
     {
         return \Carbon\Carbon::parse($value)->format($this->format);
     }

@@ -179,3 +179,6 @@ input[type=file] {
     width: 2.5rem;
     height: 2.5rem;
 }
+.nav-sidebar>.nav-item .nav-icon.fa, .nav-sidebar>.nav-item .nav-icon.fab, .nav-sidebar>.nav-item .nav-icon.far, .nav-sidebar>.nav-item .nav-icon.fas, .nav-sidebar>.nav-item .nav-icon.glyphicon, .nav-sidebar>.nav-item .nav-icon.ion {
+    font-size: 0.8rem !important;
+}

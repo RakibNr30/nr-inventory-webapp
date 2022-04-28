@@ -6,23 +6,30 @@ use App\Helpers\MailManager;
 use App\Http\Controllers\Controller;
 
 // requests...
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Modules\Cms\Http\Requests\BrandStoreRequest;
-use Modules\Cms\Http\Requests\BrandUpdateRequest;
+use Modules\Cms\Http\Requests\CampaignStoreRequest;
+use Modules\Cms\Http\Requests\CampaignUpdateRequest;
 
 // datatable...
-use Modules\Cms\DataTables\BrandDataTable;
+use Modules\Cms\DataTables\CampaignDataTable;
 
 // services...
-use Modules\Cms\Services\BrandService;
+use Modules\Cms\Services\CampaignInfluencerService;
+use Modules\Cms\Services\CampaignService;
 use Modules\Ums\Services\UserService;
 
 class BrandController extends Controller
 {
     /**
-     * @var $brandService
+     * @var $campaignService
      */
-    protected $brandService;
+    protected $campaignService;
+
+    /**
+     * @var $campaignInfluencerService
+     */
+    protected $campaignInfluencerService;
 
     /**
      * @var $userService
@@ -32,212 +39,76 @@ class BrandController extends Controller
     /**
      * Constructor
      *
-     * @param BrandService $brandService
+     * @param CampaignService $campaignService
      * @param UserService $userService
+     * @param CampaignInfluencerService $campaignInfluencerService
      */
-    public function __construct(BrandService $brandService, UserService $userService)
+    public function __construct(CampaignService $campaignService, UserService $userService, CampaignInfluencerService $campaignInfluencerService)
     {
-        $this->brandService = $brandService;
+        $this->campaignService = $campaignService;
         $this->userService = $userService;
+        $this->campaignInfluencerService = $campaignInfluencerService;
         //$this->middleware(['permission:Cms']);
     }
 
     /**
-     * Brand list
-     *
-     * @param BrandDataTable $datatable
-     * @return \Illuminate\View\View
-     */
-    public function index(BrandDataTable $datatable)
-    {
-        return $datatable->render('cms::brand.index');
-    }
-
-    /**
-     * Create brand
+     * Campaign list
      *
      * @return \Illuminate\View\View
      */
-    public function create()
+    public function index()
     {
-        // return view
-        return view('cms::brand.create');
+        $campaign_influencers = $this->campaignService->influencerCampaigns();
+        return view('cms::brand.index', compact('campaign_influencers'));
     }
 
-
-    /**
-     * Store brand
-     *
-     * @param BrandStoreRequest $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function store(BrandStoreRequest $request)
-    {
-        $data = $request->all();
-        // create brand
-        $brand = $this->brandService->create($data);
-        // upload file
-        $brand->uploadFiles();
-        // check if brand created
-        if ($brand) {
-            $user_data['first_name'] = $data['first_name'];
-            $user_data['last_name'] = $data['last_name'];
-            $user_data['email'] = $data['email'];
-            $user_data['phone'] = $data['phone'];
-            $user_data['password'] = Hash::make($data['password']);
-            $user_data['is_brand'] = true;
-            $user_data['user_brand_id'] = $brand->id;
-
-            $user = $this->userService->create($user_data);
-
-            if ($user) {
-                $user->assignRole(['Brand']);
-                $this->brandService->update(['user_id' => $user->id], $brand->id);
-
-                $user_data['user_id'] = $user->id;
-
-                $user->additionalInfo()->create($user_data);
-
-                // email sending section
-                /*try {
-                    MailManager::send($user->email, "");
-                } catch (\Exception $e) {}*/
-            }
-
-            // flash notification
-            notifier()->success('Brand created successfully.');
-        } else {
-            // flash notification
-            notifier()->error('Brand cannot be created successfully.');
-        }
-        // redirect back
-        return redirect()->back();
-    }
-
-    /**
-     * Show brand.
-     *
-     * @param $id
-     * @return mixed
-     */
-    public function show($id)
-    {
-        // get brand
-        $brand = $this->brandService->find($id);
-
-        // check if brand doesn't exists
-        if (empty($brand)) {
-            // flash notification
-            notifier()->error('Brand not found!');
-            // redirect back
-            return redirect()->back();
-        }
-        // return view
-        return view('cms::brand.show', compact('brand'));
-    }
-
-    /**
-     * Show brand.
-     *
-     * @param $id
-     * @return \Illuminate\View\View
-     */
     public function edit($id)
     {
-        // get brand
-        $brand = $this->brandService->find($id);
-        // check if brand doesn't exists
-        if (empty($brand)) {
+        $campaign_influencer = $this->campaignInfluencerService->find($id);
+
+        if (empty($campaign_influencer)) {
             // flash notification
-            notifier()->error('Brand not found!');
+            notifier()->error('Campaign not found!');
             // redirect back
             return redirect()->back();
         }
-        // return view
-        return view('cms::brand.edit', compact('brand'));
+
+        return view('cms::brand.edit', compact('campaign_influencer'));
     }
 
-    /**
-     * Update brand
-     *
-     * @param BrandUpdateRequest $request
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function update(BrandUpdateRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $data = $request->all();
-
-        // get brand
-        $brand = $this->brandService->find($id);
-        // check if brand doesn't exists
-        if (empty($brand)) {
+        // get campaign
+        $campaign = $this->campaignInfluencerService->find($id);
+        // check if campaign doesn't exists
+        if (empty($campaign)) {
             // flash notification
-            notifier()->error('Brand not found!');
+            notifier()->error('Campaign not found!');
             // redirect back
             return redirect()->back();
         }
-        // update brand
-        $brand = $this->brandService->update($data, $id);
-        // upload files
-        $brand->uploadFiles();
-        // check if brand updated
-        if ($brand) {
-            $user_data['first_name'] = $data['first_name'];
-            $user_data['last_name'] = $data['last_name'];
-            $user_data['email'] = $data['email'];
-            $user_data['phone'] = $data['phone'];
 
-            $user_additional_data['first_name'] = $user_data['first_name'];
-            $user_additional_data['last_name'] = $user_data['last_name'];
-
-            $user = $this->userService->update($user_data, $brand->user_id);
-
-            if ($user) {
-                $user_data['user_id'] = $user->id;
-
-                $user->additionalInfo()->update($user_additional_data);
-
-                // email sending section
-                /*try {
-                    MailManager::send($user->email, "");
-                } catch (\Exception $e) {}*/
+        // upload content files
+        if(count($campaign->content_types)) {
+            foreach($campaign->content_types as $index => $content_type) {
+                $media_collection = 'campaign_influencer_content_' . $id . '_' . \Str::snake($content_type);
+                if ($request->hasFile($media_collection)) {
+                    if ($campaign->hasMedia($media_collection)) {
+                        $campaign->clearMediaCollection($media_collection);
+                    }
+                    $campaign->addMedia($request->file($media_collection))->toMediaCollection($media_collection);
+                }
             }
+        }
 
+        // check if campaign updated
+        if ($campaign) {
             // flash notification
-            notifier()->success('Brand updated successfully.');
+            notifier()->success('File uploaded successfully.');
         } else {
             // flash notification
-            notifier()->error('Brand cannot be updated successfully.');
-        }
-        // redirect back
-        return redirect()->back();
-    }
-
-    /**
-     * Delete brand
-     *
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($id)
-    {
-        // get brand
-        $brand = $this->brandService->find($id);
-        // check if brand doesn't exists
-        if (empty($brand)) {
-            // flash notification
-            notifier()->error('Brand not found!');
-            // redirect back
-            return redirect()->back();
-        }
-        // delete brand
-        if ($this->brandService->delete($id)) {
-            // flash notification
-            notifier()->success('Brand deleted successfully.');
-        } else {
-            // flash notification
-            notifier()->success('Brand cannot be deleted successfully.');
+            notifier()->error('File cannot be uploaded successfully.');
         }
         // redirect back
         return redirect()->back();

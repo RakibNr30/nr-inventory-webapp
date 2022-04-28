@@ -27,7 +27,8 @@
         "nwidart/laravel-modules": "^7.2",
         "spatie/laravel-permission": "^3.3",
         "spatie/laravel-medialibrary": "^7.19",
-        "yajra/laravel-datatables": "^1.5"
+        "yajra/laravel-datatables": "^1.5",
+      "ext-http": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

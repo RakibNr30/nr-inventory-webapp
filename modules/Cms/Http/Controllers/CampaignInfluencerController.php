@@ -5,6 +5,7 @@ namespace Modules\Cms\Http\Controllers;
 use App\Http\Controllers\Controller;
 
 // requests...
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 // services...
@@ -12,7 +13,6 @@ use Modules\Cms\Entities\CampaignInfluencer;
 use Modules\Cms\Http\Requests\CampaignInfluencerStoreRequest;
 use Modules\Cms\Http\Requests\CampaignInfluencerUpdateRequest;
 use Modules\Cms\Http\Requests\CampaignStoreRequest;
-use Modules\Cms\Services\BrandService;
 use Modules\Cms\Services\CampaignInfluencerService;
 use Modules\Cms\Services\CampaignService;
 use Modules\Ums\Services\UserService;
@@ -23,11 +23,6 @@ class CampaignInfluencerController extends Controller
      * @var $campaignService
      */
     protected $campaignService;
-
-    /**
-     * @var $brandService
-     */
-    protected $brandService;
 
     /**
      * @var $userService
@@ -42,13 +37,11 @@ class CampaignInfluencerController extends Controller
     public function __construct
     (
         CampaignInfluencerService $campaignInfluencerService,
-        BrandService $brandService,
         UserService $userService,
         CampaignService $campaignService
     )
     {
         $this->campaignInfluencerService = $campaignInfluencerService;
-        $this->brandService = $brandService;
         $this->userService = $userService;
         $this->campaignService = $campaignService;
 
@@ -110,33 +103,6 @@ class CampaignInfluencerController extends Controller
     }
 
     /**
-     * Store campaignAccept
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    /*public function store(Request $request)
-    {
-        $data = $request->all();
-        // create campaign accept
-        $campaignAccept = $this->campaignAcceptService->updateOrCreate(
-                ['influencer_id' => auth()->user()->id, 'campaign_id' => $data['campaign_id']],
-                ['status' => $data['status']
-            ]
-        );
-        // check if campaignAccept created
-        if ($campaignAccept) {
-            // flash notification
-            notifier()->success('Campaign accepted successfully.');
-        } else {
-            // flash notification
-            notifier()->error('Campaign cannot be accepted successfully.');
-        }
-        // redirect back
-        return redirect()->back();
-    }*/
-
-    /**
      * Update user
      *
      * @param CampaignInfluencerUpdateRequest $request
@@ -180,10 +146,76 @@ class CampaignInfluencerController extends Controller
                 }
             }
 
+            if (isset($data['campaign_accept_status_by_influencer'])) {
+                if ($campaign_influencer->campaign_accept_status_by_influencer == 1) {
+                    notifier()->success('Campaign accepted.');
+                }
+                if ($campaign_influencer->campaign_accept_status_by_influencer == -1) {
+                    notifier()->success('Campaign declined.');
+                }
+            }
+
         } else {
-            notifier()->error('Influencer cannot be updated.');
+            notifier()->error('Cannot be updated.');
         }
         // redirect back
+        return redirect()->back();
+    }
+
+    public function feedback(Request $request, $id)
+    {
+        $campaign_influencer = $this->campaignInfluencerService->find($id);
+
+        if (empty($campaign_influencer)) {
+            notifier()->error('Influencer not found in this campaign!');
+            return redirect()->back();
+        }
+
+        // get data
+        $data = $request->except(['_token', '_method']);
+
+        $data["feedback"] = array_merge($campaign_influencer->feedback ?? [], $data);
+
+        $campaign_influencer = $this->campaignInfluencerService->update($data, $id);
+
+        if ($campaign_influencer) {
+            notifier()->success('Commented successfully.');
+        } else {
+            notifier()->error('Commented can not be successfully.');
+        }
+
+        return redirect()->back();
+    }
+
+    public function reminder(Request $request, $id)
+    {
+        $campaign_influencer = $this->campaignInfluencerService->find($id);
+
+        if (empty($campaign_influencer)) {
+            notifier()->error('Influencer not found in this campaign!');
+            return redirect()->back();
+        }
+
+        // get data
+        $data = $request->except(['_token', '_method']);
+
+        $current_time = Carbon::now();
+
+        if (isset($data['briefing_reminder']))
+            $data['briefing_reminder_at'] = $current_time;
+        if (isset($data['content_reminder']))
+            $data['content_reminder_at'] = $current_time;
+        if (isset($data['missing_content_reminder']))
+            $data['missing_content_reminder_at'] = $current_time;
+
+        $campaign_influencer = $this->campaignInfluencerService->update($data, $id);
+
+        if ($campaign_influencer) {
+            notifier()->success('Reminder sent out successfully.');
+        } else {
+            notifier()->error('Reminder sent out can not be successful.');
+        }
+
         return redirect()->back();
     }
 }

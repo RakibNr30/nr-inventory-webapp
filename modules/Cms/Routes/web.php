@@ -33,13 +33,13 @@ Route::resource('testimonial', 'TestimonialController');
 Route::resource('campaign', 'CampaignController');
 Route::get('campaign/{id}/influencer/create', 'CampaignInfluencerController@create')->name('campaign.influencer.create');
 Route::post('campaign/{id}/influencer/store', 'CampaignInfluencerController@store')->name('campaign.influencer.store');
-// Campaign accept routes...
-Route::resource('campaign-accept', 'CampaignInfluencerController')->only(['store']);
 // Brand routes...
-Route::resource('brand', 'BrandController')->only('index', 'show');
+Route::resource('brand', 'BrandController');
 // Product routes...
 Route::resource('product', 'ProductController');
 // Influencer category routes...
 Route::resource('influencer-category', 'InfluencerCategoryController');
 // Campaign influencer routes...
 Route::resource('campaign-influencer', 'CampaignInfluencerController');
+Route::put('campaign-influencer/{id}/feedback', 'CampaignInfluencerController@feedback')->name('campaign-influencer.feedback');
+Route::put('campaign-influencer/{id}/reminder', 'CampaignInfluencerController@reminder')->name('campaign-influencer.reminder');

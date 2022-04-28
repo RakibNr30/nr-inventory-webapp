@@ -3,6 +3,7 @@
 namespace Modules\Cms\Services;
 
 use Modules\Cms\Repositories\CampaignInfluencerRepository;
+use Modules\Ums\Repositories\UserRepository;
 
 class CampaignInfluencerService
 {
@@ -12,13 +13,19 @@ class CampaignInfluencerService
     protected $campaignInfluencerRepository;
 
     /**
+     * @var $userRepository
+     */
+    protected $userRepository;
+
+    /**
      * Constructor
      *
      * @param CampaignInfluencerRepository $campaignInfluencerRepository
      */
-    public function __construct(CampaignInfluencerRepository $campaignInfluencerRepository)
+    public function __construct(CampaignInfluencerRepository $campaignInfluencerRepository, UserRepository $userRepository)
     {
         $this->campaignInfluencerRepository = $campaignInfluencerRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -110,6 +117,23 @@ class CampaignInfluencerService
     {
         return $this->campaignInfluencerRepository->model
             ->whereJsonContains('brand_ids', auth()->user()->id)
+            ->paginate($limit);
+    }
+
+    /**
+     * Find data
+     *
+     * @return mixed
+     */
+    public function campaignInfluencerBrands($campaign_id, $limit = 0)
+    {
+        $campaign_influencer = $this->campaignInfluencerRepository->model
+            ->where('campaign_id', $campaign_id)
+            ->where('influencer_id', auth()->user()->id)
+            ->first();
+
+        return $this->userRepository->model->with(['additionalInfo', 'businessInfo'])
+            ->whereIn('id', $campaign_influencer->brand_ids ?? [])
             ->paginate($limit);
     }
 

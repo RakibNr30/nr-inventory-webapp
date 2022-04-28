@@ -10,7 +10,7 @@ use Modules\Ums\Http\Requests\UserSocialAccountInfoUpdateRequest;
 // services...
 use Modules\Ums\Services\UserSocialAccountInfoService;
 
-class UserSocialAccountInfoController extends Controller
+class SocialAccountInfoController extends Controller
 {
     /**
      * @var $userSocialAccountInfoService

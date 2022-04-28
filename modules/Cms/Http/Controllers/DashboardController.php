@@ -19,12 +19,13 @@ class DashboardController extends Controller
     {
         $dashboard = new \stdClass();
 
-        $dashboard->influencers = $this->dashboardService->influencers();
-        $dashboard->campaigns = $this->dashboardService->campaigns();
-
         if (AuthManager::isBrand()) {
             $dashboard->statistics = $this->dashboardService->statisticsBrandCampaign();
-        } else {
+        }
+        else if (AuthManager::isInfluencer()) {
+            $dashboard->statistics = $this->dashboardService->statisticsInfluencer();
+        }
+        else {
             $dashboard->statistics = $this->dashboardService->statistics();
         }
 
