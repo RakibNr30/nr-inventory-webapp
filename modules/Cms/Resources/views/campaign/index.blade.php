@@ -255,15 +255,52 @@
                                                                 </i>
                                                                 Accept
                                                             </button>
+                                                            {!! Form::close() !!}
 
-                                                            <button class="btn btn-danger btn-xs"
-                                                                name="campaign_accept_status_by_influencer" value="{{ -1 }}"
-                                                            >
+                                                            <button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modal-lg-1-{{ $index }}">
                                                                 <i class="fas fa-minus-circle">
                                                                 </i>
                                                                 Deny
                                                             </button>
-                                                            {!! Form::close() !!}
+
+                                                            <div class="modal fade" id="modal-lg-1-{{ $index }}" style="display: none;" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h4 class="modal-title text-lg font-weight-bold">
+                                                                                Deny this campaign?
+                                                                            </h4>
+                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                <span aria-hidden="true">×</span>
+                                                                            </button>
+                                                                        </div>
+                                                                        {!! Form::open(['url' => route('backend.cms.campaign-influencer.update', [$campaign_influencer->id]), 'method' => 'put']) !!}
+                                                                        <div class="modal-body">
+                                                                            <div class="form-group text-left mt-2">
+                                                                                <label for="denied_reason" class="@error('denied_reason') text-danger @enderror">Write us if you don‘t want to show a specific brand or if you have any other concerns.</label>
+                                                                                <textarea id="denied_reason" rows="4" name="denied_reason" class="form-control" placeholder="Please give us feedback" required autofocus>
+                                                                                    {{ old('denied_reason') }}
+                                                                                </textarea>
+                                                                                @error('denied_reason')
+                                                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                                                @enderror
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="modal-footer justify-content-between">
+                                                                            <button type="button" class="btn btn-primary" data-dismiss="modal">
+                                                                                Close
+                                                                            </button>
+                                                                            <div class="form-group">
+                                                                                <button type="submit" class="btn btn-danger" name="campaign_accept_status_by_influencer" value="{{ -1 }}">
+                                                                                    Deny Campaign
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                        {!! Form::close() !!}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         @endif
                                                         @if($campaign_influencer->campaign_accept_status_by_influencer == 1)
                                                             <small class="font-weight-bold text-success">

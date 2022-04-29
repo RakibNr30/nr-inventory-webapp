@@ -26,6 +26,7 @@ class CreateCampaignInfluencersTable extends Migration
             $table->longText('personal_notes')->nullable();
             $table->tinyInteger('accept_status')->nullable()->default(0);
             $table->tinyInteger('campaign_accept_status_by_influencer')->nullable()->default(0);
+            $table->longText('denied_reason')->nullable();
             $table->boolean('is_add_to_favourite')->nullable()->default(false);
             $table->boolean('is_reported')->nullable()->default(false);
             $table->longText('report_details')->nullable();

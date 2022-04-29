@@ -102,13 +102,13 @@ class DashboardService
         $statistics->overall_campaigns = $campaign_influencers
             ->count();
         $statistics->pending_campaigns = $campaign_influencers
-            ->where('accept_status', 0)
+            ->where('campaign_accept_status_by_influencer', 0)
             ->count();
         $statistics->accepted_campaigns = $campaign_influencers
-            ->where('accept_status', 1)
+            ->where('campaign_accept_status_by_influencer', 1)
             ->count();
         $statistics->denied_campaigns = $campaign_influencers
-            ->where('accept_status', -1)
+            ->where('campaign_accept_status_by_influencer', -1)
             ->count();
         $statistics->active_campaigns = $campaign_influencers
             ->where('available_until', '>', Carbon::now())

@@ -123,6 +123,14 @@ class CampaignInfluencerController extends Controller
         // get data
         $data = $request->except(['_token', '_method']);
 
+        if (isset($data['campaign_accept_status_by_influencer'])) {
+            if ($data['campaign_accept_status_by_influencer'] == -1) {
+                $request->validate([
+                    'denied_reason' => 'required|max:10000'
+                ]);
+            }
+        }
+
         // update campaign influencer
         $campaign_influencer = $this->campaignInfluencerService->update($data, $id);
 
