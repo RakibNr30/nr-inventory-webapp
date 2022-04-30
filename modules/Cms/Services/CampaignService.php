@@ -2,6 +2,9 @@
 
 namespace Modules\Cms\Services;
 
+use App\Helpers\NumberManager;
+use Carbon\Carbon;
+use Modules\Cms\Entities\Campaign;
 use Modules\Cms\Repositories\CampaignInfluencerRepository;
 use Modules\Cms\Repositories\CampaignRepository;
 
@@ -41,7 +44,7 @@ class CampaignService
      */
     public function all($limit = 0)
     {
-        return $this->campaignRepository->paginate($limit);
+        return $this->campaignRepository->model->withCount(['campaignInfluencers'])->paginate($limit);
     }
 
     /**
@@ -116,9 +119,22 @@ class CampaignService
      *
      * @return mixed
      */
-    public function brandCampaigns($limit = 0)
+    public function brandCampaigns($filters, $limit = 0)
     {
-        return $this->campaignRepository->model->where('brand_id', auth()->user()->id)->get();
+        $campaigns = $this->campaignRepository->model
+            ->where('brand_id', auth()->user()->id)
+            ->with(['campaignInfluencers'])
+            ->withCount(['campaignInfluencers'])
+            ->paginate($limit);
+
+        $campaigns->map(function ($value) {
+            return [
+                $value['follower_count'] = NumberManager::campaignFollowerCount($value),
+                $value['uploaded_content_count'] = NumberManager::campaignUploadedContentCount($value)
+            ];
+        });
+
+        return $campaigns;
     }
 
     /**
@@ -133,5 +149,33 @@ class CampaignService
             ->where('influencer_id', auth()->user()->id)
             ->orderByDesc('start_date')
             ->get();
+    }
+
+    public function campaignWithInfluencers($filters, $limit = 0)
+    {
+        $campaigns = $this->campaignRepository->model
+            ->with(['campaignInfluencers'])
+            ->withCount(['campaignInfluencers'])
+            ->paginate($limit);
+
+        $campaigns->map(function ($value) {
+            return [
+                $value['follower_count'] = NumberManager::campaignFollowerCount($value),
+                $value['uploaded_content_count'] = NumberManager::campaignUploadedContentCount($value)
+            ];
+        });
+
+        foreach ($filters as $filter) {
+            if ($filter == 1) {
+                $campaigns = $campaigns->filter(function ($value) {
+                    return $value->next_deadline > Carbon::now() &&
+                        $value->campaign_influencers_count < $value->amount_of_influencer_per_cycle ||
+                        $value->follower_count < $value->amount_of_influencer_follower_per_cycle ||
+                        $value->uploaded_content_count < $value->amount_of_influencer_per_cycle;
+                });
+            }
+        }
+
+        return $campaigns;
     }
 }

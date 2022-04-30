@@ -32,7 +32,7 @@
                                 Brand
                             </strong>
                             <p class="text-muted mb-0">
-                                {{ $product->brand->title ?? '' }}
+                                {{ $product->brand->additionalInfo->first_name ?? '' }}
                             </p>
                             {{--<hr>--}}
                         </div>

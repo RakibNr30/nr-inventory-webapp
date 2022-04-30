@@ -19,10 +19,10 @@
                         <div class="card-body box-profile">
                             <div class="text-center">
                                 <div class="profile-user-img img-fluid img-circle"
-                                     style="background-image: url({{ $brand->logo->file_url ?? config('core.image.default.logo_preview') }})">
+                                     style="background-image: url({{ $brand->avatar->file_url ?? config('core.image.default.logo_preview') }})">
                                 </div>
                             </div>
-                            <h3 class="profile-username text-center">{{ $brand->title ?? '' }}</h3>
+                            <h3 class="profile-username text-center">{{ $brand->additionalInfo->first_name ?? '' }}</h3>
                         </div>
                     </div>
 
@@ -46,7 +46,7 @@
                         </div>
                         <div class="card-body">
                             <div class="text-justify">
-                                {!! $brand->details ?: 'Details not available' !!}
+                                {!! $brand->additionalInfo->about ?: 'Details not available' !!}
                             </div>
                         </div>
                     </div>

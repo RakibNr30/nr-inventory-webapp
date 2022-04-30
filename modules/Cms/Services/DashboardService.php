@@ -2,7 +2,10 @@
 
 namespace Modules\Cms\Services;
 
+use App\Helpers\AuthManager;
+use App\Helpers\NumberManager;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Modules\Cms\Entities\Campaign;
 use Modules\Cms\Repositories\CampaignInfluencerRepository;
 use Modules\Cms\Repositories\CampaignRepository;
@@ -125,6 +128,77 @@ class DashboardService
      *
      * @return mixed
      */
+    public function campaignStatistics($filters)
+    {
+        $statistics = new \stdClass();
+
+        if (AuthManager::isBrand()) {
+            $campaigns = $this->campaignRepository->model
+                ->where('brand_id', auth()->user()->id)
+                ->with(['campaignInfluencers'])
+                ->withCount(['campaignInfluencers'])
+                ->get();
+        } else {
+            $campaigns = $this->campaignRepository->model
+                ->with(['campaignInfluencers'])
+                ->withCount(['campaignInfluencers'])
+                ->get();
+        }
+
+        $campaigns->map(function ($value) {
+            return [
+                $value['follower_count'] = NumberManager::campaignFollowerCount($value),
+                $value['uploaded_content_count'] = NumberManager::campaignUploadedContentCount($value)
+            ];
+        });
+
+        $campaign_array = [];
+
+        foreach ($campaigns as $campaign) {
+            $start_date = \Carbon\Carbon::parse($campaign->start_date);
+            if ($campaign->cycle_time_unit == 1)
+                $campaign['next_deadline'] = $start_date->addMonths($campaign->cycle_count);
+            else if ($campaign->cycle_time_unit == 2)
+                $campaign['next_deadline'] = $start_date->addWeeks($campaign->cycle_count);
+
+            $campaign_array[] = $campaign;
+        }
+
+        $campaign_collection = collect($campaign_array);
+
+        $statistics->overall_campaigns = $campaign_collection
+            ->count();
+
+        $statistics->running_campaigns = $campaign_collection->filter(function ($value) {
+            return $value->next_deadline > Carbon::now() &&
+                $value->campaign_influencers_count < $value->amount_of_influencer_per_cycle ||
+                $value->follower_count < $value->amount_of_influencer_follower_per_cycle ||
+                $value->uploaded_content_count < $value->amount_of_influencer_per_cycle;
+        })->count();
+
+        $statistics->overdue_campaigns = $campaign_collection->filter(function ($value) {
+            return $value->next_deadline <= Carbon::now() &&
+                $value->campaign_influencers_count < $value->amount_of_influencer_per_cycle &&
+                $value->follower_count < $value->amount_of_influencer_follower_per_cycle &&
+                $value->uploaded_content_count < $value->amount_of_influencer_per_cycle;
+        })->count();
+
+        $statistics->completed_campaigns = $campaign_collection->filter(function ($value) {
+            return $value->campaign_influencers_count >= $value->amount_of_influencer_per_cycle &&
+                $value->follower_count >= $value->amount_of_influencer_follower_per_cycle &&
+                $value->uploaded_content_count >= $value->amount_of_influencer_per_cycle;
+        })->count();
+
+        $statistics->not_active_campaigns = 0;
+
+        return $statistics;
+    }
+
+    /**
+     * Get all data
+     *
+     * @return mixed
+     */
     public function statisticsBrand()
     {
         $statistics = new \stdClass();
@@ -185,4 +259,16 @@ class DashboardService
 
         return $statistics;
     }
+
+    /*public function influencerChartData()
+    {
+        $labels = $this->donationRepository->model->latest()->take(10)->pluck('created_at')->toArray();
+        $values = $this->donationRepository->model->latest()->take(10)->pluck('donate_amount')->toArray();
+
+        $response = new \stdClass();
+        $response->labels = $labels ?? [];
+        $response->values = $values ?? [];
+
+        return $response;
+    }*/
 }

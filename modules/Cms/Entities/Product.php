@@ -4,6 +4,7 @@ namespace Modules\Cms\Entities;
 
 use App\BaseModel;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Modules\Ums\Entities\User;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
@@ -67,6 +68,6 @@ class Product extends BaseModel implements hasMedia
     }
 
     public function brand() {
-        return $this->hasOne(Brand::class, 'id', 'brand_id');
+        return $this->hasOne(User::class, 'id', 'brand_id');
     }
 }

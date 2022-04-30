@@ -1,4 +1,4 @@
-<nav class="main-header navbar navbar-expand navbar-dark navbar-fixed">
+<nav class="main-header navbar navbar-expand navbar-light navbar-fixed">
     <ul class="navbar-nav">
         <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>

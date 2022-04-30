@@ -17,6 +17,7 @@ use Modules\Cms\DataTables\CampaignDataTable;
 // services...
 use Modules\Cms\Services\CampaignInfluencerService;
 use Modules\Cms\Services\CampaignService;
+use Modules\Cms\Services\DashboardService;
 use Modules\Cms\Services\InfluencerCategoryService;
 use Modules\Cms\Services\ProductService;
 use Modules\Ums\Services\UserService;
@@ -49,20 +50,29 @@ class CampaignController extends Controller
     protected $userService;
 
     /**
+     * @var $dashboardService
+     */
+    protected $dashboardService;
+
+    /**
      * Constructor
      *
      * @param CampaignService $campaignService
+     * @param CampaignInfluencerService $campaignInfluencerService
      * @param ProductService $productService
      * @param InfluencerCategoryService $influencerCategoryService
      * @param UserService $userService
+     * @param DashboardService $dashboardService
      */
+
     public function __construct
     (
         CampaignService $campaignService,
         CampaignInfluencerService $campaignInfluencerService,
         ProductService $productService,
         InfluencerCategoryService $influencerCategoryService,
-        UserService $userService
+        UserService $userService,
+        DashboardService $dashboardService
     )
     {
         $this->campaignService = $campaignService;
@@ -70,27 +80,41 @@ class CampaignController extends Controller
         $this->productService = $productService;
         $this->influencerCategoryService = $influencerCategoryService;
         $this->userService = $userService;
+        $this->dashboardService = $dashboardService;
         //$this->middleware(['permission:Cms']);
     }
 
     /**
      * Campaign list
      *
-     * @param CampaignDataTable $datatable
      * @return \Illuminate\View\View
      */
     public function index()
     {
-        $campaigns = $this->campaignService->all();
+        $dashboard = new \stdClass();
+        $campaigns = [];
+
+        $filters = [];
+
+        if (request()->has('filters')) {
+            $filters = array_map('intval', request()->get('filters'));
+        }
+
         $campaign_influencers = [];
         if (AuthManager::isInfluencer()) {
             $campaign_influencers = $this->campaignService->influencerCampaigns();
         }
         if (AuthManager::isBrand()) {
-            $campaigns = $this->campaignService->brandCampaigns();
+            $dashboard->statistics = $this->dashboardService->campaignStatistics();
+            $campaigns = $this->campaignService->brandCampaigns($filters);
         }
 
-        return view('cms::campaign.index', compact('campaigns', 'campaign_influencers'));
+        if (AuthManager::isSuperAdmin() || AuthManager::isAdmin() || AuthManager::isInfluencerManager()) {
+            $dashboard->statistics = $this->dashboardService->campaignStatistics($filters);
+            $campaigns = $this->campaignService->campaignWithInfluencers($filters);
+        }
+
+        return view('cms::campaign.index', compact('campaigns', 'campaign_influencers', 'dashboard'));
     }
 
     /**

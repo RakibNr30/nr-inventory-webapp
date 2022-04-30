@@ -21,7 +21,7 @@
                                             <select id="brand_id" name="brand_id" class="form-control  @error('brand_id') is-invalid @enderror">
                                                 <option value="">Select a brand</option>
                                                 @foreach($brands as $brand)
-                                                    <option value="{{ $brand->id }}" {{ old('brand_id') ? (old('brand_id') == $brand->id ? 'selected' : '') : '' }}>{{ $brand->title }}</option>
+                                                    <option value="{{ $brand->id }}" {{ old('brand_id') ? (old('brand_id') == $brand->id ? 'selected' : '') : '' }}>{{ $brand->additionalInfo->first_name ?? '' }}</option>
                                                 @endforeach
                                             </select>
                                             @error('brand_id')

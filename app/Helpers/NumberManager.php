@@ -6,6 +6,7 @@ use Modules\Ums\Entities\User;
 
 class NumberManager
 {
+    // number short form
     public static function shortFormat( $n, $precision = 1 ) {
         if ($n < 900) {
             // 0 - 900
@@ -37,5 +38,27 @@ class NumberManager
         }
 
         return $n_format . $suffix;
+    }
+
+    // campaign follower counter
+    public static function campaignFollowerCount($campaign) {
+        $counter = 0;
+        foreach ($campaign->campaignInfluencers as $campaignInfluencer) {
+            $influencer = $campaignInfluencer->user;
+
+            $counter += ($influencer->socialAccountInfo->instagram_followers + $influencer->socialAccountInfo->tiktok_followers);
+        }
+
+        return $counter;
+    }
+
+    // campaign uploaded content counter
+    public static function campaignUploadedContentCount($campaign) {
+        $counter = 0;
+        foreach ($campaign->campaignInfluencers as $campaignInfluencer) {
+            $counter += ($campaignInfluencer->is_content_uploaded);
+        }
+
+        return $counter;
     }
 }

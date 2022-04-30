@@ -2,19 +2,14 @@
 
 namespace Modules\Cms\Http\Controllers;
 
-use App\Helpers\MailManager;
+use App\Helpers\AuthManager;
 use App\Http\Controllers\Controller;
 
 // requests...
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Modules\Cms\Http\Requests\CampaignStoreRequest;
-use Modules\Cms\Http\Requests\CampaignUpdateRequest;
-
-// datatable...
-use Modules\Cms\DataTables\CampaignDataTable;
 
 // services...
+use Modules\Cms\DataTables\BrandDataTable;
 use Modules\Cms\Services\CampaignInfluencerService;
 use Modules\Cms\Services\CampaignService;
 use Modules\Ums\Services\UserService;
@@ -56,10 +51,27 @@ class BrandController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(BrandDataTable $dataTable)
     {
         $campaign_influencers = $this->campaignService->influencerCampaigns();
+        if (AuthManager::isSuperAdmin() || AuthManager::isAdmin()) {
+            return $dataTable->render('cms::brand.index');
+        }
         return view('cms::brand.index', compact('campaign_influencers'));
+    }
+
+    public function show($id)
+    {
+        $brand = $this->userService->find($id);
+
+        if (empty($brand)) {
+            // flash notification
+            notifier()->error('Brand not found!');
+            // redirect back
+            return redirect()->back();
+        }
+
+        return view('cms::brand.show', compact('brand'));
     }
 
     public function edit($id)
@@ -98,6 +110,7 @@ class BrandController extends Controller
                         $campaign->clearMediaCollection($media_collection);
                     }
                     $campaign->addMedia($request->file($media_collection))->toMediaCollection($media_collection);
+                    $campaign = tap($campaign)->update(['is_content_uploaded' => true]);
                 }
             }
         }

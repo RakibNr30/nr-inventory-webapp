@@ -23,7 +23,7 @@
                                                 <option value="{{ $brand->id }}" {{ old('brand_id')
                                                 ? (old('content_category_id') == $brand->id ? 'selected' : '')
                                                 : ($product->brand_id == $brand->id ? 'selected' : '') }}>
-                                                    {{ $brand->title }}
+                                                    {{ $brand->additionalInfo->first_name }}
                                                 </option>
                                             @endforeach
                                         </select>

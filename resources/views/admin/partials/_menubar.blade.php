@@ -1,8 +1,8 @@
 @php
     $user = \Modules\Ums\Entities\User::find(auth()->user()->id);
 @endphp
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a target="_blank" href="{{ url('/') }}" class="brand-link navbar-dark">
+<aside class="main-sidebar sidebar-dark-primary bg-black elevation-4">
+    <a target="_blank" href="{{ url('/') }}" class="brand-link navbar-dark bg-black">
         <img src="{{ $global_site->favicon->file_url ?? config('core.image.default.favicon') }}" alt="Logo"
              class="brand-image img-circle elevation-3"
              style="opacity: 1; background: #fff">

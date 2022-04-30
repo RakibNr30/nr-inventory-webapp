@@ -33,6 +33,7 @@ class CreateCampaignInfluencersTable extends Migration
             $table->string('individual_coupon_code')->nullable();
             $table->string('individual_swipe_up_link')->nullable();
             $table->string('shipping_address')->nullable();
+            $table->boolean('is_content_uploaded')->nullable()->default(false);
             $table->json('feedback')->nullable();
             $table->tinyInteger('briefing_reminder')->nullable()->default(0);
             $table->timestamp('briefing_reminder_at')->nullable();

@@ -12,7 +12,6 @@ use Modules\Cms\Http\Requests\ProductUpdateRequest;
 use Modules\Cms\DataTables\ProductDataTable;
 
 // services...
-use Modules\Cms\Services\BrandService;
 use Modules\Cms\Services\ProductService;
 use Modules\Ums\Services\UserService;
 
@@ -24,11 +23,6 @@ class ProductController extends Controller
     protected $productService;
 
     /**
-     * @var $brandService
-     */
-    protected $brandService;
-
-    /**
      * @var $userService
      */
     protected $userService;
@@ -37,13 +31,11 @@ class ProductController extends Controller
      * Constructor
      *
      * @param ProductService $productService
-     * @param BrandService $brandService
      * @param UserService $userService
      */
-    public function __construct(ProductService $productService, BrandService $brandService, UserService $userService)
+    public function __construct(ProductService $productService, UserService $userService)
     {
         $this->productService = $productService;
-        $this->brandService = $brandService;
         $this->userService = $userService;
         //$this->middleware(['permission:Cms']);
     }

@@ -15,12 +15,111 @@
                                 <a href="{{ route('backend.cms.campaign.create') }}" type="button"
                                    class="btn btn-success btn-sm text-white float-right">Add new campaign</a>
                             </div>
+
+                            <div class="p-4">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <div class="input-group mb-0">
+                                            <input type="text" name="search" class="form-control" placeholder="Search...">
+                                            <button class="btn btn-light ml-1"
+                                                    data-toggle="collapse"
+                                                    data-target="#filters"
+                                                    aria-expanded="false"
+                                            >
+                                                Filter <i class="fas fa-sliders-h ml-1"></i>
+                                            </button>
+                                        </div>
+                                        <div class="card {{ request()->has('filters') ? '' : 'collapse' }} navbar-collapse" id="filters">
+                                            {!! Form::open(['url' => route('backend.cms.campaign.index'), 'id' => 'filter_form', 'method' => 'get']) !!}
+                                            <div class="input-group text-sm">
+                                                <div class="custom-control custom-checkbox d-inline">
+                                                    <input class="custom-control-input" type="checkbox" id="customCheckbox1" name="filters[]" value="1" onclick="Filter()" {{ in_array(1, request()->get('filters') ?? []) ? 'checked' : '' }}>
+                                                    <label for="customCheckbox1" class="custom-control-label ml-2 font-weight-normal">
+                                                        Running
+                                                    </label>
+                                                </div>
+                                                <div class="custom-control custom-checkbox d-inline">
+                                                    <input class="custom-control-input" type="checkbox" id="customCheckbox2" name="filters[]" value="2" onclick="Filter()" {{ in_array(2, request()->get('filters') ?? []) ? 'checked' : '' }}>
+                                                    <label for="customCheckbox2" class="custom-control-label ml-2 font-weight-normal">
+                                                        Overdue
+                                                    </label>
+                                                </div>
+                                                <div class="custom-control custom-checkbox d-inline">
+                                                    <input class="custom-control-input" type="checkbox" id="customCheckbox3" name="filters[]" value="3" onclick="Filter()" {{ in_array(3, request()->get('filters') ?? []) ? 'checked' : '' }}>
+                                                    <label for="customCheckbox3" class="custom-control-label ml-2 font-weight-normal">
+                                                        Completed
+                                                    </label>
+                                                </div>
+                                                <div class="custom-control custom-checkbox d-inline">
+                                                    <input class="custom-control-input" type="checkbox" id="customCheckbox4" name="filters[]" value="4" onclick="Filter()" {{ in_array(4, request()->get('filters') ?? []) ? 'checked' : '' }}>
+                                                    <label for="customCheckbox4" class="custom-control-label ml-2 font-weight-normal">
+                                                        Not Active
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            {!! Form::close() !!}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive shadow w-100">
+                                            <table class="table mb-0 text-center">
+                                                <tbody>
+                                                <tr>
+                                                    <td class="border-top-0 p-0 pl-1">
+                                                        Statistics
+                                                    </td>
+                                                    <td class="border-top-0 p-0">
+                                                        <small class="font-weight-bold">
+                                                            Running
+                                                        </small>
+                                                        <br>
+                                                        <small class="text-primary font-weight-bold">
+                                                            {{ $dashboard->statistics->running_campaigns }}
+                                                        </small>
+                                                    </td>
+                                                    <td class="border-top-0 p-0">
+                                                        <small class="font-weight-bold">
+                                                            Overdue
+                                                        </small>
+                                                        <br>
+                                                        <small class="text-primary font-weight-bold">
+                                                            {{ $dashboard->statistics->overdue_campaigns }}
+                                                        </small>
+                                                    </td>
+                                                    <td class="border-top-0 p-0">
+                                                        <small class="font-weight-bold">
+                                                            Completed
+                                                        </small>
+                                                        <br>
+                                                        <small class="text-primary font-weight-bold">
+                                                            {{ $dashboard->statistics->completed_campaigns }}
+                                                        </small>
+                                                    </td>
+                                                    <td class="border-top-0 p-0">
+                                                        <small class="font-weight-bold">
+                                                            Not Active
+                                                        </small>
+                                                        <br>
+                                                        <small class="text-primary font-weight-bold">
+                                                            {{ $dashboard->statistics->not_active_campaigns }}
+                                                        </small>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="card-body">
                                 @if(count($campaigns))
                                     <div class="row">
                                         @foreach($campaigns as $index => $campaign)
                                             <div class="col-lg-3 col-6">
-                                                <div class="small-box bg-info">
+                                                <div class="small-box bg-gradient-light">
                                                     <div class="inner text-justify">
                                                         <h5 class="font-weight-bold text-center">{{ $campaign->title }}</h5>
                                                         <div class="row" style="font-size: 12px">
@@ -41,19 +140,34 @@
                                                                     else if ($campaign->cycle_time_unit == 2)
                                                                         $next_deadline = $start_date->addWeeks($campaign->cycle_count);
                                                                 @endphp
-                                                                <span>{{ $next_deadline->format('M d, Y') }}</span>
+                                                                <span>{{ $next_deadline->format('d.m.Y') }}</span>
                                                             </div>
                                                             <div class="col-6 mt-1">
                                                                 <i class="fa fa-user"></i>
-                                                                <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_per_cycle) }}</span>
+                                                                <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->campaign_influencers_count) }}/{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_per_cycle) }}</span>
+                                                                @if($campaign->campaign_influencers_count >= $campaign->amount_of_influencer_per_cycle)
+                                                                    <i class="fas fa-check text-primary"></i>
+                                                                @else
+                                                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                @endif
                                                             </div>
                                                             <div class="col-6 mt-1">
                                                                 <i class="fa fa-camera"></i>
-                                                                <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_per_cycle) }}</span>
+                                                                <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->uploaded_content_count) }}/{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_per_cycle) }}</span>
+                                                                @if($campaign->uploaded_content_count >= $campaign->amount_of_influencer_per_cycle)
+                                                                    <i class="fas fa-check text-primary"></i>
+                                                                @else
+                                                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                @endif
                                                             </div>
                                                             <div class="col-12 mt-1">
                                                                 <i class="fa fa-user"></i>
-                                                                <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_follower_per_cycle) }} Follower</span>
+                                                                <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->follower_count) }}/{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_follower_per_cycle) }} Follower</span>
+                                                                @if($campaign->follower_count >= $campaign->amount_of_influencer_follower_per_cycle)
+                                                                    <i class="fas fa-check text-primary"></i>
+                                                                @else
+                                                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                @endif
                                                             </div>
                                                         </div>
                                                     </div>
@@ -334,12 +448,107 @@
                             <div class="card-header">
                                 <h3 class="card-title">Campaign List</h3>
                             </div>
+                            <div class="p-4">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <div class="input-group mb-0">
+                                            <input type="text" name="search" class="form-control" placeholder="Search...">
+                                            <button class="btn btn-light ml-1"
+                                                    data-toggle="collapse"
+                                                    data-target="#filters"
+                                                    aria-expanded="false"
+                                            >
+                                                Filter <i class="fas fa-sliders-h ml-1"></i>
+                                            </button>
+                                        </div>
+                                        <div class="card {{ request()->has('filters') ? '' : 'collapse' }} navbar-collapse" id="filters">
+                                            {!! Form::open(['url' => route('backend.cms.campaign.index'), 'id' => 'filter_form', 'method' => 'get']) !!}
+                                            <div class="input-group text-sm">
+                                                <div class="custom-control custom-checkbox d-inline">
+                                                    <input class="custom-control-input" type="checkbox" id="customCheckbox1" name="filters[]" value="1" onclick="Filter()" {{ in_array(1, request()->get('filters') ?? []) ? 'checked' : '' }}>
+                                                    <label for="customCheckbox1" class="custom-control-label ml-2 font-weight-normal">
+                                                        Running
+                                                    </label>
+                                                </div>
+                                                <div class="custom-control custom-checkbox d-inline">
+                                                    <input class="custom-control-input" type="checkbox" id="customCheckbox2" name="filters[]" value="2" onclick="Filter()" {{ in_array(2, request()->get('filters') ?? []) ? 'checked' : '' }}>
+                                                    <label for="customCheckbox2" class="custom-control-label ml-2 font-weight-normal">
+                                                        Overdue
+                                                    </label>
+                                                </div>
+                                                <div class="custom-control custom-checkbox d-inline">
+                                                    <input class="custom-control-input" type="checkbox" id="customCheckbox3" name="filters[]" value="3" onclick="Filter()" {{ in_array(3, request()->get('filters') ?? []) ? 'checked' : '' }}>
+                                                    <label for="customCheckbox3" class="custom-control-label ml-2 font-weight-normal">
+                                                        Completed
+                                                    </label>
+                                                </div>
+                                                <div class="custom-control custom-checkbox d-inline">
+                                                    <input class="custom-control-input" type="checkbox" id="customCheckbox4" name="filters[]" value="4" onclick="Filter()" {{ in_array(4, request()->get('filters') ?? []) ? 'checked' : '' }}>
+                                                    <label for="customCheckbox4" class="custom-control-label ml-2 font-weight-normal">
+                                                        Not Active
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            {!! Form::close() !!}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="table-responsive shadow w-100">
+                                            <table class="table mb-0 text-center">
+                                                <tbody>
+                                                <tr>
+                                                    <td class="border-top-0 p-0 pl-1">
+                                                        Statistics
+                                                    </td>
+                                                    <td class="border-top-0 p-0">
+                                                        <small class="font-weight-bold">
+                                                            Running
+                                                        </small>
+                                                        <br>
+                                                        <small class="text-primary font-weight-bold">
+                                                            {{ $dashboard->statistics->running_campaigns }}
+                                                        </small>
+                                                    </td>
+                                                    <td class="border-top-0 p-0">
+                                                        <small class="font-weight-bold">
+                                                            Overdue
+                                                        </small>
+                                                        <br>
+                                                        <small class="text-primary font-weight-bold">
+                                                            {{ $dashboard->statistics->overdue_campaigns }}
+                                                        </small>
+                                                    </td>
+                                                    <td class="border-top-0 p-0">
+                                                        <small class="font-weight-bold">
+                                                            Completed
+                                                        </small>
+                                                        <br>
+                                                        <small class="text-primary font-weight-bold">
+                                                            {{ $dashboard->statistics->completed_campaigns }}
+                                                        </small>
+                                                    </td>
+                                                    <td class="border-top-0 p-0">
+                                                        <small class="font-weight-bold">
+                                                            Not Active
+                                                        </small>
+                                                        <br>
+                                                        <small class="text-primary font-weight-bold">
+                                                            {{ $dashboard->statistics->not_active_campaigns }}
+                                                        </small>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="card-body">
                                 @if(count($campaigns))
                                     <div class="row">
                                         @foreach($campaigns as $index => $campaign)
                                             <div class="col-lg-3 col-6">
-                                                <div class="small-box bg-info">
+                                                <div class="small-box bg-gradient-light">
                                                     <div class="inner text-justify">
                                                         <h5 class="font-weight-bold text-center">{{ $campaign->title }}</h5>
                                                         <div class="row" style="font-size: 12px">
@@ -360,25 +569,40 @@
                                                                     else if ($campaign->cycle_time_unit == 2)
                                                                         $next_deadline = $start_date->addWeeks($campaign->cycle_count);
                                                                 @endphp
-                                                                <span>{{ $next_deadline->format('M d, Y') }}</span>
+                                                                <span>{{ $next_deadline->format('d.m.Y') }}</span>
                                                             </div>
                                                             <div class="col-6 mt-1">
                                                                 <i class="fa fa-user"></i>
-                                                                <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_per_cycle) }}</span>
+                                                                <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->campaign_influencers_count) }}/{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_per_cycle) }}</span>
+                                                                @if($campaign->campaign_influencers_count >= $campaign->amount_of_influencer_per_cycle)
+                                                                    <i class="fas fa-check text-primary"></i>
+                                                                @else
+                                                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                @endif
                                                             </div>
                                                             <div class="col-6 mt-1">
                                                                 <i class="fa fa-camera"></i>
-                                                                <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_per_cycle) }}</span>
+                                                                <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->uploaded_content_count) }}/{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_per_cycle) }}</span>
+                                                                @if($campaign->uploaded_content_count >= $campaign->amount_of_influencer_per_cycle)
+                                                                    <i class="fas fa-check text-primary"></i>
+                                                                @else
+                                                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                @endif
                                                             </div>
                                                             <div class="col-12 mt-1">
                                                                 <i class="fa fa-user"></i>
-                                                                <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_follower_per_cycle) }} Follower</span>
+                                                                <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->follower_count) }}/{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_follower_per_cycle) }} Follower</span>
+                                                                @if($campaign->follower_count >= $campaign->amount_of_influencer_follower_per_cycle)
+                                                                    <i class="fas fa-check text-primary"></i>
+                                                                @else
+                                                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                @endif
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <a href="{{ route('backend.cms.campaign.show', [$campaign->id]) }}"
-                                                       class="small-box-footer">
+                                                       class="small-box-footer text-dark">
                                                         <i class="fas fa-arrow-right"></i> View More
                                                     </a>
 
@@ -439,4 +663,12 @@
             width: 42%;
         }
     </style>
+@stop
+
+@section('script')
+    <script>
+        function Filter() {
+            document.getElementById('filter_form').submit();
+        }
+    </script>
 @stop
