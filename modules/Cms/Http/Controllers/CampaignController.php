@@ -95,9 +95,13 @@ class CampaignController extends Controller
         $campaigns = [];
 
         $filters = [];
+        $search = '';
 
         if (request()->has('filters')) {
             $filters = array_map('intval', request()->get('filters'));
+        }
+        if (request()->has('search')) {
+            $search = request()->get('search');
         }
 
         $campaign_influencers = [];
@@ -107,11 +111,20 @@ class CampaignController extends Controller
         if (AuthManager::isBrand()) {
             $dashboard->statistics = $this->dashboardService->campaignStatistics();
             $campaigns = $this->campaignService->brandCampaigns($filters);
-        }
 
+            $campaigns = $campaigns->filter(function ($item) use ($search) {
+                $search = strtolower($search);
+                return preg_match("/$search/", strtolower($item['title']));
+            });
+        }
         if (AuthManager::isSuperAdmin() || AuthManager::isAdmin() || AuthManager::isInfluencerManager()) {
-            $dashboard->statistics = $this->dashboardService->campaignStatistics($filters);
+            $dashboard->statistics = $this->dashboardService->campaignStatistics();
             $campaigns = $this->campaignService->campaignWithInfluencers($filters);
+
+            $campaigns = $campaigns->filter(function ($item) use ($search) {
+                $search = strtolower($search);
+                return preg_match("/$search/", strtolower($item['title']));
+            });
         }
 
         return view('cms::campaign.index', compact('campaigns', 'campaign_influencers', 'dashboard'));

@@ -128,7 +128,7 @@ class DashboardService
      *
      * @return mixed
      */
-    public function campaignStatistics($filters)
+    public function campaignStatistics()
     {
         $statistics = new \stdClass();
 

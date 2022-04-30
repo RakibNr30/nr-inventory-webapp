@@ -20,7 +20,9 @@
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="input-group mb-0">
-                                            <input type="text" name="search" class="form-control" placeholder="Search...">
+                                            {!! Form::open(['url' => route('backend.cms.campaign.index'), 'id' => 'search_form', 'method' => 'get']) !!}
+                                            <input type="text" name="search" class="form-control" placeholder="Search..." onkeyup="Search()" value="{{ request()->has('search') ? request()->get('search') : '' }}" onfocus="var temp=this.value; this.value=''; this.value=temp" autofocus>
+                                            {!! Form::close() !!}
                                             <button class="btn btn-light ml-1"
                                                     data-toggle="collapse"
                                                     data-target="#filters"
@@ -452,7 +454,9 @@
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="input-group mb-0">
-                                            <input type="text" name="search" class="form-control" placeholder="Search...">
+                                            {!! Form::open(['url' => route('backend.cms.campaign.index'), 'id' => 'search_form', 'method' => 'get']) !!}
+                                            <input type="text" name="search" class="form-control" placeholder="Search..." onkeyup="Search()" value="{{ request()->has('search') ? request()->get('search') : '' }}" onfocus="var temp=this.value; this.value=''; this.value=temp" autofocus>
+                                            {!! Form::close() !!}
                                             <button class="btn btn-light ml-1"
                                                     data-toggle="collapse"
                                                     data-target="#filters"
@@ -669,6 +673,17 @@
     <script>
         function Filter() {
             document.getElementById('filter_form').submit();
+        }
+
+        var timeout = null;
+
+        function Search() {
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(function() {
+                document.getElementById('search_form').submit();
+            }, 1000);
         }
     </script>
 @stop

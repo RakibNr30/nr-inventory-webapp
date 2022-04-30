@@ -134,7 +134,39 @@ class CampaignService
             ];
         });
 
-        return $campaigns;
+        $campaign_collection = collect();
+
+        foreach ($filters as $filter) {
+            if ($filter == 1) {
+                $filter_campaigns = $campaigns->filter(function ($value) {
+                    return $value->next_deadline > Carbon::now() &&
+                        $value->campaign_influencers_count < $value->amount_of_influencer_per_cycle ||
+                        $value->follower_count < $value->amount_of_influencer_follower_per_cycle ||
+                        $value->uploaded_content_count < $value->amount_of_influencer_per_cycle;
+                });
+                $campaign_collection = $campaign_collection->merge($filter_campaigns);
+            }
+            if ($filter == 2) {
+                $filter_campaigns = $campaigns->filter(function ($value) {
+                    return $value->next_deadline <= Carbon::now() &&
+                        $value->campaign_influencers_count < $value->amount_of_influencer_per_cycle &&
+                        $value->follower_count < $value->amount_of_influencer_follower_per_cycle &&
+                        $value->uploaded_content_count < $value->amount_of_influencer_per_cycle;
+                });
+                $campaign_collection = $campaign_collection->merge($filter_campaigns);
+            }
+            if ($filter == 3) {
+                $filter_campaigns = $campaigns->filter(function ($value) {
+                    return $value->campaign_influencers_count >= $value->amount_of_influencer_per_cycle &&
+                        $value->follower_count >= $value->amount_of_influencer_follower_per_cycle &&
+                        $value->uploaded_content_count >= $value->amount_of_influencer_per_cycle;
+                });
+                $campaign_collection = $campaign_collection->merge($filter_campaigns);
+            }
+            if ($filter == 4) {}
+        }
+
+        return count($filters) ? $campaign_collection->unique('id') : $campaigns;
     }
 
     /**
@@ -165,17 +197,38 @@ class CampaignService
             ];
         });
 
+        $campaign_collection = collect();
+
         foreach ($filters as $filter) {
             if ($filter == 1) {
-                $campaigns = $campaigns->filter(function ($value) {
+                $filter_campaigns = $campaigns->filter(function ($value) {
                     return $value->next_deadline > Carbon::now() &&
                         $value->campaign_influencers_count < $value->amount_of_influencer_per_cycle ||
                         $value->follower_count < $value->amount_of_influencer_follower_per_cycle ||
                         $value->uploaded_content_count < $value->amount_of_influencer_per_cycle;
                 });
+                $campaign_collection = $campaign_collection->merge($filter_campaigns);
             }
+            if ($filter == 2) {
+                $filter_campaigns = $campaigns->filter(function ($value) {
+                    return $value->next_deadline <= Carbon::now() &&
+                        $value->campaign_influencers_count < $value->amount_of_influencer_per_cycle &&
+                        $value->follower_count < $value->amount_of_influencer_follower_per_cycle &&
+                        $value->uploaded_content_count < $value->amount_of_influencer_per_cycle;
+                });
+                $campaign_collection = $campaign_collection->merge($filter_campaigns);
+            }
+            if ($filter == 3) {
+                $filter_campaigns = $campaigns->filter(function ($value) {
+                    return $value->campaign_influencers_count >= $value->amount_of_influencer_per_cycle &&
+                        $value->follower_count >= $value->amount_of_influencer_follower_per_cycle &&
+                        $value->uploaded_content_count >= $value->amount_of_influencer_per_cycle;
+                });
+                $campaign_collection = $campaign_collection->merge($filter_campaigns);
+            }
+            if ($filter == 4) {}
         }
 
-        return $campaigns;
+        return count($filters) ? $campaign_collection->unique('id') : $campaigns;
     }
 }
