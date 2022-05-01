@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{{ asset('common/plugins/select2/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('common/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 
+    <link rel="stylesheet" href="{{ asset('common/plugins/datepicker/bootstrap-datepicker.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/css/app.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/css/style.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
@@ -41,6 +42,8 @@
 <script src="{{ asset('common/plugins/select2/js/select2.full.min.js') }}"></script>
 <script src="{{ asset('common/plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
 <script src="{{ asset('common/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<!-- Datepicker -->
+<script src="{{ asset('common/plugins/datepicker/bootstrap-datepicker.min.js') }}"></script>
 <script src="{{ asset('admin/js/app.min.js') }}"></script>
 <script>
     $('.select2').select2().on('change', function() {
@@ -48,6 +51,14 @@
     });
     $(function () {
         bsCustomFileInput.init();
+    });
+    $('.datepicker').datepicker({
+        todayHighlight: true,
+        format: 'yyyy-mm-dd',
+        //startDate: new Date(),
+        changeMonth: true,
+        changeYear: true,
+        autoclose: true
     });
 </script>
 @yield('script')

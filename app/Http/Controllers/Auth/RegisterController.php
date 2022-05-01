@@ -94,6 +94,7 @@ class RegisterController extends Controller
             UserAdditionalInfo::query()->create([
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'],
+                'dob' => $data['dob'],
                 'user_id' => $user->id
             ]);
 

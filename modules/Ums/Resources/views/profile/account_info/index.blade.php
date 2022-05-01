@@ -19,17 +19,22 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="avatar" class="@error('avatar') text-danger @enderror">Avatar</label>
-                                        <input id="avatar" name="avatar" value="{{ old('avatar') }}" type="file" class="form-control @error('avatar') is-invalid @enderror" placeholder="Select File" autofocus>
-                                        <div class="image-output">
-                                            <img src="{{ $user->avatar->file_url ??
+                                        <div class="form-group">
+                                            <label for="avatar" class="@error('avatar') text-danger @enderror">Upload Avatar</label>
+                                            <div class="custom-file">
+                                                <input type="file" name="avatar" value="{{ old('avatar') }}" class="custom-file-input @error('avatar') is-invalid @enderror" id="customFile">
+                                                <label class="custom-file-label font-weight-normal" for="customFile">Choose file</label>
+                                            </div>
+                                            @error('avatar')
+                                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                            <div class="image-output">
+                                                <img src="{{ $user->avatar->file_url ??
                                                         ($user->additionalInfo->gender == 2 ?
                                                         config('core.image.default.avatar_female') :
                                                         config('core.image.default.avatar_male')) }}">
+                                            </div>
                                         </div>
-                                        @error('avatar')
-                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                        @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-12">

@@ -30,16 +30,17 @@ class DashboardController extends Controller
             $dashboard->statistics = $this->dashboardService->statistics();
         }
 
-        /*// Chart data
-        $influencerChartData = $this->dashboardService->influencerChartData();
-
-        $latestInfluencerChart = (new LarapexChart())->areaChart()
-            ->setTitle('Latest Influencer')
-            ->setSubtitle('Donation vs Date')
-            ->addData('Donation (EUR)', $influencerChartData->values)
-            ->setXAxis($influencerChartData->labels)
+        // Chart data
+        $campaignChartData = $this->dashboardService->campaignChartData();
+        $dashboard->charts = (new LarapexChart())->areaChart()
+            ->setTitle('Latest Campaign')
+            ->setSubtitle('Campaign vs Influencers')
+            ->addData('Influencers', $campaignChartData->values)
+            ->setXAxis($campaignChartData->labels)
             ->setGrid()
-            ->setMarkers(['#FF5722']);*/
+            ->setMarkers(['#FF5722']);
+
+        //dd($dashboard->charts);
 
         return view('cms::dashboard.index', compact('dashboard'));
     }

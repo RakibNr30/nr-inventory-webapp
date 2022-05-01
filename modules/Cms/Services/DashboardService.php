@@ -260,15 +260,22 @@ class DashboardService
         return $statistics;
     }
 
-    /*public function influencerChartData()
+    public function campaignChartData()
     {
-        $labels = $this->donationRepository->model->latest()->take(10)->pluck('created_at')->toArray();
-        $values = $this->donationRepository->model->latest()->take(10)->pluck('donate_amount')->toArray();
+        $campaigns = Campaign::query()->latest()->take(10)->get();
+        $campaigns = $this->campaignRepository->model
+            ->withCount(['campaignInfluencers'])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        $labels = $campaigns->pluck('title')->toArray();
+        $values = $campaigns->pluck('campaign_influencers_count')->toArray();
 
         $response = new \stdClass();
         $response->labels = $labels ?? [];
         $response->values = $values ?? [];
 
         return $response;
-    }*/
+    }
 }

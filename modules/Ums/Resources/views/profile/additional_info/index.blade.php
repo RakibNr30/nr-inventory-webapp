@@ -6,7 +6,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-3">
-                    @include('admin.partials._profile_menu', ['active' => 3])
+                    @include('admin.partials._profile_menu', ['active' => 0])
                 </div>
                 <div class="col-md-9">
                     @include('admin.partials._alert')

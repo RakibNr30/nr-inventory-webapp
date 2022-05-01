@@ -134,6 +134,7 @@ class CampaignInfluencerService
 
         return $this->userRepository->model->with(['additionalInfo', 'businessInfo'])
             ->whereIn('id', $campaign_influencer->brand_ids ?? [])
+            ->whereNotIn('id', $campaign_influencer->denied_brand_ids ?? [])
             ->paginate($limit);
     }
 

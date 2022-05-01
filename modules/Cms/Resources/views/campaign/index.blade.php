@@ -230,7 +230,7 @@
                                 <div class="table-responsive w-100 p-2">
                                     <table class="table table-striped projects mb-0">
                                         <tbody>
-                                        @foreach($campaign_influencers as $index => $campaign_influencer)
+                                        @foreach($campaign_influencers as $c_index => $campaign_influencer)
                                             <tr>
                                                 @php
                                                     $available_until = \Carbon\Carbon::parse($campaign_influencer->available_until);
@@ -259,13 +259,62 @@
                                                 </td>
 
                                                 @php
-                                                    $brands = Modules\Ums\Entities\User::query()->whereIn('id', $campaign_influencer->brand_ids)->get();
+                                                    $brands = Modules\Ums\Entities\User::query()
+                                                    ->whereIn('id', $campaign_influencer->brand_ids ?? [])
+                                                    ->whereNotIn('id', $campaign_influencer->denied_brand_ids ?? [])->get();
                                                 @endphp
 
                                                 @for($index = 0; $index < 5; $index++)
                                                     <td>
                                                         @if(isset($brands[$index]))
                                                             <ul class="list-inline text-center">
+                                                                @if(($campaign_influencer->campaign_accept_status_by_influencer == 0) && (\Carbon\Carbon::now()->lt($available_until)))
+                                                                    <span class="brand-close-btn" data-toggle="modal" href="#modal-lg-bc-{{ $c_index }}{{ $index }}">
+                                                                        <i class="fa fa-times-circle"></i>
+                                                                    </span>
+
+                                                                    <div class="modal fade" id="modal-lg-bc-{{ $c_index }}{{ $index }}" style="display: none;" aria-hidden="true">
+                                                                        <div class="modal-dialog modal-lg">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h4 class="modal-title text-lg font-weight-bold">
+                                                                                        Deny this brand?
+                                                                                    </h4>
+                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                        <span aria-hidden="true">×</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                {!! Form::open(['url' => route('backend.cms.campaign-influencer.brand.remove', [$campaign_influencer->id, $brands[$index]->id]), 'method' => 'put']) !!}
+                                                                                <div class="modal-body">
+                                                                                    <div class="form-group text-left mt-2">
+                                                                                        <label for="brand_denied_reason" class="@error('brand_denied_reason') text-danger @enderror">
+                                                                                            Write us if you don‘t want to show a specific brand or if you have any other concerns.
+                                                                                        </label>
+                                                                                        <textarea id="brand_denied_reason" rows="4" name="brand_denied_reason" class="form-control" placeholder="Please give us feedback" required autofocus>
+                                                                                            {{ old('brand_denied_reason') }}
+                                                                                        </textarea>
+                                                                                        @error('brand_denied_reason')
+                                                                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                                                        @enderror
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <div class="modal-footer justify-content-between">
+                                                                                    <button type="button" class="btn btn-primary" data-dismiss="modal">
+                                                                                        Close
+                                                                                    </button>
+                                                                                    <div class="form-group">
+                                                                                        <button type="submit" class="btn btn-danger">
+                                                                                            Deny Brand
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                                {!! Form::close() !!}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
+
                                                                 <li class="list-inline-item m-auto">
                                                                     <img alt="Avatar" class="table-avatar"
                                                                          src="{{ $brands[$index]->avatar->file_url ?? config('core.image.default.logo_preview') }}">
@@ -275,12 +324,12 @@
                                                                 </li>
                                                                 <li class="list-inline-item- mt-3 font-weight-bold">
                                                                     <a class="btn btn-secondary btn-sm text-white {{ ($campaign_influencer->campaign_accept_status_by_influencer == -1) || (\Carbon\Carbon::now()->gte($available_until)) ? 'disabled' : '' }}"
-                                                                       data-toggle="modal" href="#modal-lg-{{ $index }}"
+                                                                       data-toggle="modal" href="#modal-lg-br-{{ $c_index }}{{ $index }}"
                                                                     >
                                                                         Read
                                                                     </a>
 
-                                                                    <div class="modal fade" id="modal-lg-{{ $index }}" style="display: none;" aria-hidden="true">
+                                                                    <div class="modal fade" id="modal-lg-br-{{ $c_index }}{{ $index }}" style="display: none;" aria-hidden="true">
                                                                         <div class="modal-dialog modal-lg">
                                                                             <div class="modal-content text-left">
                                                                                 <div class="modal-header">
@@ -373,13 +422,13 @@
                                                             </button>
                                                             {!! Form::close() !!}
 
-                                                            <button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modal-lg-1-{{ $index }}">
+                                                            <button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modal-lg-1-{{ $c_index }}">
                                                                 <i class="fas fa-minus-circle">
                                                                 </i>
                                                                 Deny
                                                             </button>
 
-                                                            <div class="modal fade" id="modal-lg-1-{{ $index }}" style="display: none;" aria-hidden="true">
+                                                            <div class="modal fade" id="modal-lg-1-{{ $c_index }}" style="display: none;" aria-hidden="true">
                                                                 <div class="modal-dialog modal-lg">
                                                                     <div class="modal-content">
                                                                         <div class="modal-header">

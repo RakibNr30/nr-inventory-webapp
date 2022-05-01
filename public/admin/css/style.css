@@ -193,3 +193,15 @@ ul.box-footer li a {
 ul.box-footer li a:hover {
     color: rgba(0, 0, 0, 0.7) !important;
 }
+li.nav-item.bg-light {
+    background-color: #ebebeb!important;
+}
+
+.brand-close-btn {
+    position: absolute;
+    cursor: pointer;
+    padding-left: 40px;
+}
+.brand-close-btn:hover {
+    color: rgba(0, 0, 0, 0.68);
+}

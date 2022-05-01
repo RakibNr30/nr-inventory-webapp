@@ -16,6 +16,7 @@ use Modules\Cms\Http\Requests\CampaignStoreRequest;
 use Modules\Cms\Services\CampaignInfluencerService;
 use Modules\Cms\Services\CampaignService;
 use Modules\Ums\Services\UserService;
+use phpDocumentor\Reflection\Types\Integer;
 
 class CampaignInfluencerController extends Controller
 {
@@ -222,6 +223,42 @@ class CampaignInfluencerController extends Controller
             notifier()->success('Reminder sent out successfully.');
         } else {
             notifier()->error('Reminder sent out can not be successful.');
+        }
+
+        return redirect()->back();
+    }
+
+    public function brandRemove(Request $request, $id, $brand_id)
+    {
+        $request->validate([
+            'brand_denied_reason' => 'required|max:10000'
+        ]);
+
+        $campaign_influencer = $this->campaignInfluencerService->find($id);
+
+        if (empty($campaign_influencer)) {
+            notifier()->error('Influencer not found in this campaign!');
+            return redirect()->back();
+        }
+
+        // get data
+        $data = $request->except(['_token', '_method']);
+
+        $denied_brand_ids = $campaign_influencer->denied_brand_ids ?? [];
+        $brand_denied_reasons = $campaign_influencer->brand_denied_reasons ?? [];
+
+        array_push($denied_brand_ids, intval($brand_id));
+        array_push($brand_denied_reasons, $data['brand_denied_reason']);
+
+        $data['denied_brand_ids'] = $denied_brand_ids;
+        $data['brand_denied_reasons'] = $brand_denied_reasons;
+
+        $campaign_influencer = $this->campaignInfluencerService->update($data, $id);
+
+        if ($campaign_influencer) {
+            notifier()->success('Brand denied successfully.');
+        } else {
+            notifier()->error('Brand can not be denied.');
         }
 
         return redirect()->back();

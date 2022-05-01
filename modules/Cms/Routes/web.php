@@ -43,3 +43,4 @@ Route::resource('influencer-category', 'InfluencerCategoryController');
 Route::resource('campaign-influencer', 'CampaignInfluencerController');
 Route::put('campaign-influencer/{id}/feedback', 'CampaignInfluencerController@feedback')->name('campaign-influencer.feedback');
 Route::put('campaign-influencer/{id}/reminder', 'CampaignInfluencerController@reminder')->name('campaign-influencer.reminder');
+Route::put('campaign-influencer/{id}/brand/{brand_id}/remove', 'CampaignInfluencerController@brandRemove')->name('campaign-influencer.brand.remove');

@@ -38,6 +38,7 @@
     @include('admin.partials._right_sidebar')
     @include('admin.partials._footer')
 </div>
+
 <script src="{{ asset('common/plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('common/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
 <script src="{{ asset('common/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>

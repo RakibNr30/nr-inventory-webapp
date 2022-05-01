@@ -15,7 +15,7 @@
                  config('core.image.default.avatar_female')) }})">
             </div>
             <div class="info">
-                <a href="{{ url('/backend/profile/account-info') }}" class="d-block">
+                <a href="{{ url('/backend/profile/additional-info') }}" class="d-block">
                     {{ $user->additionalInfo->first_name ?? '' }} {{ $user->additionalInfo->last_name ?? '' }}
                 </a>
             </div>

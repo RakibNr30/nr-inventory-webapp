@@ -89,29 +89,6 @@ return [
                     ]
                 ],
                 [
-                    "name" => "Access Controls",
-                    "id" => "access_controls",
-                    "icon" => "fa-dot-circle",
-                    "url" => "",
-                    "permission" => "Access Controls",
-                    "children" => [
-                        [
-                            "name" => "Role",
-                            "id" => "role",
-                            "icon" => "fa-arrow-right",
-                            "url" => "/backend/role",
-                            "permission" => "Role",
-                        ],
-                        [
-                            "name" => "User",
-                            "id" => "user",
-                            "icon" => "fa-arrow-right",
-                            "url" => "/backend/user",
-                            "permission" => "User",
-                        ]
-                    ]
-                ],
-                [
                     "name" => "Common Settings",
                     "id" => "common_settings",
                     "icon" => "fa-dot-circle",
@@ -186,6 +163,14 @@ return [
     // profile menu
     'profile_menu' => [
         [
+            "name" => "Additional Info",
+            "id" => "additional_info",
+            "icon" => "fa-user",
+            "url" => "/backend/profile/additional-info",
+            "permission" => "profile_additional_info",
+            "children" => []
+        ],
+        [
             "name" => "Social Account Info",
             "id" => "social_account_info",
             "icon" => "fa-user",
@@ -207,14 +192,6 @@ return [
             "icon" => "fa-user",
             "url" => "/backend/profile/shipping-info",
             "permission" => "profile_shipping_info",
-            "children" => []
-        ],
-        [
-            "name" => "Additional Info",
-            "id" => "additional_info",
-            "icon" => "fa-user",
-            "url" => "/backend/profile/additional-info",
-            "permission" => "profile_additional_info",
             "children" => []
         ],
         [

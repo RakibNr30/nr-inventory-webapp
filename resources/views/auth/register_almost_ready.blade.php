@@ -145,7 +145,7 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="input-group mb-3">
                                 <select id="gender" name="gender"
                                         class="form-control @error('gender') is-invalid @enderror">
@@ -155,6 +155,16 @@
                                     @endforeach
                                 </select>
                                 @error('gender')
+                                <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <input id="dob" name="dob" placeholder="DOB" value="{{ old('dob') }}" type="text" class="form-control datepicker @error('dob') is-invalid @enderror" required>
+                                @error('dob')
                                 <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>

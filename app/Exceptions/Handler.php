@@ -50,7 +50,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if ($this->isHttpException($exception)) {
+        /*if ($this->isHttpException($exception)) {
             $status_code = $exception->getStatusCode();
             if ($status_code == 404) {
                 $status = "Oops! page not found!";
@@ -86,7 +86,7 @@ class Handler extends ExceptionHandler
                     'message' => $message
                 ]);
             }
-        }
+        }*/
 
         return parent::render($request, $exception);
     }

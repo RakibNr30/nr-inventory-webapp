@@ -18,6 +18,8 @@ class CreateCampaignInfluencersTable extends Migration
             $table->unsignedBigInteger('campaign_id')->nullable();
             $table->unsignedBigInteger('influencer_id')->nullable();
             $table->json('brand_ids')->nullable();
+            $table->json('denied_brand_ids')->nullable();
+            $table->json('brand_denied_reasons')->nullable();
             $table->timestamp('available_until')->nullable();
             $table->json('content_types')->nullable();
             $table->double('fee')->nullable()->default(0);
