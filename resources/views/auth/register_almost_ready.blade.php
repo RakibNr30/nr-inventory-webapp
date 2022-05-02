@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="register-box step-2">
-        <div class="card card-outline card-primary mb-2 mt-2">
+        <div class="card card-outline card-primary mb-2 mt-2" id="vue_app">
             <div class="card-header text-center">
                 <a class="h1" href="{{ url('/') }}">
                     <b>
@@ -166,8 +166,8 @@
                                 <input id="dob" name="dob" placeholder="DOB" value="{{ old('dob') }}" type="text" class="form-control datepicker @error('dob') is-invalid @enderror" required>
                                 @error('dob')
                                 <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
+                                    <strong>{{ $message }}</strong>
+                                </span>
                                 @enderror
                             </div>
                         </div>
@@ -310,26 +310,25 @@
                                 @enderror
                             </div>
                         </div>
-
                     </div>
                 @endif
                 <div class="row">
                     <div class="col-12">
                         <div class="icheck-primary">
-                            <input class="custom-control-input" type="checkbox" name="terms_conditions" id="terms_conditions" value="1" {{ old('terms_conditions') ? 'checked' : '' }}>
+                            <input class="custom-control-input" type="checkbox" name="terms_conditions" id="terms_conditions" v-model="check_terms_conditions" value="1" {{ old('terms_conditions') ? 'checked' : '' }}>
                             <label for="terms_conditions" class="checkbox-label">
                                 I agree to the <a href="#">terms</a> & <a href="#">condition</a> and <a href="#">privacy policy</a>.
                             </label>
                         </div>
                         <div class="icheck-primary">
-                            <input class="custom-control-input" type="checkbox" name="subscribe" id="subscribe" value="1" {{ old('subscribe') ? 'checked' : '' }}>
+                            <input class="custom-control-input" type="checkbox" name="subscribe" id="subscribe" v-model="check_subscribe" value="1" {{ old('subscribe') ? 'checked' : '' }}>
                             <label for="subscribe" class="checkbox-label">
                                 Subscribe to the <a href="#">newsletter</a>.
                             </label>
                         </div>
                     </div>
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary btn-block">Submit & get started</button>
+                        <button type="submit" class="btn btn-primary btn-block" :disabled="!check_terms_conditions || !check_subscribe">Submit & get started</button>
                     </div>
                 </div>
                 {!! Form::close() !!}
@@ -342,4 +341,16 @@
             </div>
         </div>
     </div>
+@stop
+
+@section('script')
+    <script>
+        new Vue({
+            el: '#vue_app',
+            data: {
+                check_terms_conditions: false,
+                check_subscribe: false
+            },
+        });
+    </script>
 @stop

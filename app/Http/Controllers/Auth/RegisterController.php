@@ -94,7 +94,6 @@ class RegisterController extends Controller
             UserAdditionalInfo::query()->create([
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'],
-                'dob' => $data['dob'],
                 'user_id' => $user->id
             ]);
 
@@ -171,7 +170,8 @@ class RegisterController extends Controller
             'subscribe' => $data['subscribe'] ?? 0,
         ];
         $user_additional_data = [
-            'gender' => $data['gender'] ?? null
+            'gender' => $data['gender'] ?? null,
+            'dob' => $data['dob'] ?? null
         ];
         $user_shipping_data = [
             'phone' => $data['phone'] ?? null,

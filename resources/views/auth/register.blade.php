@@ -21,11 +21,11 @@
                 {!! Form::open(['route' => 'register', 'method' => 'post']) !!}
                 <label class="d-block font-weight-bold">Registered as</label>
                 <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
-                    <label class="btn btn-secondary {{ old('login_as') ? (old('login_as') == 1 ? 'active' : '') : 'active' }}" v-on:click="changeValue(1)">
+                    <label class="btn btn-secondary {{ old('login_as') ? (old('login_as') == 1 ? 'active' : '') : 'active' }}" v-on:click="changeValue(1)" style="cursor: pointer">
                         <input type="radio" name="login_as" id="option_a1" autocomplete="off" value="{{ 1 }}"
                             {{ old('login_as') ? (old('login_as') == 1 ? 'checked' : '') : 'checked' }}> Influencer
                     </label>
-                    <label class="btn btn-secondary {{ old('login_as') ? (old('login_as') == 2 ? 'active' : '') : '' }}" v-on:click="changeValue(2)">
+                    <label class="btn btn-secondary {{ old('login_as') ? (old('login_as') == 2 ? 'active' : '') : '' }}" v-on:click="changeValue(2)" style="cursor: pointer">
                         <input type="radio" name="login_as" id="option_a2" autocomplete="off" value="{{ 2 }}"
                             {{ old('login_as') ? (old('login_as') == 2 ? 'checked' : '') : '' }}> Brand
                     </label>
@@ -128,20 +128,20 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="icheck-primary">
-                            <input class="custom-control-input" type="checkbox" name="terms_conditions" id="terms_conditions" {{ old('terms_conditions') ? 'checked' : '' }}>
+                            <input class="custom-control-input" type="checkbox" name="terms_conditions" id="terms_conditions" v-model="check_terms_conditions" value="1" {{ old('terms_conditions') ? 'checked' : '' }}>
                             <label for="terms_conditions" class="checkbox-label">
                                 I agree to the <a href="#">terms</a> & <a href="#">condition</a> and <a href="#">privacy policy</a>.
                             </label>
                         </div>
                         <div class="icheck-primary">
-                            <input class="custom-control-input" type="checkbox" name="subscribe" id="subscribe" {{ old('subscribe') ? 'checked' : '' }}>
+                            <input class="custom-control-input" type="checkbox" name="subscribe" id="subscribe" v-model="check_subscribe" value="1" {{ old('subscribe') ? 'checked' : '' }}>
                             <label for="subscribe" class="checkbox-label">
                                 Subscribe to the <a href="#">newsletter</a>.
                             </label>
                         </div>
                     </div>
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                        <button type="submit" class="btn btn-primary btn-block" :disabled="!check_terms_conditions || !check_subscribe">Sign Up</button>
                     </div>
                 </div>
                 {!! Form::close() !!}
@@ -171,7 +171,9 @@
         new Vue({
             el: '#vue_app',
             data: {
-                nameToggle: '{{ old('login_as') ? old('login_as') : 1 }}'
+                nameToggle: '{{ old('login_as') ? old('login_as') : 1 }}',
+                check_terms_conditions: false,
+                check_subscribe: false
             },
             methods: {
                 changeValue(value) {
