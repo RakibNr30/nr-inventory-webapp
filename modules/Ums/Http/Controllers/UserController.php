@@ -49,7 +49,7 @@ class UserController extends Controller
         $this->userService = $userService;
         $this->userAdditionalInfoService = $userAdditionalInfoService;
         $this->roleService = $roleService;
-        //$this->middleware(['permission:User']);
+        $this->middleware(['permission:Influencer']);
     }
 
     /**

@@ -25,6 +25,7 @@ class SocialiteController extends Controller
     public function __construct(SocialiteService $socialiteService)
     {
         $this->socialiteService = $socialiteService;
+        $this->middleware(['permission:App Settings']);
     }
 
     /**

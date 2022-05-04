@@ -43,7 +43,7 @@ class BrandController extends Controller
         $this->campaignService = $campaignService;
         $this->userService = $userService;
         $this->campaignInfluencerService = $campaignInfluencerService;
-        //$this->middleware(['permission:Cms']);
+        $this->middleware(['permission:Brands']);
     }
 
     /**

@@ -8,7 +8,7 @@ use Illuminate\Queue\SerializesModels;
 use Modules\Cms\Entities\MailContent;
 use Modules\Cms\Services\MailContentService;
 
-class ContactMail extends Mailable
+class NotificationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -33,6 +33,6 @@ class ContactMail extends Mailable
     {
         $data = $this->data;
         return $this->subject('')
-            ->view('front::mail.contact', compact('data'));
+            ->view('cms::mail.notification', compact('data'));
     }
 }

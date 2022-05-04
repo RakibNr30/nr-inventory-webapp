@@ -35,7 +35,7 @@
 
     @yield('content')
 
-<script src="//cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="{{ asset('common/plugins/vue/vue.js') }}"></script>
 <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
 <script>window.jQuery || document.write(`<script src="{{ asset('common/plugins/jquery-3.3.1/jquery-3.3.1.min.js') }}"><\/script>`)</script>
 <!-- Select2 -->

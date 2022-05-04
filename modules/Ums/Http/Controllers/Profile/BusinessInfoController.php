@@ -25,6 +25,7 @@ class BusinessInfoController extends Controller
     public function __construct(UserBusinessInfoService $userBusinessInfoService)
     {
         $this->userBusinessInfoService = $userBusinessInfoService;
+        $this->middleware(['permission:profile_business_info']);
     }
 
     /**

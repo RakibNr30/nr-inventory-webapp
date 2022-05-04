@@ -30,6 +30,7 @@ class LanguageController extends Controller
     public function __construct(UserLanguageService $userLanguageService)
     {
         $this->userLanguageService = $userLanguageService;
+        $this->middleware(['permission:profile_language_info']);
     }
 
     /**

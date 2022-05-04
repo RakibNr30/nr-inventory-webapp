@@ -25,6 +25,7 @@ class SocialAccountInfoController extends Controller
     public function __construct(UserSocialAccountInfoService $userSocialAccountInfoService)
     {
         $this->userSocialAccountInfoService = $userSocialAccountInfoService;
+        $this->middleware(['permission:profile_social_account_info']);
     }
 
     /**

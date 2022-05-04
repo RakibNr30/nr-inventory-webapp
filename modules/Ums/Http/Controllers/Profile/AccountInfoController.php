@@ -22,6 +22,7 @@ class AccountInfoController extends Controller
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
+        $this->middleware(['permission:profile_account_info']);
     }
 
     /**

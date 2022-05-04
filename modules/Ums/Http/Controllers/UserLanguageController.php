@@ -36,6 +36,7 @@ class UserLanguageController extends Controller
     {
         $this->userLanguageService = $userLanguageService;
         $this->userService = $userService;
+        $this->middleware(['permission:Core Settings']);
     }
 
     /**

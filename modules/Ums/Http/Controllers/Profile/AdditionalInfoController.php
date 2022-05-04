@@ -25,6 +25,7 @@ class AdditionalInfoController extends Controller
     public function __construct(UserAdditionalInfoService $userAdditionalInfoService)
     {
         $this->userAdditionalInfoService = $userAdditionalInfoService;
+        $this->middleware(['permission:profile_additional_info']);
     }
 
     /**

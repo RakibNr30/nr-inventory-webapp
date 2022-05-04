@@ -37,6 +37,7 @@ class UserAdditionalInfoController extends Controller
     {
         $this->userAdditionalInfoService = $userAdditionalInfoService;
         $this->userService = $userService;
+        $this->middleware(['permission:Core Settings']);
     }
 
     /**

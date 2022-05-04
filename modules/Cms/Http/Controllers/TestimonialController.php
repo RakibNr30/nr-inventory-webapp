@@ -29,6 +29,7 @@ class TestimonialController extends Controller
     public function __construct(TestimonialService $testimonialService)
     {
         $this->testimonialService = $testimonialService;
+        $this->middleware(['permission:Cms']);
     }
 
     /**

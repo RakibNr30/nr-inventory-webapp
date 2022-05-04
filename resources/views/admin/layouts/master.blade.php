@@ -57,33 +57,10 @@
     }
 </style>
 
-<script src="//cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="//cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script>
-<script>
-    $(document).ready(function() {
-        if (document.getElementById('description')) {
-            if(CKEDITOR.instances.description) {
-                CKEDITOR.instances.description.destroy();
-            }
-            CKEDITOR.replace( 'description' );
-        }
-    });
+<script src="{{ asset('common/plugins/vue/vue.js') }}"></script>
+<script src="{{ asset('common/plugins/ckeditor/ckeditor.js') }}"></script>
+<script src="{{ asset('admin/js/plugin.init.js') }}"></script>
 
-    $('.select2').select2().on('change', function() {
-        //$(this).valid();
-    });
-    $('.datepicker').datepicker({
-        todayHighlight: true,
-        format: 'yyyy-mm-dd',
-        //startDate: new Date(),
-        changeMonth: true,
-        changeYear: true,
-        autoclose: true
-    });
-    $(function () {
-        bsCustomFileInput.init();
-    });
-</script>
 @yield('script')
 </body>
 </html>

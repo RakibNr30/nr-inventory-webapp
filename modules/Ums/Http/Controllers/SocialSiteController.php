@@ -29,6 +29,7 @@ class SocialSiteController extends Controller
     public function __construct(SocialSiteService $socialSiteService)
     {
         $this->socialSiteService = $socialSiteService;
+        $this->middleware(['permission:Core Settings']);
     }
 
     /**

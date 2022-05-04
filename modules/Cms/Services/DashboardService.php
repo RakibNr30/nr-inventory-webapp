@@ -67,25 +67,23 @@ class DashboardService
     public function statistics()
     {
         $statistics = new \stdClass();
-        $influencers = $this->userRepository->model->with(['additionalInfo', 'shippingInfo', 'socialAccountInfo'])
-            ->whereHas("roles", function ($query) {
-                $query->where("name", "Influencer");
-            })->get();
+        $influencers = $this->campaignInfluencerRepository->model
+            ->get();
 
         $statistics->overall_influencers = $influencers
-                                            ->where('is_process_completed', 1)->count();
+            ->count();
         $statistics->pending_influencers = $influencers
-                                            ->where('is_influencer_accepted', 0)
-                                            ->where('is_process_completed', 1)->count();
+            ->where('accept_status', 0)
+            ->count();
         $statistics->accepted_influencers = $influencers
-                                            ->where('is_influencer_accepted', 1)
-                                            ->where('is_process_completed', 1)->count();
+            ->where('accept_status', 1)
+            ->count();
         $statistics->denied_influencers = $influencers
-                                            ->where('is_influencer_accepted', -1)
-                                            ->where('is_process_completed', 1)->count();
+            ->where('accept_status', -1)
+            ->count();
         $statistics->favourite_influencers = $influencers
-                                            ->where('is_influencer_add_to_favourite', 1)
-                                            ->where('is_process_completed', 1)->count();
+            ->where('is_add_to_favourite', 1)
+            ->count();
 
         return $statistics;
     }

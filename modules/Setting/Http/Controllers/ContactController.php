@@ -25,6 +25,7 @@ class ContactController extends Controller
     public function __construct(ContactService $contactService)
     {
         $this->contactService = $contactService;
+        $this->middleware(['permission:App Settings']);
     }
 
     /**

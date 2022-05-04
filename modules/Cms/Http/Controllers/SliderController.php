@@ -29,6 +29,7 @@ class SliderController extends Controller
     public function __construct(SliderService $sliderService)
     {
         $this->sliderService = $sliderService;
+        $this->middleware(['permission:Cms']);
     }
 
     /**

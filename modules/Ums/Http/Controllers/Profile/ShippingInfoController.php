@@ -30,6 +30,7 @@ class ShippingInfoController extends Controller
     public function __construct(UserShippingInfoService $userShippingInfoService)
     {
         $this->userShippingInfoService = $userShippingInfoService;
+        $this->middleware(['permission:profile_shipping_info']);
     }
 
     /**

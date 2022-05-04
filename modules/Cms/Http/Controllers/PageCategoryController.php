@@ -29,6 +29,7 @@ class PageCategoryController extends Controller
     public function __construct(PageCategoryService $pageCategoryService)
     {
         $this->pageCategoryService = $pageCategoryService;
+        $this->middleware(['permission:Common Settings']);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Modules\Cms\Http\Controllers;
 
+use App\Helpers\MailManager;
 use App\Http\Controllers\Controller;
 
 // requests...
@@ -17,6 +18,7 @@ use Modules\Cms\Services\CampaignInfluencerService;
 use Modules\Cms\Services\CampaignService;
 use Modules\Ums\Services\UserService;
 use phpDocumentor\Reflection\Types\Integer;
+use PhpParser\Node\Expr\Throw_;
 
 class CampaignInfluencerController extends Controller
 {
@@ -45,8 +47,7 @@ class CampaignInfluencerController extends Controller
         $this->campaignInfluencerService = $campaignInfluencerService;
         $this->userService = $userService;
         $this->campaignService = $campaignService;
-
-        //$this->middleware(['permission:Cms']);
+        $this->middleware(['permission:Campaigns']);
     }
 
     public function create()
@@ -219,8 +220,20 @@ class CampaignInfluencerController extends Controller
 
         $campaign_influencer = $this->campaignInfluencerService->update($data, $id);
 
+        $send_success = true;
+
+        try {
+            MailManager::send($campaign_influencer->user, []);
+        } catch (\Exception $exception) {
+            $send_success = false;
+        }
+
         if ($campaign_influencer) {
-            notifier()->success('Reminder sent out successfully.');
+            if ($send_success) {
+                notifier()->success('Reminder sent out successfully.');
+            } else {
+                notifier()->warning('Reminder sent out successfully but mail not send due to connection error.');
+            }
         } else {
             notifier()->error('Reminder sent out can not be successful.');
         }

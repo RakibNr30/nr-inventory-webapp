@@ -36,6 +36,7 @@ class UserShippingInfoController extends Controller
     {
         $this->userShippingInfoService = $userShippingInfoService;
         $this->userService = $userService;
+        $this->middleware(['permission:Core Settings']);
     }
 
     /**

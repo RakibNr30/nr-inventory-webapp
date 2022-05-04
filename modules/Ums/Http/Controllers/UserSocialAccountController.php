@@ -36,6 +36,7 @@ class UserSocialAccountController extends Controller
     {
         $this->userSocialAccountService = $userSocialAccountService;
         $this->userService = $userService;
+        $this->middleware(['permission:Core Settings']);
     }
 
     /**

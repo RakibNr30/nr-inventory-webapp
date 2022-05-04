@@ -29,6 +29,7 @@ class InfluencerCategoryController extends Controller
     public function __construct(InfluencerCategoryService $influencerCategoryService)
     {
         $this->influencerCategoryService = $influencerCategoryService;
+        $this->middleware(['permission:Common Settings']);
     }
 
     /**

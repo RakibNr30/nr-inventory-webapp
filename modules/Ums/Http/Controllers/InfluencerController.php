@@ -98,7 +98,7 @@ class InfluencerController extends Controller
         $this->userShippingInfoService = $userShippingInfoService;
         $this->userSocialAccountInfoService = $userSocialAccountInfoService;
         $this->campaignInfluencerService = $campaignInfluencerService;
-        //$this->middleware(['permission:User']);
+        $this->middleware(['permission:Influencer']);
     }
 
     /**

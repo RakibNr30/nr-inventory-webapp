@@ -37,7 +37,7 @@ class ProductController extends Controller
     {
         $this->productService = $productService;
         $this->userService = $userService;
-        //$this->middleware(['permission:Cms']);
+        $this->middleware(['permission:Products']);
     }
 
     /**

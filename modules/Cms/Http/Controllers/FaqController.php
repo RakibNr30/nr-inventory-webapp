@@ -29,6 +29,7 @@ class FaqController extends Controller
     public function __construct(FaqService $faqService)
     {
         $this->faqService = $faqService;
+        $this->middleware(['permission:Cms']);
     }
 
     /**

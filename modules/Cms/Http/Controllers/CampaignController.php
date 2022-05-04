@@ -81,7 +81,7 @@ class CampaignController extends Controller
         $this->influencerCategoryService = $influencerCategoryService;
         $this->userService = $userService;
         $this->dashboardService = $dashboardService;
-        //$this->middleware(['permission:Cms']);
+        $this->middleware(['permission:Campaigns']);
     }
 
     /**

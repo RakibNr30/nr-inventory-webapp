@@ -25,6 +25,7 @@ class SeoController extends Controller
     public function __construct(SeoService $seoService)
     {
         $this->seoService = $seoService;
+        $this->middleware(['permission:App Settings']);
     }
 
     /**
