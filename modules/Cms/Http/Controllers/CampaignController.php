@@ -166,6 +166,8 @@ class CampaignController extends Controller
         if (isset($data['product_ids']))
             $data['product_ids'] = array_map('intval', $data['product_ids']);
 
+        $data['created_by'] = auth()->user()->id;
+
         // create campaign
         $campaign = $this->campaignService->create($data);
         // upload file

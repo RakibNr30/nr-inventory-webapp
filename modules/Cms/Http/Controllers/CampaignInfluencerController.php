@@ -138,6 +138,12 @@ class CampaignInfluencerController extends Controller
 
         // check if user updated
         if ($campaign_influencer) {
+            if (isset($data['internal_accept_status'])) {
+                if ($campaign_influencer->accept_status == 1) {
+                    notifier()->success('Modified successfully..');
+                }
+            }
+
             if (isset($data['accept_status'])) {
                 if ($campaign_influencer->is_influencer_accepted == 1) {
                     notifier()->success('Influencer accepted.');
@@ -211,12 +217,19 @@ class CampaignInfluencerController extends Controller
 
         $current_time = Carbon::now();
 
-        if (isset($data['briefing_reminder']))
-            $data['briefing_reminder_at'] = $current_time;
-        if (isset($data['content_reminder']))
-            $data['content_reminder_at'] = $current_time;
-        if (isset($data['missing_content_reminder']))
-            $data['missing_content_reminder_at'] = $current_time;
+        if (isset($data['briefing_reminder'])) {
+            $data['briefing_reminders_at'] = $campaign_influencer->briefing_reminders_at ?? [];
+            $data['briefing_reminders_at'][] = $current_time;
+        }
+
+        if (isset($data['content_reminder'])) {
+            $data['content_reminders_at'] = $campaign_influencer->content_reminders_at ?? [];
+            $data['content_reminders_at'][] = $current_time;
+        }
+        if (isset($data['missing_content_reminder'])) {
+            $data['missing_content_reminders_at'] = $campaign_influencer->missing_content_reminders_at ?? [];
+            $data['missing_content_reminders_at'][] = $current_time;
+        }
 
         $campaign_influencer = $this->campaignInfluencerService->update($data, $id);
 

@@ -4,9 +4,6 @@ namespace Modules\Cms\Entities;
 
 use App\BaseModel;
 use Cviebrock\EloquentSluggable\Sluggable;
-use Cviebrock\EloquentSluggable\Tests\Models\PostWithMaxLengthSplitWords;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Ums\Entities\User;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
@@ -41,6 +38,21 @@ class Campaign extends BaseModel implements hasMedia
         'influencer_shipping_address_brand',
         'campaign_goals',
         'desired_content_notes',
+        'instagram_story',
+        'instagram_feed',
+        'instagram_reel',
+        'instagram_igtv',
+        'tiktok_video',
+        'extra_content_1',
+        'extra_content_1_value',
+        'extra_content_2',
+        'extra_content_2_value',
+        'extra_content_3',
+        'extra_content_3_value',
+        'extra_content_4',
+        'extra_content_4_value',
+        'extra_content_5',
+        'extra_content_5_value',
         'personal_notes',
 		'offer_signed',
 		'start_of_recurring_bill',
@@ -77,6 +89,21 @@ class Campaign extends BaseModel implements hasMedia
 		'influencer_shipping_address_brand' => 'integer',
 		'campaign_goals' => 'array',
 		'desired_content_notes' => 'string',
+        'instagram_story' => 'integer',
+        'instagram_feed' => 'integer',
+        'instagram_reel' => 'integer',
+        'instagram_igtv' => 'integer',
+        'tiktok_video' => 'integer',
+        'extra_content_1' => 'string',
+        'extra_content_1_value' => 'integer',
+        'extra_content_2' => 'string',
+        'extra_content_2_value' => 'integer',
+        'extra_content_3' => 'string',
+        'extra_content_3_value' => 'integer',
+        'extra_content_4' => 'string',
+        'extra_content_4_value' => 'integer',
+        'extra_content_5' => 'string',
+        'extra_content_5_value' => 'integer',
 		'personal_notes' => 'string',
 		'offer_signed' => 'integer',
 		'start_of_recurring_bill' => 'datetime',

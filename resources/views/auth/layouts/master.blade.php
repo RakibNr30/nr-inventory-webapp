@@ -38,11 +38,9 @@
 <script src="{{ asset('common/plugins/vue/vue.js') }}"></script>
 <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
 <script>window.jQuery || document.write(`<script src="{{ asset('common/plugins/jquery-3.3.1/jquery-3.3.1.min.js') }}"><\/script>`)</script>
-<!-- Select2 -->
 <script src="{{ asset('common/plugins/select2/js/select2.full.min.js') }}"></script>
 <script src="{{ asset('common/plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
 <script src="{{ asset('common/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<!-- Datepicker -->
 <script src="{{ asset('common/plugins/datepicker/bootstrap-datepicker.min.js') }}"></script>
 <script src="{{ asset('admin/js/app.min.js') }}"></script>
 <script>

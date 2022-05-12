@@ -125,31 +125,41 @@
                                                         <i class="fas fa-clone">
                                                         </i>
                                                     </a>-->
-                                                    @if($influencer->accept_status == 0)
-                                                        <button name="accept_status" value="1" class="btn btn-primary btn-xs">
-                                                            <i class="fas fa-check">
-                                                            </i>
-                                                            Accept
-                                                        </button>
-                                                        <button name="accept_status" value="-1" class="btn btn-danger btn-xs" href="#">
-                                                            <i class="fas fa-minus-circle">
-                                                            </i>
-                                                            Deny
-                                                        </button>
-                                                    @endif
-                                                    @if($influencer->accept_status == 1)
-                                                        <span class="text-success">
+                                                    @if(\App\Helpers\AuthManager::isBrand())
+                                                        @if($influencer->accept_status == 0)
+                                                            <button name="accept_status" value="1" class="btn btn-primary btn-xs">
+                                                                <i class="fas fa-check">
+                                                                </i>
+                                                                Accept
+                                                            </button>
+                                                            <button name="accept_status" value="-1" class="btn btn-danger btn-xs" href="#">
+                                                                <i class="fas fa-minus-circle">
+                                                                </i>
+                                                                Deny
+                                                            </button>
+                                                        @endif
+                                                        @if($influencer->accept_status == 1)
+                                                            <span class="text-success">
                                                             <i class="fas fa-check">
                                                             </i>
                                                             <strong>Accepted</strong>
                                                         </span>
-                                                    @endif
-                                                    @if($influencer->accept_status == -1)
-                                                        <span class="text-danger">
+                                                        @endif
+                                                        @if($influencer->accept_status == -1)
+                                                            <span class="text-danger">
                                                             <i class="fas fa-minus-circle">
                                                             </i>
                                                             <strong>Denied</strong>
                                                         </span>
+                                                        @endif
+                                                    @endif
+
+                                                    @if(!\App\Helpers\AuthManager::isBrand() && !\App\Helpers\AuthManager::isInfluencer())
+                                                        @if($influencer->accept_status == 1)
+                                                            <button name="internal_accept_status" value="1" class="btn btn-primary btn-xs">
+                                                                Modify
+                                                            </button>
+                                                        @endif
                                                     @endif
                                                 </div>
                                             </td>
@@ -238,11 +248,11 @@
                                                            <div class="col-md-6">
                                                                <div class="form-group">
                                                                    <label class="brand-input-label">Individual Coupon Code</label>
-                                                                   <input id="individual_coupon_code" name="individual_coupon_code" value="{{ old('individual_coupon_code') ?? $influencer->individual_coupon_code ?? '' }}"
+                                                                   <input id="internal_individual_coupon_code" name="internal_individual_coupon_code" value="{{ old('internal_individual_coupon_code') ?? ($influencer->internal_individual_coupon_code ?? $influencer->individual_coupon_code) }}"
                                                                           type="text"
-                                                                          class="form-control @error('individual_coupon_code') is-invalid @enderror"
+                                                                          class="form-control @error('internal_individual_coupon_code') is-invalid @enderror"
                                                                           placeholder="Individual Coupon Code" autofocus
-                                                                       {{ $influencer->accept_status != 0 ? 'readonly' : '' }}
+                                                                       {{ $influencer->accept_status != 0 ? '' : '' }}
                                                                    >
                                                                </div>
                                                            </div>
@@ -251,11 +261,11 @@
                                                            <div class="col-md-6">
                                                                <div class="form-group">
                                                                    <label class="brand-input-label">Individual Swipe-up Link</label>
-                                                                   <input id="individual_swipe_up_link" name="individual_swipe_up_link" value="{{ old('individual_swipe_up_link') ?? $influencer->individual_swipe_up_link ?? '' }}"
+                                                                   <input id="internal_individual_swipe_up_link" name="internal_individual_swipe_up_link" value="{{ old('internal_individual_swipe_up_link') ?? ($influencer->internal_individual_swipe_up_link ?? $influencer->individual_swipe_up_link) }}"
                                                                           type="text"
-                                                                          class="form-control @error('individual_swipe_up_link') is-invalid @enderror"
+                                                                          class="form-control @error('internal_individual_swipe_up_link') is-invalid @enderror"
                                                                           placeholder="Individual Swipe-Up Link Code" autofocus
-                                                                       {{ $influencer->accept_status != 0 ? 'readonly' : '' }}
+                                                                       {{ $influencer->accept_status != 0 ? '' : '' }}
                                                                    >
                                                                </div>
                                                            </div>
@@ -352,6 +362,9 @@
             display: none;
         }
 
+        td.brand-input {
+            min-width: 300px;
+        }
         td.brand-input .form-control {
             height: calc(2rem + 2px);
             padding: 0.375rem 0.75rem;
@@ -363,6 +376,10 @@
         }
         td.brand-input .form-group {
             margin-bottom: 0.3rem;
+        }
+        th, td {
+            white-space:nowrap;
+            text-align: left
         }
     </style>
 @stop

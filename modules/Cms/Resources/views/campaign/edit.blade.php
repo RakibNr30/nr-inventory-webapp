@@ -258,6 +258,153 @@
                                         @enderror
                                     </div>
                                 </div>
+
+                                <div class="col-md-12">
+                                    <label class="d-block">
+                                        Content Requirements
+                                    </label>
+                                    <span class="d-block font-weight-light">
+                                            Leave blank if there are no specific requirements.
+                                        </span>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p>Placements</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p class="float-right">
+                                                Your settings must match 100%.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <table class="table w-100">
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label for="instagram_story" class="font-weight-normal @error('instagram_story') text-danger @enderror">
+                                                        Instagram Story
+                                                    </label>
+                                                    <input id="instagram_story" name="instagram_story" value="{{ old('instagram_story') ?? $campaign->instagram_story }}" type="number" min="0" max="100" class="form-control percentages @error('instagram_story') is-invalid @enderror" placeholder="" autofocus>
+                                                    @error('instagram_story')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label for="instagram_feed" class="font-weight-normal @error('instagram_feed') text-danger @enderror">
+                                                        Instagram Feed
+                                                    </label>
+                                                    <input id="instagram_feed" name="instagram_feed" value="{{ old('instagram_feed') ?? $campaign->instagram_feed }}" type="number" min="0" max="100" class="form-control @error('instagram_feed') is-invalid @enderror" placeholder="" autofocus>
+                                                    @error('instagram_feed')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label for="instagram_reel" class="font-weight-normal @error('instagram_reel') text-danger @enderror">
+                                                        Instagram Reel
+                                                    </label>
+                                                    <input id="instagram_reel" name="instagram_reel" value="{{ old('instagram_reel') ?? $campaign->instagram_reel }}" type="number" min="0" max="100" class="form-control @error('instagram_reel') is-invalid @enderror" placeholder="" autofocus>
+                                                    @error('instagram_reel')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label for="instagram_igtv" class="font-weight-normal @error('instagram_igtv') text-danger @enderror">
+                                                        Instagram IGTV
+                                                    </label>
+                                                    <input id="instagram_igtv" name="instagram_igtv" value="{{ old('instagram_igtv') ?? $campaign->instagram_igtv }}" type="number" min="0" max="100" class="form-control @error('instagram_igtv') is-invalid @enderror" placeholder="" autofocus>
+                                                    @error('instagram_igtv')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label for="tiktok_video" class="font-weight-normal @error('tiktok_video') text-danger @enderror">
+                                                        TikTok Video
+                                                    </label>
+                                                    <input id="tiktok_video" name="tiktok_video" value="{{ old('tiktok_video') ?? $campaign->tiktok_video }}" type="number" min="0" max="100" class="form-control @error('tiktok_video') is-invalid @enderror" placeholder="" autofocus>
+                                                    @error('tiktok_video')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="d-block">
+                                                Extras
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p class="float-right">
+                                                Your settings can not exceed 100%.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <table class="table w-100 mb-0">
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <input type="text" name="extra_content_1" placeholder="Your requirement" class="form-control extra_content" value="{{ old('extra_content_1') ?? $campaign->extra_content_1 }}">
+                                                    <input id="extra_content_1_value" name="extra_content_1_value" value="{{ old('extra_content_1_value') ?? $campaign->extra_content_1_value }}" type="number" min="0" max="100" class="form-control percentages @error('extra_content_1_value') is-invalid @enderror" placeholder="" autofocus>
+                                                    @error('extra_content_1_value')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <input type="text" name="extra_content_2" placeholder="Your requirement" class="form-control extra_content" value="{{ old('extra_content_2') ?? $campaign->extra_content_2 }}">
+                                                    <input id="extra_content_2_value" name="extra_content_2_value" value="{{ old('extra_content_2_value') ?? $campaign->extra_content_2_value }}" type="number" min="0" max="100" class="form-control percentages @error('extra_content_2_value') is-invalid @enderror" placeholder="" autofocus>
+                                                    @error('extra_content_2_value')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <input type="text" name="extra_content_3" placeholder="Your requirement" class="form-control extra_content" value="{{ old('extra_content_3') ?? $campaign->extra_content_3 }}">
+                                                    <input id="extra_content_3_value" name="extra_content_3_value" value="{{ old('extra_content_3_value') ?? $campaign->extra_content_3_value }}" type="number" min="0" max="100" class="form-control percentages @error('extra_content_3_value') is-invalid @enderror" placeholder="" autofocus>
+                                                    @error('extra_content_3_value')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <input type="text" name="extra_content_4" placeholder="Your requirement" class="form-control extra_content" value="{{ old('extra_content_4') ?? $campaign->extra_content_4 }}">
+                                                    <input id="extra_content_4_value" name="extra_content_4_value" value="{{ old('extra_content_4_value') ?? $campaign->extra_content_4_value }}" type="number" min="0" max="100" class="form-control percentages @error('extra_content_4_value') is-invalid @enderror" placeholder="" autofocus>
+                                                    @error('extra_content_4_value')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <input type="text" name="extra_content_5" placeholder="Your requirement" class="form-control extra_content" value="{{ old('extra_content_5') ?? $campaign->extra_content_5 }}">
+                                                    <input id="extra_content_5_value" name="extra_content_5_value" value="{{ old('extra_content_5_value') ?? $campaign->extra_content_5_value }}" type="number" min="0" max="100" class="form-control percentages @error('extra_content_5_value') is-invalid @enderror" placeholder="" autofocus>
+                                                    @error('extra_content_5_value')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="personal_notes" class="@error('personal_notes') text-danger @enderror">Personal Notes</label>
@@ -345,11 +492,10 @@
 
 @section('style')
     <style>
-        .select2-selection__rendered {
-        /line-height: 28px !important;
-        }
-        .select2-selection {
-        /height: auto !important;
+        .form-control.extra_content {
+            margin-bottom: 2px;
+            border: none;
+            padding-left: 0;
         }
     </style>
 @stop

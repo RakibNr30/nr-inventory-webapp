@@ -1,6 +1,9 @@
 @extends('admin.layouts.master')
 
 @section('content')
+    @php
+    use \Carbon\Carbon;
+    @endphp
     <div class="content-header pt-2"></div>
     <div class="content">
         <div class="container-fluid">
@@ -9,7 +12,7 @@
                     @include('admin.partials._alert')
                     <div class="card card-gray-dark card-outline">
                         <div class="card-header">
-                            <h3 class="card-title mt-1">Campaign Details</h3>
+                            <h3 class="card-title mt-1">Campaign Details ({{ $campaign->title ?? '' }})</h3>
                             <a href="{{ route('backend.cms.campaign.index') }}" type="button" class="btn btn-success btn-sm text-white float-right">View Campaign List</a>
                             @if(\App\Helpers\AuthManager::isSuperAdmin() || \App\Helpers\AuthManager::isAdmin() || \App\Helpers\AuthManager::isInfluencerManager())
                                 <a href="{{ route('backend.cms.campaign.influencer.create', [$campaign->id]) }}" type="button" class="btn btn-primary btn-sm text-white float-right mr-2">
@@ -19,7 +22,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+<!--                <div class="col-md-4">
                     <div class="card card-primary">
                         <div class="card-body box-profile">
                             <div class="text-center">
@@ -208,9 +211,9 @@
                             </p>
                         </div>
                     </div>
-                </div>
+                </div>-->
 
-                <div class="col-md-8">
+                <div class="col-md-12">
                     @if(!\App\Helpers\AuthManager::isInfluencer())
                         <div class="card">
                             <div class="card-header font-weight-bold">
@@ -221,6 +224,18 @@
                                     <div class="influencer-list">
                                         <div class="table-responsive w-100">
                                             <table class="table table-striped projects">
+                                                <thead>
+                                                <tr>
+                                                    <th>Influencer Name</th>
+                                                    <th>Instagram Profile</th>
+                                                    <th>Instagram Follower</th>
+                                                    <th>Tiktok Profile</th>
+                                                    <th>Tiktok Follower</th>
+                                                    <th>Start Date</th>
+                                                    <th>Fee</th>
+                                                    <th>Content Type</th>
+                                                </tr>
+                                                </thead>
                                                 <tbody>
                                                 @foreach($campaign->campaignInfluencers as $index => $campaignInfluencer)
                                                     <tr>
@@ -232,6 +247,9 @@
                                                         <td>
                                                             <ul class="list-inline">
                                                                 <li class="list-inline-item">
+                                                                    <a data-toggle="modal" href="#modal-xl-{{ $index }}">
+                                                                        <i class="far fa-clone mr-3"></i>
+                                                                    </a>
                                                                     <a class="font-weight-bold text-dark" data-toggle="modal" href="#modal-xl-{{ $index }}">
                                                                         <img alt="Avatar" class="table-avatar" src="{{ $influencer->avatar->file_url ??
                                                                             ($influencer->additionalInfo->gender == 2 ?
@@ -239,15 +257,44 @@
                                                                             config('core.image.default.avatar_male')) }}"
                                                                         >
                                                                     </a>
+                                                                    <a class="font-weight-bold text-dark ml-2" data-toggle="modal" href="#modal-xl-{{ $index }}">
+                                                                        {{ $influencer->additionalInfo->first_name ?? '' }}
+                                                                        {{ $influencer->additionalInfo->last_name ?? '' }}
+                                                                    </a>
                                                                 </li>
                                                             </ul>
                                                         </td>
                                                         <td>
-                                                            <a class="font-weight-bold text-dark" data-toggle="modal" href="#modal-xl-{{ $index }}">
-                                                                {{ $influencer->additionalInfo->first_name ?? '' }}
-                                                                {{ $influencer->additionalInfo->last_name ?? '' }}
-                                                            </a>
-                                                            <br>
+                                                            @if(isset($influencer->socialAccountInfo->instagram_username))
+                                                                <a target="_blank" href="https://instagram.com/{{ $influencer->socialAccountInfo->instagram_username }}">
+                                                                    {{ '@' . $influencer->socialAccountInfo->instagram_username }}
+                                                                </a>
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            {{ \App\Helpers\NumberManager::shortFormat($influencer->socialAccountInfo->instagram_followers ?? 0) }}
+                                                        </td>
+                                                        <td>
+                                                            @if(isset($influencer->socialAccountInfo->tiktok_username))
+                                                                <a target="_blank" href="https://tiktok.com/{{ $influencer->socialAccountInfo->tiktok_username }}">
+                                                                    {{ '@' . $influencer->socialAccountInfo->tiktok_username }}
+                                                                </a>
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            {{ \App\Helpers\NumberManager::shortFormat($influencer->socialAccountInfo->tiktok_followers ?? 0) }}
+                                                        </td>
+                                                        <td>
+                                                            {{ $campaignInfluencer->start_date ?? '-' }}
+                                                        </td>
+                                                        <td>
+                                                            {{ $campaignInfluencer->fee }}&euro;
+                                                        </td>
+                                                        <td>
                                                             <small class="text-primary font-weight-bold">
                                                                 @foreach($campaignInfluencer->content_types as $c_index => $content_type)
                                                                     {{ $content_type }}
@@ -256,9 +303,18 @@
                                                                     @endif
                                                                 @endforeach
                                                             </small>
-
                                                             {{-- modal --}}
                                                             <div class="modal fade" id="modal-xl-{{ $index }}" style="display: none;" aria-hidden="true">
+
+                                                                @php
+                                                                    $uploaded_content = 0;
+                                                                    foreach($campaignInfluencer->content_types as $index => $content_type) {
+                                                                        $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . \Str::snake($content_type);
+                                                                        $uploaded_content += isset($campaignInfluencer->getMedia($media_collection)[0]);
+                                                                    }
+                                                                    $missing_contents = count($campaignInfluencer->content_types ?? []) - $uploaded_content;
+                                                                @endphp
+
                                                                 <div class="modal-dialog modal-xl">
                                                                     <div class="modal-content">
                                                                         <div class="modal-header">
@@ -314,11 +370,11 @@
                                                                                             Briefing Reminder
                                                                                         </span>
                                                                                         <span class="d-block text-sm">
-                                                                                            {{ $campaignInfluencer->briefing_reminder == 0 ? 'none' : $campaignInfluencer->briefing_reminder_at }}
+                                                                                            {{ count($campaignInfluencer->briefing_reminders_at ?? []) }}
                                                                                         </span>
                                                                                         <span class="d-block text-sm mt-1">
                                                                                             <button name="briefing_reminder" value="{{ 1 }}" class="btn btn-primary btn-sm"
-                                                                                                {{ $campaignInfluencer->briefing_reminder != 0 ? 'disabled' : '' }}
+                                                                                                {{ Carbon::now()->gt(Carbon::parse($campaignInfluencer->created_at)->addDays(2)) ? '' : 'disabled' }}
                                                                                             >
                                                                                                 Send out
                                                                                             </button>
@@ -332,11 +388,11 @@
                                                                                             Content Reminder
                                                                                         </span>
                                                                                         <span class="d-block text-sm">
-                                                                                            {{ $campaignInfluencer->content_reminder == 0 ? 'none' : $campaignInfluencer->content_reminder_at }}
+                                                                                            {{ count($campaignInfluencer->content_reminders_at ?? []) }}
                                                                                         </span>
                                                                                         <span class="d-block text-sm mt-1">
                                                                                             <button name="content_reminder" value="{{ 1 }}" class="btn btn-primary btn-sm"
-                                                                                                {{ $campaignInfluencer->content_reminder != 0 ? 'disabled' : '' }}
+                                                                                                {{ !$uploaded_content && (Carbon::now()->gt(Carbon::parse($campaignInfluencer->available_until))) ? '' : 'disabled' }}
                                                                                             >
                                                                                                 Send out
                                                                                             </button>
@@ -348,13 +404,18 @@
                                                                                         </span>
                                                                                         <span class="d-block text-sm font-weight-bold">
                                                                                             Missing Content Reminder
+                                                                                            @if(!$missing_contents && (Carbon::now()->gt(Carbon::parse($campaignInfluencer->available_until))))
+                                                                                                <span class="badge badge-danger">
+                                                                                                    {{ $missing_contents }}
+                                                                                                </span>
+                                                                                            @endif
                                                                                         </span>
                                                                                         <span class="d-block text-sm">
-                                                                                            {{ $campaignInfluencer->missing_content_reminder == 0 ? 'none' : $campaignInfluencer->missing_content_reminder_at }}
+                                                                                            {{ count($campaignInfluencer->missing_content_reminders_at ?? []) }}
                                                                                         </span>
                                                                                         <span class="d-block text-sm mt-1">
                                                                                             <button name="missing_content_reminder" value="{{ 1 }}" class="btn btn-primary btn-sm"
-                                                                                                {{ $campaignInfluencer->missing_content_reminder != 0 ? 'disabled' : '' }}
+                                                                                                {{ (count($campaignInfluencer->content_types ?? []) > $uploaded_content) && (Carbon::now()->gt(Carbon::parse($campaignInfluencer->available_until))) ? '' : 'disabled' }}
                                                                                             >
                                                                                                 Send out
                                                                                             </button>
@@ -370,16 +431,16 @@
                                                                         <div class="modal-body">
                                                                             <div class="row">
                                                                                 <div class="col-md-12 table-responsive">
-                                                                                    <table class="table w-100">
+                                                                                    <table class="table w-100" style="height: 180px">
                                                                                         <tr>
-                                                                                            <th>Campaign</th>
-                                                                                            <th>Start Date</th>
-                                                                                            <th>Deadline, Time Left</th>
-                                                                                            <th>Briefing Reminder</th>
-                                                                                            <th>Content Reminder</th>
-                                                                                            <th>Missing Content Reminder</th>
-                                                                                            <th>Duration</th>
-                                                                                            <th>Content</th>
+                                                                                            <th class="align-middle">Campaign</th>
+                                                                                            <th class="align-middle">Start Date</th>
+                                                                                            <th class="align-middle">Deadline, Time Left</th>
+                                                                                            <th class="align-middle">Briefing Reminder</th>
+                                                                                            <th class="align-middle">Content Reminder</th>
+                                                                                            <th class="align-middle">Missing Content Reminder</th>
+                                                                                            <th class="align-middle">Duration</th>
+                                                                                            <th class="align-middle">Content</th>
                                                                                         </tr>
                                                                                         <tr>
                                                                                             @php
@@ -394,13 +455,46 @@
                                                                                             <td>{{ $campaignInfluencer->campaign->start_date ?? '' }}</td>
                                                                                             <td>{{ $next_deadline->format('d.m.Y') ?? '' }}, {{ $next_deadline->diffInDays() }} days</td>
                                                                                             <td>
-                                                                                                {{ $campaignInfluencer->briefing_reminder == 0 ? 'none' : $campaignInfluencer->briefing_reminder_at }}
+                                                                                                <div class="tooltip2">
+                                                                                                    {{ count($campaignInfluencer->briefing_reminders_at ?? []) }}. Reminder
+                                                                                                    <span class="tooltiptext">
+                                                                                                        @if(count($campaignInfluencer->briefing_reminders_at ?? []))
+                                                                                                            @foreach($campaignInfluencer->briefing_reminders_at ?? [] as $c_index => $briefing_reminder_at)
+                                                                                                                <span class="d-block">
+                                                                                                                {{ $c_index + 1 }}. Reminder ({{ \Carbon\Carbon::parse($briefing_reminder_at)->format('d.m.Y') }})
+                                                                                                            </span>
+                                                                                                            @endforeach
+                                                                                                        @endif
+                                                                                                    </span>
+                                                                                                </div>
                                                                                             </td>
                                                                                             <td>
-                                                                                                {{ $campaignInfluencer->content_reminder == 0 ? 'none' : $campaignInfluencer->content_reminder_at }}
+                                                                                                <div class="tooltip2">
+                                                                                                    {{ count($campaignInfluencer->content_reminders_at ?? []) }}. Reminder
+                                                                                                    <span class="tooltiptext">
+                                                                                                        @if(count($campaignInfluencer->content_reminders_at ?? []))
+                                                                                                            @foreach($campaignInfluencer->content_reminders_at ?? [] as $c_index => $content_reminder_at)
+                                                                                                                <span class="d-block">
+                                                                                                                {{ $c_index + 1 }}. Reminder ({{ \Carbon\Carbon::parse($content_reminder_at)->format('d.m.Y') }})
+                                                                                                            </span>
+                                                                                                            @endforeach
+                                                                                                        @endif
+                                                                                                    </span>
+                                                                                                </div>
                                                                                             </td>
                                                                                             <td>
-                                                                                                {{ $campaignInfluencer->missing_content_reminder == 0 ? 'none' : $campaignInfluencer->missing_content_reminder_at }}
+                                                                                                <div class="tooltip2">
+                                                                                                    {{ count($campaignInfluencer->missing_content_reminders_at ?? []) }}. Reminder
+                                                                                                    <span class="tooltiptext">
+                                                                                                        @if(count($campaignInfluencer->missing_content_reminders_at ?? []))
+                                                                                                            @foreach($campaignInfluencer->missing_content_reminders_at ?? [] as $c_index => $missing_content_reminder_at)
+                                                                                                                <span class="d-block">
+                                                                                                                {{ $c_index + 1 }}. Reminder ({{ \Carbon\Carbon::parse($missing_content_reminder_at)->format('d.m.Y') }})
+                                                                                                            </span>
+                                                                                                            @endforeach
+                                                                                                        @endif
+                                                                                                    </span>
+                                                                                                </div>
                                                                                             </td>
                                                                                             <td>
                                                                                                 {{ $campaign->cycle_count }}
@@ -411,15 +505,7 @@
                                                                                                 @endif
                                                                                             </td>
                                                                                             <td>
-                                                                                                @php
-                                                                                                    $uploaded_content = 0;
-                                                                                                    foreach($campaignInfluencer->content_types as $index => $content_type) {
-                                                                                                        $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . \Str::snake($content_type);
-                                                                                                        $uploaded_content += isset($campaignInfluencer->getMedia($media_collection)[0]);
-                                                                                                    }
-                                                                                                @endphp
-
-                                                                                                {{ $uploaded_content }} / {{ count($campaignInfluencer->content_types) }}
+                                                                                                {{ $uploaded_content }} / {{ count($campaignInfluencer->content_types ?? []) }}
                                                                                             </td>
                                                                                         </tr>
                                                                                     </table>
@@ -478,43 +564,6 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-
-                                                        </td>
-                                                        <td>
-                                                            <a class="font-weight-bold">
-                                                                Username
-                                                            </a>
-                                                            <br>
-                                                            <div class="mt-1">
-                                                                <i class="fab fa-instagram mr-1">
-                                                                </i>
-                                                                <a class="" href="javascript:void(0)">
-                                                                    {{ $influencer->socialAccountInfo->instagram_username ?? '' }}
-                                                                </a>
-                                                            </div>
-                                                            <div class="mt-1">
-                                                                <i class="fab fa-tiktok mr-1">
-                                                                </i>
-                                                                <a class="" href="javascript:void(0)">
-                                                                    {{ $influencer->socialAccountInfo->tiktok_username ?? '' }}
-                                                                </a>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <a class="font-weight-bold">
-                                                                Follower
-                                                            </a>
-                                                            <br>
-                                                            <div class="mt-1">
-                                                                <a>
-                                                                    {{ \App\Helpers\NumberManager::shortFormat($influencer->socialAccountInfo->instagram_followers ?? 0) }}
-                                                                </a>
-                                                            </div>
-                                                            <div class="mt-1">
-                                                                <a>
-                                                                    {{ \App\Helpers\NumberManager::shortFormat($influencer->socialAccountInfo->tiktok_followers ?? 0) }}
-                                                                </a>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -664,6 +713,46 @@
         }
         ul.box-body li {
             width: 42%;
+        }
+        th, td {white-space:nowrap; text-align: left}
+    </style>
+    <style>
+        .tooltip2 {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip2 .tooltiptext {
+            visibility: hidden;
+            width: 180px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 2;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip2 .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip2:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
 @stop

@@ -17,9 +17,7 @@ class CreateCampaignsTable extends Migration
             $table->bigIncrements('id');
             $table->string('title');
             $table->string('slug');
-            // new
             $table->unsignedBigInteger('brand_id')->nullable();
-
             $table->timestamp('start_date')->nullable();
             $table->timestamp('first_content_online')->nullable();
             $table->integer('cycle_count')->nullable();
@@ -27,15 +25,12 @@ class CreateCampaignsTable extends Migration
             $table->json('product_ids')->nullable();
             $table->json('target_influencer_category_ids')->nullable();
             $table->json('target_influencer_genders')->nullable();
-            // new
             $table->integer('target_influencer_lower_age')->nullable();
             $table->integer('target_influencer_upper_age')->nullable();
-
             $table->longText('target_influencer_details')->nullable();
             $table->unsignedBigInteger('amount_of_influencer_per_cycle')->nullable();
             $table->unsignedBigInteger('amount_of_influencer_follower_per_cycle')->nullable();
             $table->longText('extra_agreements')->nullable();
-            // new
             $table->boolean('individual_coupon_code_internal')->nullable()->default(false);
             $table->boolean('individual_coupon_code_brand')->nullable()->default(false);
             $table->boolean('individual_swipe_up_link_internal')->nullable()->default(false);
@@ -43,8 +38,25 @@ class CreateCampaignsTable extends Migration
             $table->boolean('influencer_shipping_address_brand')->nullable()->default(false);
             $table->json('campaign_goals')->nullable();
             $table->longText('desired_content_notes')->nullable();
-            $table->longText('personal_notes')->nullable();
 
+            // new
+            $table->integer('instagram_story')->nullable()->default(0);
+            $table->integer('instagram_feed')->nullable()->default(0);
+            $table->integer('instagram_reel')->nullable()->default(0);
+            $table->integer('instagram_igtv')->nullable()->default(0);
+            $table->integer('tiktok_video')->nullable()->default(0);
+            $table->string('extra_content_1')->nullable();
+            $table->integer('extra_content_1_value')->nullable()->default(0);
+            $table->string('extra_content_2')->nullable();
+            $table->integer('extra_content_2_value')->nullable()->default(0);
+            $table->string('extra_content_3')->nullable();
+            $table->integer('extra_content_3_value')->nullable()->default(0);
+            $table->string('extra_content_4')->nullable();
+            $table->integer('extra_content_4_value')->nullable()->default(0);
+            $table->string('extra_content_5')->nullable();
+            $table->integer('extra_content_5_value')->nullable()->default(0);
+
+            $table->longText('personal_notes')->nullable();
             $table->boolean('offer_signed')->nullable()->default(false);
             $table->timestamp('start_of_recurring_bill')->nullable()->comment('when first content is online');
             $table->integer('billing_cycle_count')->nullable();

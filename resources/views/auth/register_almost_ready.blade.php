@@ -343,6 +343,17 @@
     </div>
 @stop
 
+@section('style')
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+        .select2-container--default .select2-selection--single {
+            display: none !important;
+        }
+    </style>
+@stop
+
 @section('script')
     <script>
         new Vue({
@@ -350,6 +361,16 @@
             data: {
                 check_terms_conditions: false,
                 check_subscribe: false
+            },
+            mounted: function () {
+                $('.select2').select2().on('change', function () {});
+                $('.datepicker').datepicker({
+                    todayHighlight: true,
+                    format: 'yyyy-mm-dd',
+                    changeMonth: true,
+                    changeYear: true,
+                    autoclose: true
+                });
             },
         });
     </script>

@@ -25,7 +25,6 @@ class UserAdditionalInfoStoreRequest extends FormRequest
     {
         return [
             'first_name' => 'required',
-			'gender' => 'required'
         ];
     }
 }

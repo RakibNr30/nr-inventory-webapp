@@ -34,15 +34,17 @@ class CampaignInfluencer extends BaseModel implements HasMedia
 		'report_details',
 		'individual_coupon_code',
 		'individual_swipe_up_link',
+        'internal_individual_coupon_code',
+		'internal_individual_swipe_up_link',
 		'shipping_address',
 		'feedback',
 		'is_content_uploaded',
 		'briefing_reminder',
-		'briefing_reminder_at',
+		'briefing_reminders_at',
 		'content_reminder',
-		'content_reminder_at',
+		'content_reminders_at',
 		'missing_content_reminder',
-		'missing_content_reminder_at',
+		'missing_content_reminders_at',
     ];
 
     protected $hidden = [
@@ -69,15 +71,17 @@ class CampaignInfluencer extends BaseModel implements HasMedia
         'report_details' => 'string',
         'individual_coupon_code' => 'string',
         'individual_swipe_up_link' => 'string',
+        'internal_individual_coupon_code' => 'string',
+        'internal_individual_swipe_up_link' => 'string',
         'shipping_address' => 'string',
         'feedback' => 'array',
         'is_content_uploaded' => 'integer',
         'briefing_reminder' => 'integer',
-        'briefing_reminder_at' => 'datetime',
+        'briefing_reminders_at' => 'array',
         'content_reminder' => 'integer',
-        'content_reminder_at' => 'datetime',
+        'content_reminders_at' => 'array',
         'missing_content_reminder' => 'integer',
-        'missing_content_reminder_at' => 'datetime',
+        'missing_content_reminders_at' => 'array',
     ];
 
     public function user() {
