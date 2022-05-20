@@ -15,10 +15,10 @@
                         {!! Form::open(['url' => route('backend.cms.product.store'), 'method' => 'product', 'files' => true]) !!}
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="brand_id" class="@error('brand_id') text-danger @enderror">Product Brand</label>
-                                            <select id="brand_id" name="brand_id" class="form-control  @error('brand_id') is-invalid @enderror">
+                                            <select id="brand_id" name="brand_id" class="form-control select2 @error('brand_id') is-invalid @enderror">
                                                 <option value="">Select a brand</option>
                                                 @foreach($brands as $brand)
                                                     <option value="{{ $brand->id }}" {{ old('brand_id') ? (old('brand_id') == $brand->id ? 'selected' : '') : '' }}>{{ $brand->additionalInfo->first_name ?? '' }}</option>
@@ -29,7 +29,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="title" class="@error('title') text-danger @enderror">Title</label>
                                             <input id="title" name="title" value="{{ old('title') }}" type="text" class="form-control @error('title') is-invalid @enderror" placeholder="Enter title" autofocus>
@@ -38,7 +38,16 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
+<!--                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="product_id" class="@error('product_id') text-danger @enderror">Product ID</label>
+                                            <input id="product_id" name="product_id" value="{{ old('product_id') }}" type="text" class="form-control @error('product_id') is-invalid @enderror" placeholder="Enter product id" autofocus>
+                                            @error('product_id')
+                                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>-->
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="image" class="@error('image') text-danger @enderror">Upload Image</label>
                                             <div class="custom-file">
@@ -46,6 +55,15 @@
                                                 <label class="custom-file-label font-weight-normal" for="customFile">Choose file</label>
                                             </div>
                                             @error('image')
+                                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="priority" class="@error('priority') text-danger @enderror">Priority</label>
+                                            <input id="priority" name="priority" value="{{ old('priority') }}" type="number" min="0" class="form-control @error('priority') is-invalid @enderror" placeholder="Enter priority" autofocus>
+                                            @error('priority')
                                             <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>

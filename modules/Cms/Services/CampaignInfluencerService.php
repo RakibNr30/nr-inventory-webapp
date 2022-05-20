@@ -150,4 +150,16 @@ class CampaignInfluencerService
             ->where('is_add_to_favourite', 1)
             ->paginate($limit);
     }
+
+    /**
+     * Find data
+     *
+     * @return mixed
+     */
+    public function campaignManagerInfluencers($limit = 0)
+    {
+        return $this->campaignInfluencerRepository->model
+            ->where('campaign_manager_id', auth()->user()->id)
+            ->paginate($limit);
+    }
 }

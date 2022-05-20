@@ -21,12 +21,13 @@ class CreateUsersTable extends Migration
             $table->boolean('is_process_completed')->default(false);
             $table->boolean('is_brand')->nullable()->default(false);
             $table->boolean('is_influencer')->nullable()->default(false);
+            $table->boolean('is_pre_selected')->nullable()->default(false);
             $table->json('categories')->nullable();
             $table->boolean('terms_conditions')->nullable();
             $table->boolean('subscribe')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('remember_token')->nullable();
-            $table->tinyInteger('profile_grade')->default(10);
+            $table->tinyInteger('profile_grade')->nullable()->default(10);
             $table->timestamp('approved_at')->nullable();
             $table->unsignedBigInteger('approved_by')->nullable();
             $table->commonFields();

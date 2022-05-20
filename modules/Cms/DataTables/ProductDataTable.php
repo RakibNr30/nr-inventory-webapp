@@ -33,7 +33,18 @@ class ProductDataTable extends DataTable
      */
     public function query(Product $model)
     {
-        return $model->newQuery();
+        $product = $model->newQuery();
+
+        $product->join('users as brands', 'brands.id', '=', 'products.brand_id')
+            ->join('user_additional_infos as brand_additional_infos', 'brands.id', '=', 'brand_additional_infos.user_id');
+
+        $product->select([
+            'products.*',
+            'brands.id as brand_id',
+            'brand_additional_infos.first_name as brand_name'
+        ]);
+
+        return $product;
     }
 
     /**
@@ -71,7 +82,8 @@ class ProductDataTable extends DataTable
             Column::computed('DT_RowIndex')
                 ->title('Sl'),
             Column::make('title'),
-            Column::make('brand_id'),
+            Column::make('priority'),
+            Column::make('brand_name')->name('brand_additional_infos.first_name'),
             Column::computed('action')
                 ->exportable(false)
                 ->printable(false)

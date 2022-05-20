@@ -10,7 +10,7 @@
                     <div class="card card-gray-dark card-outline">
                         <div class="card-header">
                             <h3 class="card-title mt-1">Edit Influencer</h3>
-                            <a href="{{ route('backend.ums.influencer.index') }}" type="button"
+                            <a href="{{ route('backend.cms.campaign.influencer-manager.list') }}" type="button"
                                class="btn btn-success btn-sm text-white float-right">View Influencer List</a>
                         </div>
                         {!! Form::open(['url' => route('backend.ums.influencer.update', [$user->id]), 'method' => 'put', 'files' => true]) !!}
@@ -131,7 +131,7 @@
                                         <select id="categories" name="categories[]"
                                                 class="form-control select2 @error('categories') is-invalid @enderror" data-placeholder="Select Categories" multiple>
                                             @foreach($influencerCategories as $category)
-                                                <option value="{{ $category->id }}" {{ in_array($category->id, $user->categories) ? 'selected' : '' }}>{{ $category->title }}</option>
+                                                <option value="{{ $category->id }}" {{ in_array($category->id, $user->categories ?? []) ? 'selected' : '' }}>{{ $category->title }}</option>
                                             @endforeach
                                         </select>
                                         @error('categories')
@@ -144,7 +144,6 @@
                                     <div class="form-group">
                                         <label for="profile_grade" class="@error('profile_grade') text-danger @enderror">Profile Grade</label>
                                         <select id="profile_grade" name="profile_grade" class="form-control @error('profile_grade') is-invalid @enderror">
-                                            <option value="">Select Grade</option>
                                             @foreach(config('core.profile_grades') as $profile_grade_key => $profile_grade)
                                                 <option
                                                     value="{{ $profile_grade_key }}" {{ $profile_grade_key == $user->profile_grade ? 'selected' : '' }}>{{ $profile_grade }}</option>
@@ -296,7 +295,7 @@
                                         <label for="email" class="@error('email') text-danger @enderror">Email</label>
                                         <input id="email" name="email" value="{{ old('email') ?? $user->email ?? '' }}" type="text"
                                                class="form-control @error('email') is-invalid @enderror"
-                                               placeholder="Enter email" autofocus>
+                                               placeholder="Enter email" autofocus readonly>
                                         @error('email')
                                         <span class="invalid-feedback"
                                               role="alert"><strong>{{ $message }}</strong></span>

@@ -176,6 +176,7 @@ class CampaignController extends Controller
         if ($campaign) {
             // flash notification
             notifier()->success('Campaign created successfully.');
+            return redirect()->route('backend.cms.campaign.pre-selection', [$campaign->id]);
         } else {
             // flash notification
             notifier()->error('Campaign cannot be created successfully.');
@@ -310,5 +311,82 @@ class CampaignController extends Controller
         }
         // redirect back
         return redirect()->back();
+    }
+
+    /**
+     * Preselection influencer
+     *
+     * @return \Illuminate\View\View
+     */
+    public function preSelection($id)
+    {
+        $campaign = $this->campaignService->find($id);
+
+        if (empty($campaign)) {
+            // flash notification
+            notifier()->error('Campaign not found!');
+            // redirect back
+            return redirect()->back();
+        }
+
+        $influencers = $this->userService->influencerByCampaignMatch($campaign);
+
+        // return view
+        return view('cms::campaign.pre_selection', compact('influencers', 'campaign'));
+    }
+
+    /**
+     * Preselection influencer
+     *
+     * @return \Illuminate\View\View
+     */
+    public function preSelectionCreate($id, $influencerId)
+    {
+        $campaign = $this->campaignService->find($id);
+
+        if (empty($campaign)) {
+            notifier()->error('Campaign not found!');
+            return redirect()->back();
+        }
+
+        $influencer = $this->userService->find($influencerId);
+
+        if (empty($influencer)) {
+            notifier()->error('Influencer not found!');
+            return redirect()->back();
+        }
+
+        $this->userService->update(['is_pre_selected' => true], $influencerId);
+
+        $brands = $this->userService->brands();
+
+        // return view
+        return view('cms::campaign.influencer.pre_selection_create', compact('campaign', 'influencer', 'brands'));
+    }
+
+    /**
+     * Update user
+     *
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateActiveStatus(Request $request, $id)
+    {
+        $data = $request->all();
+
+        $campaign = $this->campaignService->find($id);
+
+        if (empty($campaign)) {
+            return response()->json(['status' => 'success', 'updated' => false]);
+        }
+
+        $campaign = $this->campaignService->update($data, $id);
+
+        if ($campaign) {
+            return response()->json(['status' => 'success', 'updated' => true]);
+        } else {
+            return response()->json(['status' => 'success', 'updated' => false]);
+        }
     }
 }

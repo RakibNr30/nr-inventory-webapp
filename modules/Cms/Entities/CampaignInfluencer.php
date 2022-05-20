@@ -45,6 +45,8 @@ class CampaignInfluencer extends BaseModel implements HasMedia
 		'content_reminders_at',
 		'missing_content_reminder',
 		'missing_content_reminders_at',
+		'campaign_manager_id',
+		'is_pre_selected',
     ];
 
     protected $hidden = [
@@ -82,6 +84,8 @@ class CampaignInfluencer extends BaseModel implements HasMedia
         'content_reminders_at' => 'array',
         'missing_content_reminder' => 'integer',
         'missing_content_reminders_at' => 'array',
+        'campaign_manager_id' => 'integer',
+        'is_pre_selected' => 'integer',
     ];
 
     public function user() {

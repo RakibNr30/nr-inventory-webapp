@@ -62,6 +62,7 @@ class CreateCampaignsTable extends Migration
             $table->integer('billing_cycle_count')->nullable();
             $table->integer('billing_cycle_time_unit')->nullable()->default(1)->comment('1. Monthly, 2. Weekly');
             $table->double('euros_total')->nullable()->default(0.0);
+            $table->boolean('is_active')->nullable()->default(true);
             $table->commonFields();
         });
     }

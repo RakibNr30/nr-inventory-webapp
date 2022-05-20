@@ -163,7 +163,12 @@ class CampaignService
                 });
                 $campaign_collection = $campaign_collection->merge($filter_campaigns);
             }
-            if ($filter == 4) {}
+            if ($filter == 4) {
+                $filter_campaigns = $campaigns->filter(function ($value) {
+                    return !$value->is_active;
+                });
+                $campaign_collection = $campaign_collection->merge($filter_campaigns);
+            }
         }
 
         return count($filters) ? $campaign_collection->unique('id') : $campaigns;
@@ -226,7 +231,12 @@ class CampaignService
                 });
                 $campaign_collection = $campaign_collection->merge($filter_campaigns);
             }
-            if ($filter == 4) {}
+            if ($filter == 4) {
+                $filter_campaigns = $campaigns->filter(function ($value) {
+                    return !$value->is_active;
+                });
+                $campaign_collection = $campaign_collection->merge($filter_campaigns);
+            }
         }
 
         return count($filters) ? $campaign_collection->unique('id') : $campaigns;

@@ -4,7 +4,7 @@ namespace Modules\Cms\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProductUpdateRequest extends FormRequest
+class LogisticUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,9 @@ class ProductUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|max:255',
-            'priority' => "required",
-			'details' => "max:4294967295",
-			'brand_id' => 'required',
-            'logo' => 'sometimes|image|max:1024'
+            'influencer_id' => 'required',
+            'product_id' => 'required',
+			'product_count' => "required|max:9999999",
         ];
     }
 }

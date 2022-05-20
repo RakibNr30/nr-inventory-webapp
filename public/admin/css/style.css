@@ -205,3 +205,10 @@ li.nav-item.bg-light {
 .brand-close-btn:hover {
     color: rgba(0, 0, 0, 0.68);
 }
+a.disabled {
+    cursor: default !important;
+    pointer-events: none !important;
+}
+.bg-disabled {
+    background: #ddd !important;
+}

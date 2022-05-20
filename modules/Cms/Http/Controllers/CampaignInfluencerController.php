@@ -2,6 +2,7 @@
 
 namespace Modules\Cms\Http\Controllers;
 
+use App\Helpers\AuthManager;
 use App\Helpers\MailManager;
 use App\Http\Controllers\Controller;
 
@@ -10,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 // services...
+use Modules\Cms\Entities\Campaign;
 use Modules\Cms\Entities\CampaignInfluencer;
 use Modules\Cms\Http\Requests\CampaignInfluencerStoreRequest;
 use Modules\Cms\Http\Requests\CampaignInfluencerUpdateRequest;
@@ -88,6 +90,7 @@ class CampaignInfluencerController extends Controller
             $data['brand_ids'] = array_map('intval', $data['brand_ids'] ?? []);
 
         $data['campaign_id'] = $id;
+        $data['campaign_manager_id'] = Campaign::query()->find($id)->created_by ?? null;
 
         // create campaign
         $campaign = $this->campaignInfluencerService->create($data);
@@ -288,5 +291,20 @@ class CampaignInfluencerController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function campaignInfluencerManager()
+    {
+        $campaignInfluencers = [];
+
+        if (AuthManager::isInfluencerManager()) {
+            $campaignInfluencers = $this->campaignInfluencerService->campaignManagerInfluencers();
+        }
+
+        if (AuthManager::isSuperAdmin() || AuthManager::isAdmin()) {
+            $campaignInfluencers = $this->campaignService->all();
+        }
+
+        return view('cms::campaign.influencer.index', compact('campaignInfluencers'));
     }
 }

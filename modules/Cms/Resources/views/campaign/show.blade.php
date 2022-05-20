@@ -19,6 +19,14 @@
                                     Add Influencer to Campaign
                                 </a>
                             @endif
+                            <div class="float-right mr-2">
+                                <input type="checkbox" name="is_active" id="is_active"
+                                       {{ $campaign->is_active ? 'checked' : '' }}
+                                       data-bootstrap-switch
+                                       data-on-text="Active"
+                                       data-off-text="De-active"
+                                >
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -217,7 +225,10 @@
                     @if(!\App\Helpers\AuthManager::isInfluencer())
                         <div class="card">
                             <div class="card-header font-weight-bold">
-                                Influencers
+                                <h6 class="float-left">Influencers</h6>
+                                <a href="{{ route('backend.cms.campaign.pre-selection', [$campaign->id]) }}" type="button" class="btn btn-dark btn-sm text-white float-right">
+                                    Add Influencer From Pre-selection
+                                </a>
                             </div>
                             <div class="card-body">
                                 @if(count($campaign->campaignInfluencers))
@@ -585,7 +596,7 @@
                     @if(\App\Helpers\AuthManager::isInfluencer())
                         <div class="card">
                             <div class="card-header font-weight-bold">
-                                Brands
+                                <h6>Brands</h6>
                             </div>
                             <div class="card-body">
                                 @if(count($brands))
@@ -755,4 +766,29 @@
             opacity: 1;
         }
     </style>
+@stop
+
+@section('script')
+    <script src="{{ asset('common/plugins/bootstrap-switch/js/bootstrap-switch.min.js') }}"></script>
+    <script>
+        $("input[data-bootstrap-switch]").each(function(){
+            $(this).bootstrapSwitch('state', $(this).prop('checked'));
+        });
+
+        $("input[name=is_active]").on('switchChange.bootstrapSwitch',function (e, data) {
+            $.ajaxSetup({
+                headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token()}}'
+                    }
+                });
+                $.ajax({
+                    url: '{{ route('backend.cms.campaign.active-status.update', [$campaign->id]) }}',
+                    method: 'POST',
+                    data: {
+                        is_active: data ? 1 : 0
+                    },
+                    success: function(){}
+                })
+            });
+    </script>
 @stop

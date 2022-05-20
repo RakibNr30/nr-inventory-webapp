@@ -17,10 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::resource('dashboard', 'DashboardController')->only(['index']);
 // Slider routes...
 Route::resource('slider', 'SliderController');
-// Menu routes...
-Route::resource('menu', 'MenuController');
-// MenuLink routes...
-Route::resource('menu-link', 'MenuLinkController');
 // PageCategory routes...
 Route::resource('page-category', 'PageCategoryController');
 // Page routes...
@@ -31,8 +27,12 @@ Route::resource('faq', 'FaqController');
 Route::resource('testimonial', 'TestimonialController');
 // Campaign routes...
 Route::resource('campaign', 'CampaignController');
+Route::get('campaign/{id}/pre-selection', 'CampaignController@preSelection')->name('campaign.pre-selection');
+Route::get('campaign/{id}/pre-selection/{influencerId}/create', 'CampaignController@preSelectionCreate')->name('campaign.influencer.pre-selection.create');
 Route::get('campaign/{id}/influencer/create', 'CampaignInfluencerController@create')->name('campaign.influencer.create');
 Route::post('campaign/{id}/influencer/store', 'CampaignInfluencerController@store')->name('campaign.influencer.store');
+Route::get('campaign-influencer-manager', 'CampaignInfluencerController@campaignInfluencerManager')->name('campaign.influencer-manager.list');
+Route::post('campaign/{id}/active-status/update', 'CampaignController@updateActiveStatus')->name('campaign.active-status.update');
 // Brand routes...
 Route::resource('brand', 'BrandController');
 // Product routes...
@@ -44,3 +44,7 @@ Route::resource('campaign-influencer', 'CampaignInfluencerController');
 Route::put('campaign-influencer/{id}/feedback', 'CampaignInfluencerController@feedback')->name('campaign-influencer.feedback');
 Route::put('campaign-influencer/{id}/reminder', 'CampaignInfluencerController@reminder')->name('campaign-influencer.reminder');
 Route::put('campaign-influencer/{id}/brand/{brand_id}/remove', 'CampaignInfluencerController@brandRemove')->name('campaign-influencer.brand.remove');
+
+// Logistic routes...
+Route::resource('logistic', 'LogisticController')->only(['index', 'create', 'store']);
+Route::post('logistic/spipping-status/{id}/update', 'LogisticController@updateShippingStatus')->name('logistic.shipping-status.update');

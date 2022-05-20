@@ -64,8 +64,7 @@
         "name": "Settings",
         "roles": [
             "Super Admin",
-            "Admin",
-            "Influencer Manager"
+            "Admin"
         ]
     },
     {

@@ -144,7 +144,6 @@
                                     <div class="form-group">
                                         <label for="profile_grade" class="@error('profile_grade') text-danger @enderror">Profile Grade</label>
                                         <select id="profile_grade" name="profile_grade" class="form-control @error('profile_grade') is-invalid @enderror">
-                                            <option value="">Select Grade</option>
                                             @foreach(config('core.profile_grades') as $profile_grade_key => $profile_grade)
                                                 <option
                                                     value="{{ $profile_grade_key }}">{{ $profile_grade }}</option>

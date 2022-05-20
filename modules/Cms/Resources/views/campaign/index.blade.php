@@ -12,8 +12,10 @@
                         <div class="card card-gray-dark card-outline">
                             <div class="card-header">
                                 <h3 class="card-title">Campaign List</h3>
+                                <a href="{{ route('backend.cms.campaign.influencer-manager.list') }}" type="button"
+                                   class="btn btn-primary btn-sm text-white float-right">Influencer Campaign Manager</a>
                                 <a href="{{ route('backend.cms.campaign.create') }}" type="button"
-                                   class="btn btn-success btn-sm text-white float-right">Add new campaign</a>
+                                   class="btn btn-success btn-sm text-white float-right mr-2">Add new campaign</a>
                             </div>
 
                             <div class="p-4">
@@ -121,7 +123,7 @@
                                     <div class="row">
                                         @foreach($campaigns as $index => $campaign)
                                             <div class="col-lg-3 col-6">
-                                                <div class="small-box bg-gradient-light">
+                                                <div class="small-box bg-gradient-light {{ $campaign->is_active ? '' : 'bg-disabled' }}">
                                                     <div class="inner text-justify">
                                                         <h5 class="font-weight-bold text-center">{{ $campaign->title }}</h5>
                                                         <div class="row" style="font-size: 12px">
@@ -129,46 +131,54 @@
                                                                 <span>Start Date:</span>
                                                             </div>
                                                             <div class="col-6">
-                                                                <span>{{ $campaign->start_date }}</span>
+                                                                <span>{{ $campaign->is_active ? $campaign->start_date : '' }}</span>
                                                             </div>
                                                             <div class="col-6">
                                                                 <span>Next Deadline:</span>
                                                             </div>
                                                             <div class="col-6">
-                                                                @php
-                                                                    $start_date = \Carbon\Carbon::parse($campaign->start_date);
-                                                                    if ($campaign->cycle_time_unit == 1)
-                                                                        $next_deadline = $start_date->addMonths($campaign->cycle_count);
-                                                                    else if ($campaign->cycle_time_unit == 2)
-                                                                        $next_deadline = $start_date->addWeeks($campaign->cycle_count);
-                                                                @endphp
-                                                                <span>{{ $next_deadline->format('d.m.Y') }}</span>
+                                                                @if($campaign->is_active)
+                                                                    @php
+                                                                        $start_date = \Carbon\Carbon::parse($campaign->start_date);
+                                                                        if ($campaign->cycle_time_unit == 1)
+                                                                            $next_deadline = $start_date->addMonths($campaign->cycle_count);
+                                                                        else if ($campaign->cycle_time_unit == 2)
+                                                                            $next_deadline = $start_date->addWeeks($campaign->cycle_count);
+                                                                    @endphp
+                                                                    <span>{{ $next_deadline->format('d.m.Y') }}</span>
+                                                                @endif
                                                             </div>
                                                             <div class="col-6 mt-1">
                                                                 <i class="fa fa-user"></i>
                                                                 <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->campaign_influencers_count) }}/{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_per_cycle) }}</span>
-                                                                @if($campaign->campaign_influencers_count >= $campaign->amount_of_influencer_per_cycle)
-                                                                    <i class="fas fa-check text-primary"></i>
-                                                                @else
-                                                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                @if($campaign->is_active)
+                                                                    @if($campaign->campaign_influencers_count >= $campaign->amount_of_influencer_per_cycle)
+                                                                        <i class="fas fa-check text-primary"></i>
+                                                                    @else
+                                                                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                    @endif
                                                                 @endif
                                                             </div>
                                                             <div class="col-6 mt-1">
                                                                 <i class="fa fa-camera"></i>
                                                                 <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->uploaded_content_count) }}/{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_per_cycle) }}</span>
-                                                                @if($campaign->uploaded_content_count >= $campaign->amount_of_influencer_per_cycle)
-                                                                    <i class="fas fa-check text-primary"></i>
-                                                                @else
-                                                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                @if($campaign->is_active)
+                                                                    @if($campaign->uploaded_content_count >= $campaign->amount_of_influencer_per_cycle)
+                                                                        <i class="fas fa-check text-primary"></i>
+                                                                    @else
+                                                                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                    @endif
                                                                 @endif
                                                             </div>
                                                             <div class="col-12 mt-1">
                                                                 <i class="fa fa-user"></i>
                                                                 <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->follower_count) }}/{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_follower_per_cycle) }} Follower</span>
-                                                                @if($campaign->follower_count >= $campaign->amount_of_influencer_follower_per_cycle)
-                                                                    <i class="fas fa-check text-primary"></i>
-                                                                @else
-                                                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                @if($campaign->is_active)
+                                                                    @if($campaign->follower_count >= $campaign->amount_of_influencer_follower_per_cycle)
+                                                                        <i class="fas fa-check text-primary"></i>
+                                                                    @else
+                                                                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                    @endif
                                                                 @endif
                                                             </div>
                                                         </div>
@@ -177,17 +187,17 @@
                                                     <ul class="box-footer">
                                                         <li>
                                                             <a href="{{ route('backend.cms.campaign.show', [$campaign->id]) }}"
-                                                               class="small-box-footer">
-                                                                <i class="fas fa-eye"></i>
+                                                               class="{{ $campaign->is_active ? '' : 'disabled' }}">
+                                                                <i class="fas fa-eye"></i> View
                                                             </a>
                                                         </li>
                                                         <li>
                                                             <a href="{{ route('backend.cms.campaign.edit', [$campaign->id]) }}"
-                                                               class="small-box-footer">
-                                                                <i class="fa fa-pen"></i>
+                                                               class="{{ $campaign->is_active ? '' : 'disabled' }}" {{ $campaign->is_active ? '' : 'disabled' }} >
+                                                                <i class="fa fa-pen"></i> Edit
                                                             </a>
                                                         </li>
-                                                        <li>
+<!--                                                        <li>
                                                             <a tabindex="0" data-html="true"
                                                                data-popover-content="#confirm_delete{{ $campaign->id }}"
                                                                class="small-box-footer">
@@ -202,7 +212,7 @@
                                                                 </div>
                                                             </div>
                                                             {!! Form::open(['url' => route('backend.cms.campaign.destroy', [$campaign->id]), 'method' => 'delete', 'id' => 'delete_form' . $campaign->id]) !!}{!! Form::close() !!}
-                                                        </li>
+                                                        </li>-->
                                                     </ul>
                                                 </div>
                                             </div>
@@ -654,7 +664,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <a href="{{ route('backend.cms.campaign.show', [$campaign->id]) }}"
+                                                    <a href="{{ route('backend.cms.campaign.show', [$campaign->id]) }}" disabled
                                                        class="small-box-footer text-dark">
                                                         <i class="fas fa-arrow-right"></i> View More
                                                     </a>
@@ -689,7 +699,8 @@
             display: flex;
             background-color: rgba(0, 0, 0, .1);
             color: rgba(255, 255, 255, .8);
-            padding: 3px 0;
+            /padding: 3px 0;
+            padding: 0;
             position: relative;
             text-align: center;
             text-decoration: none;
@@ -697,7 +708,7 @@
         }
 
         ul.box-footer li {
-            width: 33.33%;
+            width: 50%;
         }
 
         ul.box-footer li a {

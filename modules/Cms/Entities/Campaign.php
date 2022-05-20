@@ -59,6 +59,7 @@ class Campaign extends BaseModel implements hasMedia
 		'billing_cycle_count',
 		'billing_cycle_time_unit',
 		'euros_total',
+		'is_active',
     ];
 
     protected $hidden = [
@@ -110,6 +111,7 @@ class Campaign extends BaseModel implements hasMedia
 		'billing_cycle_count' => 'integer',
 		'billing_cycle_time_unit' => 'integer',
 		'euros_total' => 'double',
+		'is_active' => 'integer',
     ];
 
     public function sluggable()

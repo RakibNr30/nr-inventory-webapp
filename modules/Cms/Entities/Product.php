@@ -10,13 +10,13 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 class Product extends BaseModel implements hasMedia
 {
-    use Sluggable, HasMediaTrait;
+    use HasMediaTrait;
 
     protected $table = 'products';
 
     protected $fillable = [
         'title',
-		'slug',
+		'priority',
 		'details',
 		'brand_id',
     ];
@@ -27,19 +27,10 @@ class Product extends BaseModel implements hasMedia
 
     protected $casts = [
         'title' => 'string',
-		'slug' => 'string',
+		'priority' => 'integer',
 		'details' => 'string',
 		'brand_id' => 'integer',
     ];
-
-    public function sluggable()
-    {
-        return [
-            'slug' => [
-                'source' => 'title'
-            ]
-        ];
-    }
 
     public function getImageAttribute()
     {
