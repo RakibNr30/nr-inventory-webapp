@@ -17,6 +17,7 @@ class Product extends BaseModel implements hasMedia
     protected $fillable = [
         'title',
 		'priority',
+		'stock_amount',
 		'details',
 		'brand_id',
     ];
@@ -28,6 +29,7 @@ class Product extends BaseModel implements hasMedia
     protected $casts = [
         'title' => 'string',
 		'priority' => 'integer',
+		'stock_amount' => 'integer',
 		'details' => 'string',
 		'brand_id' => 'integer',
     ];

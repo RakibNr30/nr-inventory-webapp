@@ -26,6 +26,7 @@ class ProductStoreRequest extends FormRequest
         return [
             'title' => 'required|max:255',
 			'priority' => "required|max:99999999",
+			'stock_amount' => "required|max:9999999999999",
 			'details' => "max:4294967295",
 			'brand_id' => 'required',
             'logo' => 'sometimes|image|max:1024'

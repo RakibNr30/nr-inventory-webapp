@@ -88,6 +88,8 @@ class CampaignController extends Controller
      * Campaign list
      *
      * @return \Illuminate\View\View
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function index()
     {
@@ -176,7 +178,9 @@ class CampaignController extends Controller
         if ($campaign) {
             // flash notification
             notifier()->success('Campaign created successfully.');
-            return redirect()->route('backend.cms.campaign.pre-selection', [$campaign->id]);
+            if (!AuthManager::isBrand()) {
+                return redirect()->route('backend.cms.campaign.pre-selection', [$campaign->id]);
+            }
         } else {
             // flash notification
             notifier()->error('Campaign cannot be created successfully.');

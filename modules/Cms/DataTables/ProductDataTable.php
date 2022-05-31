@@ -83,6 +83,7 @@ class ProductDataTable extends DataTable
                 ->title('Sl'),
             Column::make('title'),
             Column::make('priority'),
+            Column::make('stock_amount'),
             Column::make('brand_name')->name('brand_additional_infos.first_name'),
             Column::computed('action')
                 ->exportable(false)

@@ -43,6 +43,13 @@
                             </p>
                             <hr>
                             <strong>
+                                Stock Amount
+                            </strong>
+                            <p class="text-muted mb-0">
+                                {{ $product->stock_amount ?? '' }}
+                            </p>
+                            <hr>
+                            <strong>
                                 Brand
                             </strong>
                             <p class="text-muted mb-0">

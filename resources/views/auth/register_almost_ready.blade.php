@@ -27,7 +27,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="input-group mb-3">
-                                <input id="instagram_username" name="instagram_username" placeholder="Instagram Username" value="{{ old('instagram_username') }}" type="text" class="form-control @error('instagram_username') is-invalid @enderror" required>
+                                <input id="instagram_username" name="instagram_username" placeholder="Instagram Username" value="{{ old('instagram_username') }}" type="text" class="form-control @error('instagram_username') is-invalid @enderror">
                                 @error('instagram_username')
                                 <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -37,7 +37,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="input-group mb-3">
-                                <input id="tiktok_username" name="tiktok_username" placeholder="Tiktok Username" value="{{ old('tiktok_username') }}" type="text" class="form-control @error('tiktok_username') is-invalid @enderror" required>
+                                <input id="tiktok_username" name="tiktok_username" placeholder="Tiktok Username" value="{{ old('tiktok_username') }}" type="text" class="form-control @error('tiktok_username') is-invalid @enderror">
                                 @error('tiktok_username')
                                 <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>

@@ -156,4 +156,14 @@ class Campaign extends BaseModel implements hasMedia
     public function brand() {
         return $this->hasOne(User::class, 'id', 'brand_id');
     }
+
+    public function getNextDeadlineAttribute() {
+        $start_date = \Carbon\Carbon::parse($this->start_date);
+        if ($this->cycle_time_unit == 1)
+            return $start_date->addMonths($this->cycle_count);
+        else if ($this->cycle_time_unit == 2)
+            return $start_date->addWeeks($this->cycle_count);
+
+        return null;
+    }
 }

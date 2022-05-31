@@ -19,14 +19,16 @@
                                     Add Influencer to Campaign
                                 </a>
                             @endif
-                            <div class="float-right mr-2">
-                                <input type="checkbox" name="is_active" id="is_active"
-                                       {{ $campaign->is_active ? 'checked' : '' }}
-                                       data-bootstrap-switch
-                                       data-on-text="Active"
-                                       data-off-text="De-active"
-                                >
-                            </div>
+                            @if(!\App\Helpers\AuthManager::isInfluencer())
+                                <div class="float-right mr-2">
+                                    <input type="checkbox" name="is_active" id="is_active"
+                                           {{ $campaign->is_active ? 'checked' : '' }}
+                                           data-bootstrap-switch
+                                           data-on-text="Active"
+                                           data-off-text="De-active"
+                                    >
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -226,9 +228,11 @@
                         <div class="card">
                             <div class="card-header font-weight-bold">
                                 <h6 class="float-left">Influencers</h6>
-                                <a href="{{ route('backend.cms.campaign.pre-selection', [$campaign->id]) }}" type="button" class="btn btn-dark btn-sm text-white float-right">
-                                    Add Influencer From Pre-selection
-                                </a>
+                                @if(!\App\Helpers\AuthManager::isBrand())
+                                    <a href="{{ route('backend.cms.campaign.pre-selection', [$campaign->id]) }}" type="button" class="btn btn-dark btn-sm text-white float-right">
+                                        Add Influencer From Pre-selection
+                                    </a>
+                                @endif
                             </div>
                             <div class="card-body">
                                 @if(count($campaign->campaignInfluencers))

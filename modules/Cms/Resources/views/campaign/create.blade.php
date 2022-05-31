@@ -41,7 +41,7 @@
                                             <label for="brand_id" class="@error('brand_id') text-danger @enderror">Brand</label>
                                             <select id="brand_id" name="brand_id"
                                                     class="form-control select2 @error('brand_id') is-invalid @enderror" data-placeholder="Select a brand">
-                                                <option>Select a brand</option>
+                                                <option value="">Select a brand</option>
                                                 @foreach($brands as $brand)
                                                     <option value="{{ $brand->id }}">{{ $brand->additionalInfo->first_name ?? '' }}</option>
                                                 @endforeach

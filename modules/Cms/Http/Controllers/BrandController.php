@@ -54,9 +54,15 @@ class BrandController extends Controller
     public function index(BrandDataTable $dataTable)
     {
         $campaign_influencers = $this->campaignService->influencerCampaigns();
+
+        $campaign_influencers = $campaign_influencers->filter(function ($value) {
+            return $value->campaign->is_active == 1;
+        });
+
         if (AuthManager::isSuperAdmin() || AuthManager::isAdmin()) {
             return $dataTable->render('cms::brand.index');
         }
+
         return view('cms::brand.index', compact('campaign_influencers'));
     }
 

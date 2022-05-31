@@ -241,7 +241,7 @@
                                     <table class="table table-striped projects mb-0">
                                         <tbody>
                                         @foreach($campaign_influencers as $c_index => $campaign_influencer)
-                                            <tr>
+                                            <tr class="{{ $campaign_influencer->campaign->is_active ? '' : 'bg-disabled' }}" style="border-top: 3px solid #fff !important;">
                                                 @php
                                                     $available_until = \Carbon\Carbon::parse($campaign_influencer->available_until);
                                                 @endphp
@@ -258,6 +258,7 @@
                                                             @endphp
                                                             <span>{{ $next_deadline->format('M d, Y') }}</span>--}}
                                                             <span>{{ \Carbon\Carbon::now()->lt($available_until) ? $available_until->format('M d, Y') : 'Expired' }}</span>
+                                                            <span>{{ $campaign_influencer->campaign->is_active ? '' : ' / De-activate' }}</span>
                                                         </li>
                                                         <li class="list-inline-item- mt-3 font-weight-bold">
                                                             Brands
@@ -278,10 +279,12 @@
                                                     <td>
                                                         @if(isset($brands[$index]))
                                                             <ul class="list-inline text-center">
-                                                                @if(($campaign_influencer->campaign_accept_status_by_influencer == 0) && (\Carbon\Carbon::now()->lt($available_until)))
-                                                                    <span class="brand-close-btn" data-toggle="modal" href="#modal-lg-bc-{{ $c_index }}{{ $index }}">
+                                                                @if(($campaign_influencer->campaign_accept_status_by_influencer == 0) && (\Carbon\Carbon::now()->lt($available_until)) && ($campaign_influencer->campaign->is_active))
+                                                                    @if(count($brands) > 1)
+                                                                        <span class="brand-close-btn" data-toggle="modal" href="#modal-lg-bc-{{ $c_index }}{{ $index }}">
                                                                         <i class="fa fa-times-circle"></i>
                                                                     </span>
+                                                                    @endif
 
                                                                     <div class="modal fade" id="modal-lg-bc-{{ $c_index }}{{ $index }}" style="display: none;" aria-hidden="true">
                                                                         <div class="modal-dialog modal-lg">
@@ -333,7 +336,7 @@
                                                                     {{ $brands[$index]->title ?? '' }}
                                                                 </li>
                                                                 <li class="list-inline-item- mt-3 font-weight-bold">
-                                                                    <a class="btn btn-secondary btn-sm text-white {{ ($campaign_influencer->campaign_accept_status_by_influencer == -1) || (\Carbon\Carbon::now()->gte($available_until)) ? 'disabled' : '' }}"
+                                                                    <a class="btn btn-secondary btn-sm text-white {{ ($campaign_influencer->campaign_accept_status_by_influencer == -1) || (\Carbon\Carbon::now()->gte($available_until) || !$campaign_influencer->campaign->is_active) ? 'disabled' : '' }}"
                                                                        data-toggle="modal" href="#modal-lg-br-{{ $c_index }}{{ $index }}"
                                                                     >
                                                                         Read
@@ -407,10 +410,12 @@
                                                             style="height: 2.5rem;">
                                                             {{ count($brands) }} Brands
                                                             <br>
-                                                            <a class="btn btn-outline-primary btn-sm pt-0 pb-0"
-                                                               href="{{ route('backend.cms.campaign.show', [$campaign_influencer->campaign->id]) }}">
-                                                                More
-                                                            </a>
+                                                            @if($campaign_influencer->campaign->is_active && !$campaign_influencer->campaign_accept_status_by_influencer == -1)
+                                                                <a class="btn btn-outline-primary btn-sm pt-0 pb-0"
+                                                                   href="{{ route('backend.cms.campaign.show', [$campaign_influencer->campaign->id]) }}">
+                                                                    More
+                                                                </a>
+                                                            @endif
                                                         </li>
                                                         <li class="list-inline-item- mt-3 font-weight-bold">
                                                             {{ '' }}
@@ -421,7 +426,7 @@
                                                     </ul>
 
                                                     <div class="mt-1">
-                                                        @if(($campaign_influencer->campaign_accept_status_by_influencer == 0) && (\Carbon\Carbon::now()->lt($available_until)))
+                                                        @if(($campaign_influencer->campaign_accept_status_by_influencer == 0) && (\Carbon\Carbon::now()->lt($available_until)) && ($campaign_influencer->campaign->is_active))
                                                             {!! Form::open(['url' => route('backend.cms.campaign-influencer.update', [$campaign_influencer->id]), 'method' => 'put']) !!}
                                                             <button class="btn btn-primary btn-xs"
                                                                 name="campaign_accept_status_by_influencer" value="{{ 1 }}"

@@ -139,16 +139,16 @@ class CampaignService
         foreach ($filters as $filter) {
             if ($filter == 1) {
                 $filter_campaigns = $campaigns->filter(function ($value) {
-                    return $value->next_deadline > Carbon::now() &&
-                        $value->campaign_influencers_count < $value->amount_of_influencer_per_cycle ||
+                    return $value->next_deadline->gt(Carbon::now()) && $value->is_active &&
+                        ($value->campaign_influencers_count < $value->amount_of_influencer_per_cycle ||
                         $value->follower_count < $value->amount_of_influencer_follower_per_cycle ||
-                        $value->uploaded_content_count < $value->amount_of_influencer_per_cycle;
+                        $value->uploaded_content_count < $value->amount_of_influencer_per_cycle);
                 });
                 $campaign_collection = $campaign_collection->merge($filter_campaigns);
             }
             if ($filter == 2) {
                 $filter_campaigns = $campaigns->filter(function ($value) {
-                    return $value->next_deadline <= Carbon::now() &&
+                    return $value->next_deadline->lte(Carbon::now()) &&
                         $value->campaign_influencers_count < $value->amount_of_influencer_per_cycle &&
                         $value->follower_count < $value->amount_of_influencer_follower_per_cycle &&
                         $value->uploaded_content_count < $value->amount_of_influencer_per_cycle;
@@ -207,16 +207,16 @@ class CampaignService
         foreach ($filters as $filter) {
             if ($filter == 1) {
                 $filter_campaigns = $campaigns->filter(function ($value) {
-                    return $value->next_deadline > Carbon::now() &&
-                        $value->campaign_influencers_count < $value->amount_of_influencer_per_cycle ||
+                    return $value->next_deadline->gt(Carbon::now()) && $value->is_active &&
+                        ($value->campaign_influencers_count < $value->amount_of_influencer_per_cycle ||
                         $value->follower_count < $value->amount_of_influencer_follower_per_cycle ||
-                        $value->uploaded_content_count < $value->amount_of_influencer_per_cycle;
+                        $value->uploaded_content_count < $value->amount_of_influencer_per_cycle);
                 });
                 $campaign_collection = $campaign_collection->merge($filter_campaigns);
             }
             if ($filter == 2) {
                 $filter_campaigns = $campaigns->filter(function ($value) {
-                    return $value->next_deadline <= Carbon::now() &&
+                    return $value->next_deadline->lte(Carbon::now()) &&
                         $value->campaign_influencers_count < $value->amount_of_influencer_per_cycle &&
                         $value->follower_count < $value->amount_of_influencer_follower_per_cycle &&
                         $value->uploaded_content_count < $value->amount_of_influencer_per_cycle;

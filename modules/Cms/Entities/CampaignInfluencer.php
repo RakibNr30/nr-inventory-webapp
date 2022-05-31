@@ -91,6 +91,7 @@ class CampaignInfluencer extends BaseModel implements HasMedia
     public function user() {
         return $this->hasOne(User::class, 'id', 'influencer_id');
     }
+
     public function campaign() {
         return $this->hasOne(Campaign::class, 'id', 'campaign_id');
     }

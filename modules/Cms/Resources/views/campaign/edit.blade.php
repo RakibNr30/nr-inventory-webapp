@@ -46,7 +46,7 @@
                                         <label for="brand_id" class="@error('brand_id') text-danger @enderror">Brand</label>
                                         <select id="brand_id" name="brand_id"
                                                 class="form-control select2 @error('brand_id') is-invalid @enderror" data-placeholder="Select Brand">
-                                            <option>Select a brand</option>
+                                            <option value="">Select a brand</option>
                                             @foreach($brands as $brand)
                                                 <option value="{{ $brand->id }}" {{ $brand->id == $campaign->brand_id ? 'selected' : '' }}>{{ $brand->additionalInfo->first_name ?? '' }}</option>
                                             @endforeach
@@ -126,7 +126,7 @@
                                         </label>
                                         @foreach(config('core.genders') as $gender_key => $gender)
                                             <div class="custom-control custom-checkbox d-inline">
-                                                <input class="custom-control-input" type="checkbox" id="customCheckbox{{ $gender_key }}" name="target_influencer_genders[]" value="{{ $gender_key }}" {{ in_array($gender_key, $campaign->target_influencer_genders) ? 'checked' : '' }}>
+                                                <input class="custom-control-input" type="checkbox" id="customCheckbox{{ $gender_key }}" name="target_influencer_genders[]" value="{{ $gender_key }}" {{ in_array($gender_key, $campaign->target_influencer_genders ?? []) ? 'checked' : '' }}>
                                                 <label for="customCheckbox{{ $gender_key }}" class="custom-control-label ml-3 font-weight-normal">{{ $gender }}</label>
                                             </div>
                                         @endforeach
@@ -239,7 +239,7 @@
                                         </label>
                                         @foreach(config('core.campaign_goals') as $goal_key => $campaign_goal)
                                             <div class="custom-control custom-checkbox d-inline">
-                                                <input class="custom-control-input" type="checkbox" id="customCheckbox{{ $goal_key }}" name="campaign_goals[]" value="{{ $goal_key }}" {{ in_array($goal_key, $campaign->campaign_goals) ? 'checked' : '' }}>
+                                                <input class="custom-control-input" type="checkbox" id="customCheckbox{{ $goal_key }}" name="campaign_goals[]" value="{{ $goal_key }}" {{ in_array($goal_key, $campaign->campaign_goals ?? []) ? 'checked' : '' }}>
                                                 <label for="customCheckbox{{ $goal_key }}" class="custom-control-label ml-3 font-weight-normal">{{ $campaign_goal }}</label>
                                             </div>
                                         @endforeach
