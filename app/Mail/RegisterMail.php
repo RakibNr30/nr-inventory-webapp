@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class NotificationMail extends Mailable
+class RegisterMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -29,6 +29,6 @@ class NotificationMail extends Mailable
      */
     public function build()
     {
-        return $this->markdown('mail.notification.index')->with('data', $this->data);
+        return $this->markdown('mail.register.index')->with('data', $this->data);
     }
 }

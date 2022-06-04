@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Helpers\AuthManager;
 use App\Http\Controllers\Controller;
+use App\Mail\RegisterMail;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Modules\Cms\Entities\InfluencerCategory;
 use Modules\Ums\Entities\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -215,7 +215,25 @@ class RegisterController extends Controller
 
         $user->update(['is_process_completed' => true]);
 
-        notifier()->success('Your registration completed. Now you can login.');
+        $send_success = true;
+
+        try {
+            $mailData = [
+                'title' => 'Registration',
+                'first_name' => $user->additionalInfo->first_name ?? '',
+                'last_name' => $user->additionalInfo->last_name ?? '',
+            ];
+            \Mail::to($user->email ?? '')->send(new RegisterMail($mailData));
+        } catch (\Exception $exception) {
+            $send_success = false;
+        }
+
+        if ($send_success) {
+            notifier()->success('Your registration completed. Now you can login.');
+        } else {
+            notifier()->warning('Your registration completed. Now you can login but mail not send due to connection error.');
+        }
+
         return redirect()->route('login');
     }
 }

@@ -46,7 +46,9 @@ class NumberManager
         foreach ($campaign->campaignInfluencers as $campaignInfluencer) {
             $influencer = $campaignInfluencer->user;
 
-            $counter += ($influencer->socialAccountInfo->instagram_followers + $influencer->socialAccountInfo->tiktok_followers);
+            if ($campaignInfluencer->accept_status == 1 && $campaignInfluencer->campaign_accept_status_by_influencer) {
+                $counter += ($influencer->socialAccountInfo->instagram_followers + $influencer->socialAccountInfo->tiktok_followers);
+            }
         }
 
         return $counter;

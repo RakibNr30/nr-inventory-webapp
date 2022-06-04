@@ -20,15 +20,6 @@
                         </div>
                         <div class="p-4">
                             <div class="row">
-<!--                                <div class="col-md-5">
-                                    <div class="form-group mb-0">
-                                        <label>Sort by</label>
-                                        <select class="form-control d-inline ml-2 w-auto">
-                                            <option>Filters</option>
-                                            <option>Name</option>
-                                        </select>
-                                    </div>
-                                </div>-->
                                 <div class="col-md-12">
                                     <div class="table-responsive shadow w-100">
                                         <table class="table mb-0 text-center">
@@ -127,10 +118,6 @@
                                                         <br>
                                                     @endif
                                                     <div class="mt-1">
-                                                        <!--<a class="btn btn-info btn-xs" href="#">
-                                                            <i class="fas fa-clone">
-                                                            </i>
-                                                        </a>-->
                                                         @if(\App\Helpers\AuthManager::isBrand())
                                                             @if($influencer->accept_status == 0)
                                                                 <button name="accept_status" value="1" class="btn btn-primary btn-xs">
@@ -161,7 +148,7 @@
                                                         @endif
 
                                                         @if(!\App\Helpers\AuthManager::isBrand() && !\App\Helpers\AuthManager::isInfluencer())
-                                                            @if($influencer->accept_status == 1)
+                                                            @if($influencer->accept_status == 1 && ($influencer->campaign->individual_coupon_code_internal || $influencer->campaign->individual_swipe_up_link_internal))
                                                                 <button name="internal_accept_status" value="1" class="btn btn-primary btn-xs">
                                                                     Modify
                                                                 </button>
@@ -174,20 +161,24 @@
                                                         Username
                                                     </a>
                                                     <br>
-                                                    <div class="mt-1">
-                                                        <i class="fab fa-instagram mr-1">
-                                                        </i>
-                                                        <a class="" href="javascript:void(0)">
-                                                            {{ $influencer->user->socialAccountInfo->instagram_username ?? '' }}
-                                                        </a>
-                                                    </div>
-                                                    <div class="mt-1">
-                                                        <i class="fab fa-tiktok mr-1">
-                                                        </i>
-                                                        <a class="" href="javascript:void(0)">
-                                                            {{ $influencer->user->socialAccountInfo->tiktok_username ?? '' }}
-                                                        </a>
-                                                    </div>
+                                                    @if(isset($influencer->user->socialAccountInfo->instagram_username))
+                                                        <div class="mt-1">
+                                                            <i class="fab fa-instagram mr-1">
+                                                            </i>
+                                                            <a class="" target="_blank" href="https://www.instagram.com/{{ $influencer->user->socialAccountInfo->instagram_username ?? '' }}">
+                                                                {{ '@' . $influencer->user->socialAccountInfo->instagram_username ?? '' }}
+                                                            </a>
+                                                        </div>
+                                                    @endif
+                                                    @if(isset($influencer->user->socialAccountInfo->tiktok_username))
+                                                        <div class="mt-1">
+                                                            <i class="fab fa-tiktok mr-1">
+                                                            </i>
+                                                            <a class="" target="_blank" href="https://www.tiktok.com/{{ '@' . $influencer->user->socialAccountInfo->tiktok_username ?? '' }}">
+                                                                {{ '@' . $influencer->user->socialAccountInfo->tiktok_username ?? '' }}
+                                                            </a>
+                                                        </div>
+                                                    @endif
                                                 </td>
                                                 <td>
                                                     <a class="font-weight-bold">
@@ -305,32 +296,6 @@
                                                         </a>
                                                     </div>
                                                 </td>
-                                                {{--                                            <td>--}}
-                                                {{--                                                <ul class="action-button">--}}
-                                                {{--                                                    <li>--}}
-                                                {{--                                                        <a href="{{ route('backend.ums.influencer.show', [$influencer->id]) }}" class="btn btn-outline-success">--}}
-                                                {{--                                                            <i class="fa fa-eye"></i>--}}
-                                                {{--                                                        </a>--}}
-                                                {{--                                                    </li>--}}
-                                                {{--                                                    <li>--}}
-                                                {{--                                                        <a href="{{ route('backend.ums.influencer.edit', [$influencer->id]) }}" class="btn btn-outline-primary">--}}
-                                                {{--                                                            <i class="fa fa-pen"></i>--}}
-                                                {{--                                                        </a>--}}
-                                                {{--                                                    </li>--}}
-                                                {{--                                                    <li>--}}
-                                                {{--                                                        <a type="button" tabindex="0" data-html="true" data-popover-content="#confirm_delete{{ $influencer->id }}" class="btn btn-outline-danger">--}}
-                                                {{--                                                            <i class="fa fa-trash"></i>--}}
-                                                {{--                                                        </a>--}}
-                                                {{--                                                        <div style="display: none;" id="confirm_delete{{ $influencer->id }}">--}}
-                                                {{--                                                            <div class="popover-body">--}}
-                                                {{--                                                                <a type="button" class="btn btn-danger text-white delete_submit {{ $influencer->id }}">Delete</a>--}}
-                                                {{--                                                                <a role="button" class="btn btn-dark text-white">Cancel</a>--}}
-                                                {{--                                                            </div>--}}
-                                                {{--                                                        </div>--}}
-                                                {{--                                                        {!! Form::open(['url' => route('backend.ums.influencer.destroy', [$influencer->id]), 'method' => 'delete', 'id' => 'delete_form' . $influencer->id]) !!}{!! Form::close() !!}--}}
-                                                {{--                                                    </li>--}}
-                                                {{--                                                </ul>--}}
-                                                {{--                                            </td>--}}
                                             </tr>
                                         @endforeach
                                     @endforeach

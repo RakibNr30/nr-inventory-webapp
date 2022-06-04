@@ -4,7 +4,8 @@ namespace Modules\Cms\Services;
 
 use App\Helpers\NumberManager;
 use Carbon\Carbon;
-use Modules\Cms\Entities\Campaign;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Cms\Repositories\CampaignInfluencerRepository;
 use Modules\Cms\Repositories\CampaignRepository;
 
@@ -66,7 +67,16 @@ class CampaignService
      */
     public function find($id)
     {
-        return $this->campaignRepository->find($id);
+        return $this->campaignRepository->model
+            ->with(
+                [
+                    'campaignInfluencers' => function (HasMany $query) {
+                        $query->where('accept_status', 1)
+                            ->where('campaign_accept_status_by_influencer', 1);
+                    }
+                ]
+            )
+            ->find($id);
     }
 
     /**
@@ -191,8 +201,22 @@ class CampaignService
     public function campaignWithInfluencers($filters, $limit = 0)
     {
         $campaigns = $this->campaignRepository->model
-            ->with(['campaignInfluencers'])
-            ->withCount(['campaignInfluencers'])
+            ->with(
+                [
+                    'campaignInfluencers' => function (HasMany $query) {
+                        $query->where('accept_status', 1)
+                            ->where('campaign_accept_status_by_influencer', 1);
+                    }
+                ]
+            )
+            ->withCount(
+                [
+                    'campaignInfluencers' => function (Builder $query) {
+                        $query->where('accept_status', 1)
+                            ->where('campaign_accept_status_by_influencer', 1);
+                    }
+                ]
+            )
             ->paginate($limit);
 
         $campaigns->map(function ($value) {

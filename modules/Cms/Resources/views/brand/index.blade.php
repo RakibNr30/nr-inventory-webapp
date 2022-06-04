@@ -226,6 +226,9 @@
                                                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                                                     @enderror
                                                                                     @if(isset($campaign_influencer->getMedia($media_collection)[0]))
+                                                                                        <div class="image-output" style="border: 1px solid #bebebe">
+                                                                                            <img src="{{ $campaign_influencer->getMedia($media_collection)[0]->getUrl() }}" class="w-100" style="height: 100px" />
+                                                                                        </div>
                                                                                         <div class="form-group text-left mt-2">
                                                                                             <label>Grade</label>
                                                                                             <input value="{{ $campaign_influencer->feedback['grade_' . \Str::snake($content_type)] ?? '' }}" type="number" min="0" placeholder="Grade" class="form-control" readonly />

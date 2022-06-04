@@ -21,11 +21,11 @@
                 {!! Form::open(['route' => 'register', 'method' => 'post']) !!}
                 <label class="d-block font-weight-bold">Registered as</label>
                 <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
-                    <label class="btn btn-secondary {{ old('login_as') ? (old('login_as') == 1 ? 'active' : '') : 'active' }}" v-on:click="changeValue(1)" style="cursor: pointer">
+                    <label class="btn btn-outline-secondary {{ old('login_as') ? (old('login_as') == 1 ? 'active' : '') : 'active' }}" v-on:click="changeValue(1)" style="cursor: pointer">
                         <input type="radio" name="login_as" id="option_a1" autocomplete="off" value="{{ 1 }}"
                             {{ old('login_as') ? (old('login_as') == 1 ? 'checked' : '') : 'checked' }}> Influencer
                     </label>
-                    <label class="btn btn-secondary {{ old('login_as') ? (old('login_as') == 2 ? 'active' : '') : '' }}" v-on:click="changeValue(2)" style="cursor: pointer">
+                    <label class="btn btn-outline-secondary {{ old('login_as') ? (old('login_as') == 2 ? 'active' : '') : '' }}" v-on:click="changeValue(2)" style="cursor: pointer">
                         <input type="radio" name="login_as" id="option_a2" autocomplete="off" value="{{ 2 }}"
                             {{ old('login_as') ? (old('login_as') == 2 ? 'checked' : '') : '' }}> Brand
                     </label>
@@ -60,7 +60,7 @@
                 </template>
                 <template v-if="nameToggle == 2">
                     <div class="input-group mb-3">
-                        <input id="name" name="name" placeholder="Name" value="{{ old('name') }}" type="text" class="form-control @error('name') is-invalid @enderror" required autofocus>
+                        <input id="name" name="name" placeholder="Brand Name" value="{{ old('name') }}" type="text" class="form-control @error('name') is-invalid @enderror" required autofocus>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-user"></span>

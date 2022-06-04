@@ -123,8 +123,8 @@
                                     <div class="row">
                                         @foreach($campaigns as $index => $campaign)
                                             <div class="col-lg-3 col-6">
-                                                <div class="small-box bg-gradient-light {{ $campaign->is_active ? '' : 'bg-disabled' }}">
-                                                    <div class="inner text-justify">
+                                                <div class="small-box bg-gradient-light">
+                                                    <div class="inner text-justify {{ $campaign->is_active ? '' : 'bg-disabled' }}">
                                                         <h5 class="font-weight-bold text-center">{{ $campaign->title }}</h5>
                                                         <div class="row" style="font-size: 12px">
                                                             <div class="col-6">
@@ -141,9 +141,9 @@
                                                                     @php
                                                                         $start_date = \Carbon\Carbon::parse($campaign->start_date);
                                                                         if ($campaign->cycle_time_unit == 1)
-                                                                            $next_deadline = $start_date->addMonths($campaign->cycle_count);
+                                                                            $next_deadline = $start_date->addMonths(1 + $start_date->diffInMonths(\Carbon\Carbon::now()));
                                                                         else if ($campaign->cycle_time_unit == 2)
-                                                                            $next_deadline = $start_date->addWeeks($campaign->cycle_count);
+                                                                            $next_deadline = $start_date->addWeeks(1 + $start_date->diffInWeeks(\Carbon\Carbon::now()));
                                                                     @endphp
                                                                     <span>{{ $next_deadline->format('d.m.Y') }}</span>
                                                                 @endif
@@ -184,35 +184,19 @@
                                                         </div>
                                                     </div>
 
-                                                    <ul class="box-footer">
+                                                    <ul class="box-footer {{ $campaign->is_active ? '' : 'bg-light' }}">
                                                         <li>
                                                             <a href="{{ route('backend.cms.campaign.show', [$campaign->id]) }}"
-                                                               class="{{ $campaign->is_active ? '' : 'disabled' }}">
+                                                               class="{{ $campaign->is_active ? '' : '' }}">
                                                                 <i class="fas fa-eye"></i> View
                                                             </a>
                                                         </li>
                                                         <li>
                                                             <a href="{{ route('backend.cms.campaign.edit', [$campaign->id]) }}"
-                                                               class="{{ $campaign->is_active ? '' : 'disabled' }}" {{ $campaign->is_active ? '' : 'disabled' }} >
+                                                               class="{{ $campaign->is_active ? '' : '' }}" {{ $campaign->is_active ? '' : '' }} >
                                                                 <i class="fa fa-pen"></i> Edit
                                                             </a>
                                                         </li>
-<!--                                                        <li>
-                                                            <a tabindex="0" data-html="true"
-                                                               data-popover-content="#confirm_delete{{ $campaign->id }}"
-                                                               class="small-box-footer">
-                                                                <i class="fa fa-trash"></i>
-                                                            </a>
-                                                            <div style="display: none;"
-                                                                 id="confirm_delete{{ $campaign->id }}">
-                                                                <div class="popover-body">
-                                                                    <a type="button"
-                                                                       class="btn btn-danger text-white delete_submit{{ $campaign->id }}">Delete</a>
-                                                                    <a role="button" class="btn btn-dark text-white">Cancel</a>
-                                                                </div>
-                                                            </div>
-                                                            {!! Form::open(['url' => route('backend.cms.campaign.destroy', [$campaign->id]), 'method' => 'delete', 'id' => 'delete_form' . $campaign->id]) !!}{!! Form::close() !!}
-                                                        </li>-->
                                                     </ul>
                                                 </div>
                                             </div>
@@ -617,63 +601,82 @@
                                         @foreach($campaigns as $index => $campaign)
                                             <div class="col-lg-3 col-6">
                                                 <div class="small-box bg-gradient-light">
-                                                    <div class="inner text-justify">
+                                                    <div class="inner text-justify {{ $campaign->is_active ? '' : 'bg-disabled' }}">
                                                         <h5 class="font-weight-bold text-center">{{ $campaign->title }}</h5>
                                                         <div class="row" style="font-size: 12px">
                                                             <div class="col-6">
                                                                 <span>Start Date:</span>
                                                             </div>
                                                             <div class="col-6">
-                                                                <span>{{ $campaign->start_date }}</span>
+                                                                <span>{{ $campaign->is_active ? $campaign->start_date : '' }}</span>
                                                             </div>
                                                             <div class="col-6">
                                                                 <span>Next Deadline:</span>
                                                             </div>
                                                             <div class="col-6">
-                                                                @php
-                                                                    $start_date = \Carbon\Carbon::parse($campaign->start_date);
-                                                                    if ($campaign->cycle_time_unit == 1)
-                                                                        $next_deadline = $start_date->addMonths($campaign->cycle_count);
-                                                                    else if ($campaign->cycle_time_unit == 2)
-                                                                        $next_deadline = $start_date->addWeeks($campaign->cycle_count);
-                                                                @endphp
-                                                                <span>{{ $next_deadline->format('d.m.Y') }}</span>
+                                                                @if($campaign->is_active)
+                                                                    @php
+                                                                        $start_date = \Carbon\Carbon::parse($campaign->start_date);
+                                                                        if ($campaign->cycle_time_unit == 1)
+                                                                            $next_deadline = $start_date->addMonths(1 + $start_date->diffInMonths(\Carbon\Carbon::now()));
+                                                                        else if ($campaign->cycle_time_unit == 2)
+                                                                            $next_deadline = $start_date->addWeeks(1 + $start_date->diffInWeeks(\Carbon\Carbon::now()));
+                                                                    @endphp
+                                                                    <span>{{ $next_deadline->format('d.m.Y') }}</span>
+                                                                @endif
                                                             </div>
                                                             <div class="col-6 mt-1">
                                                                 <i class="fa fa-user"></i>
                                                                 <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->campaign_influencers_count) }}/{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_per_cycle) }}</span>
-                                                                @if($campaign->campaign_influencers_count >= $campaign->amount_of_influencer_per_cycle)
-                                                                    <i class="fas fa-check text-primary"></i>
-                                                                @else
-                                                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                @if($campaign->is_active)
+                                                                    @if($campaign->campaign_influencers_count >= $campaign->amount_of_influencer_per_cycle)
+                                                                        <i class="fas fa-check text-primary"></i>
+                                                                    @else
+                                                                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                    @endif
                                                                 @endif
                                                             </div>
                                                             <div class="col-6 mt-1">
                                                                 <i class="fa fa-camera"></i>
                                                                 <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->uploaded_content_count) }}/{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_per_cycle) }}</span>
-                                                                @if($campaign->uploaded_content_count >= $campaign->amount_of_influencer_per_cycle)
-                                                                    <i class="fas fa-check text-primary"></i>
-                                                                @else
-                                                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                @if($campaign->is_active)
+                                                                    @if($campaign->uploaded_content_count >= $campaign->amount_of_influencer_per_cycle)
+                                                                        <i class="fas fa-check text-primary"></i>
+                                                                    @else
+                                                                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                    @endif
                                                                 @endif
                                                             </div>
                                                             <div class="col-12 mt-1">
                                                                 <i class="fa fa-user"></i>
                                                                 <span class="ml-1">{{ \App\Helpers\NumberManager::shortFormat($campaign->follower_count) }}/{{ \App\Helpers\NumberManager::shortFormat($campaign->amount_of_influencer_follower_per_cycle) }} Follower</span>
-                                                                @if($campaign->follower_count >= $campaign->amount_of_influencer_follower_per_cycle)
-                                                                    <i class="fas fa-check text-primary"></i>
-                                                                @else
-                                                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                @if($campaign->is_active)
+                                                                    @if($campaign->follower_count >= $campaign->amount_of_influencer_follower_per_cycle)
+                                                                        <i class="fas fa-check text-primary"></i>
+                                                                    @else
+                                                                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                                    @endif
                                                                 @endif
                                                             </div>
                                                         </div>
                                                     </div>
 
-                                                    <a href="{{ route('backend.cms.campaign.show', [$campaign->id]) }}" disabled
-                                                       class="small-box-footer text-dark">
-                                                        <i class="fas fa-arrow-right"></i> View More
-                                                    </a>
-
+                                                    <ul class="box-footer {{ $campaign->is_active ? '' : 'bg-disabled' }}">
+                                                        @if($campaign->is_active)
+                                                            <li>
+                                                                <a href="{{ route('backend.cms.campaign.show', [$campaign->id]) }}">
+                                                                    <i class="fas fa-eye"></i> View
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="{{ route('backend.cms.campaign.edit', [$campaign->id]) }}">
+                                                                    <i class="fa fa-pen"></i> Edit
+                                                                </a>
+                                                            </li>
+                                                        @else
+                                                            &nbsp;
+                                                        @endif
+                                                    </ul>
                                                 </div>
                                             </div>
                                         @endforeach

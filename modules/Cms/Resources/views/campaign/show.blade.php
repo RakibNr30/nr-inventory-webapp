@@ -19,7 +19,7 @@
                                     Add Influencer to Campaign
                                 </a>
                             @endif
-                            @if(!\App\Helpers\AuthManager::isInfluencer())
+                            @if(!\App\Helpers\AuthManager::isInfluencer() && !\App\Helpers\AuthManager::isBrand())
                                 <div class="float-right mr-2">
                                     <input type="checkbox" name="is_active" id="is_active"
                                            {{ $campaign->is_active ? 'checked' : '' }}
@@ -32,196 +32,6 @@
                         </div>
                     </div>
                 </div>
-<!--                <div class="col-md-4">
-                    <div class="card card-primary">
-                        <div class="card-body box-profile">
-                            <div class="text-center">
-                                <div class="profile-user-img img-fluid img-circle"
-                                     style="background-image: url({{ $campaign->logo->file_url ?? config('core.image.default.logo_preview') }})">
-                                </div>
-                            </div>
-                            <h3 class="profile-username text-center">{{ $campaign->title ?? '' }}</h3>
-                        </div>
-                    </div>
-
-                    <div class="card card-primary">
-                        <div class="card-body">
-                            <strong>
-                                Brand
-                            </strong>
-                            <p class="text-muted mb-0">
-                                <span class="text-dark">Name: </span> {{ $campaign->brand->additionalInfo->first_name ?? '' }}
-                                <br>
-                                <span class="text-dark">Contact: </span> {{ $campaign->brand->email ?? '' }}
-                                <br>
-                                <a href="{{ route('backend.cms.brand.show', [$campaign->brand->id]) }}">
-                                    <span class="badge badge-primary">
-                                        View
-                                    </span>
-                                </a>
-                            </p>
-                            <hr>
-                            <strong>
-                                Start Date
-                            </strong>
-                            <p class="text-muted mb-0">
-                                {{ $campaign->start_date ?? '' }}
-                            </p>
-                            <hr>
-                            <strong>
-                                First Content Online
-                            </strong>
-                            <p class="text-muted mb-0">
-                                {{ $campaign->first_content_online ?? '' }}
-                            </p>
-                            <hr>
-                            <strong>
-                                Cycle Count
-                            </strong>
-                            <p class="text-muted mb-0">
-                                {{ $campaign->cycle_count ?? '' }}
-                            </p>
-                            <hr>
-                            <strong>
-                                Cycle Time Unit
-                            </strong>
-                            <p class="text-muted mb-0">
-                                {{ $campaign->cycle_time_unit == 1 ? 'Monthly' : 'Weekly' }}
-                            </p>
-                            <hr>
-                            <strong>
-                                Next Deadline
-                            </strong>
-                            <p class="text-muted mb-0">
-                                @php
-                                    $start_date = \Carbon\Carbon::parse($campaign->start_date);
-                                    if ($campaign->cycle_time_unit == 1)
-                                        $next_deadline = $start_date->addMonths($campaign->cycle_count);
-                                    else if ($campaign->cycle_time_unit == 2)
-                                        $next_deadline = $start_date->addWeeks($campaign->cycle_count);
-                                @endphp
-                                {{ $next_deadline->format('M d, Y') ?? '' }}
-                            </p>
-                            <hr>
-                            <strong>
-                                Products
-                            </strong>
-                            <p class="text-muted mb-0">
-                                @if(count($campaign->product_ids ?? []))
-                                    @foreach($campaign->product_ids as $index => $category)
-                                        <span class="badge badge-primary">
-                                            {{ $category }}
-                                        </span>
-                                    @endforeach
-                                @else
-                                    Not Found
-                                @endif
-                            </p>
-                            <hr>
-                            <strong>
-                                Target Group Influencer Category
-                            </strong>
-                            <p class="text-muted mb-0">
-                                @if(count($campaign->target_influencer_category_ids ?? []))
-                                    @foreach($campaign->target_influencer_category_ids as $index => $category)
-                                        <span class="badge badge-primary">
-                                            {{ $category }}
-                                        </span>
-                                    @endforeach
-                                @else
-                                    Not Found
-                                @endif
-                            </p>
-                            <hr>
-                            <strong>
-                                Target Group Influencer Gender
-                            </strong>
-                            <p class="text-muted mb-0">
-                                @if(count($campaign->target_influencer_genders ?? []))
-                                    @foreach($campaign->target_influencer_genders as $index => $gender)
-                                        <span class="badge badge-success">
-                                            {{ $gender == 1 ? 'Male' : '' }}
-                                            {{ $gender == 2 ? 'Female' : '' }}
-                                            {{ $gender == 3 ? 'Others' : '' }}
-                                        </span>
-                                    @endforeach
-                                @else
-                                    Not Found
-                                @endif
-                            </p>
-                            <hr>
-                            <strong>
-                                Age Range
-                            </strong>
-                            <p class="text-muted mb-0">
-                                {{ $campaign->target_influencer_lower_age ?? 0 }} - {{ $campaign->target_influencer_upper_age ?? 0 }}
-                            </p>
-                            <hr>
-                            <strong>
-                                Amount of Influencer Per Cycle
-                            </strong>
-                            <p class="text-muted mb-0">
-                                {{ $campaign->amount_of_influencer_per_cycle ?? '' }}
-                            </p>
-                            <hr>
-                            <strong>
-                                Amount of Influencer Follower Per Cycle
-                            </strong>
-                            <p class="text-muted mb-0">
-                                {{ $campaign->amount_of_influencer_follower_per_cycle ?? '' }}
-                            </p>
-                            <hr>
-                            <strong>
-                                Offer Signed
-                            </strong>
-                            <p class="text-muted mb-0">
-                                {{ $campaign->offer_signed == 1 ? 'Yes' : 'No' }}
-                            </p>
-                            <hr>
-                            <strong>
-                                Start of Recurring Bill
-                            </strong>
-                            <p class="text-muted mb-0">
-                                {{ $campaign->start_of_recurring_bill ?? '' }}
-                            </p>
-                            <hr>
-                            <strong>
-                                Billing Cycle Count
-                            </strong>
-                            <p class="text-muted mb-0">
-                                {{ $campaign->billing_cycle_count ?? '' }}
-                            </p>
-                            <hr>
-                            <strong>
-                                Billing Cycle Time Unit
-                            </strong>
-                            <p class="text-muted mb-0">
-                                {{ $campaign->billing_cycle_time_unit == 1 ? 'Monthly' : 'Weekly' }}
-                            </p>
-                            <hr>
-                            <strong>
-                                Billing Cycle Next Deadline
-                            </strong>
-                            <p class="text-muted mb-0">
-                                @php
-                                    $start_of_recurring_bill = \Carbon\Carbon::parse($campaign->start_of_recurring_bill);
-                                    if ($campaign->billing_cycle_time_unit == 1)
-                                        $next_deadline = $start_of_recurring_bill->addMonths($campaign->billing_cycle_count);
-                                    else if ($campaign->billing_cycle_time_unit == 2)
-                                        $next_deadline = $start_of_recurring_bill->addWeeks($campaign->billing_cycle_count);
-                                @endphp
-                                {{ $next_deadline->format('M d, Y') ?? '' }}
-                            </p>
-                            <hr>
-                            <strong>
-                                Euros Total
-                            </strong>
-                            <p class="text-muted mb-0">
-                                {{ $campaign->euros_total ?? '' }}
-                            </p>
-                        </div>
-                    </div>
-                </div>-->
 
                 <div class="col-md-12">
                     @if(!\App\Helpers\AuthManager::isInfluencer())
@@ -293,7 +103,7 @@
                                                         </td>
                                                         <td>
                                                             @if(isset($influencer->socialAccountInfo->tiktok_username))
-                                                                <a target="_blank" href="https://tiktok.com/{{ $influencer->socialAccountInfo->tiktok_username }}">
+                                                                <a target="_blank" href="https://tiktok.com/{{ '@' . $influencer->socialAccountInfo->tiktok_username }}">
                                                                     {{ '@' . $influencer->socialAccountInfo->tiktok_username }}
                                                                 </a>
                                                             @else
@@ -354,10 +164,16 @@
                                                                                             {{ $influencer->email ?? '' }}
                                                                                         </span>
                                                                                         <span class="d-block text-sm">
-                                                                                            <i class="fab fa-instagram mr-2"></i> {{ $influencer->socialAccountInfo->instagram_username }}
+                                                                                            <i class="fab fa-instagram mr-2"></i>
+                                                                                            <a href="https://www.instagram.com/{{ $influencer->socialAccountInfo->instagram_username }}" >
+                                                                                                {{ '@' . $influencer->socialAccountInfo->tiktok_username }}
+                                                                                            </a>
                                                                                         </span>
                                                                                         <span class="d-block text-sm">
-                                                                                            <i class="fab fa-tiktok mr-2"></i> {{ $influencer->socialAccountInfo->tiktok_username }}
+                                                                                            <i class="fab fa-tiktok mr-2"></i>
+                                                                                            <a href="https://www.tiktok.com/{{ '@' . $influencer->socialAccountInfo->tiktok_username }}">
+                                                                                                {{ '@' . $influencer->socialAccountInfo->tiktok_username }}
+                                                                                            </a>
                                                                                         </span>
                                                                                     </div>
                                                                                     <div class="ml-4 d-inline-block">

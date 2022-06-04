@@ -7,6 +7,7 @@ use App\Helpers\MailManager;
 use App\Http\Controllers\Controller;
 
 // requests...
+use App\Mail\NotificationMail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -239,7 +240,11 @@ class CampaignInfluencerController extends Controller
         $send_success = true;
 
         try {
-            MailManager::send($campaign_influencer->user, []);
+            $title = isset($data['briefing_reminder']) ? 'Briefing Reminder' : (isset($data['content_reminder']) ? 'Content Reminder' : (isset($data['missing_content_reminder']) ? 'Missing Content Reminder' : ''));
+            $mailData = [
+                'title' => $title,
+            ];
+            \Mail::to($campaign_influencer->user->email ?? '')->send(new NotificationMail($mailData));
         } catch (\Exception $exception) {
             $send_success = false;
         }
@@ -302,7 +307,7 @@ class CampaignInfluencerController extends Controller
         }
 
         if (AuthManager::isSuperAdmin() || AuthManager::isAdmin()) {
-            $campaignInfluencers = $this->campaignService->all();
+            $campaignInfluencers = $this->campaignInfluencerService->all();
         }
 
         return view('cms::campaign.influencer.index', compact('campaignInfluencers'));

@@ -86,7 +86,7 @@
                                                         </td>
                                                         <td>
                                                             @if(isset($influencer->socialAccountInfo->tiktok_username))
-                                                                <a target="_blank" href="https://tiktok.com/{{ $influencer->socialAccountInfo->tiktok_username }}">
+                                                                <a target="_blank" href="https://tiktok.com/{{ '@' . $influencer->socialAccountInfo->tiktok_username }}">
                                                                     {{ '@' . $influencer->socialAccountInfo->tiktok_username }}
                                                                 </a>
                                                             @else
