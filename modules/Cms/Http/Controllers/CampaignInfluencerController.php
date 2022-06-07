@@ -7,6 +7,8 @@ use App\Helpers\MailManager;
 use App\Http\Controllers\Controller;
 
 // requests...
+use App\Mail\BrandDenyMail;
+use App\Mail\CampaignDenyMail;
 use App\Mail\NotificationMail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -167,6 +169,30 @@ class CampaignInfluencerController extends Controller
             }
 
             if (isset($data['campaign_accept_status_by_influencer'])) {
+
+                $brand = $this->userService->find($campaign_influencer->campaign->brand_id ?? '');
+
+                try {
+                    $mailData = [
+                        'title' => 'Campaign Accept/Deny Notification',
+                        'campaign_name' => $campaign_influencer->campaign->title ?? '',
+                        'brand_name' => $brand->additionalInfo->first_name ?? '',
+                    ];
+                    \Mail::to($brand->email ?? '')->send(new CampaignDenyMail($mailData));
+                } catch (\Exception $exception) {
+                    $send_success = false;
+                }
+
+                if ($campaign_influencer) {
+                    if ($send_success) {
+                        notifier()->success('Brand denied successfully.');
+                    } else {
+                        notifier()->warning('Brand denied successfully but mail not send due to connection error.');
+                    }
+                } else {
+                    notifier()->error('Brand can not be denied.');
+                }
+
                 if ($campaign_influencer->campaign_accept_status_by_influencer == 1) {
                     notifier()->success('Campaign accepted.');
                 }
@@ -201,7 +227,7 @@ class CampaignInfluencerController extends Controller
         if ($campaign_influencer) {
             notifier()->success('Commented successfully.');
         } else {
-            notifier()->error('Commented can not be successfully.');
+            notifier()->error('Commented can not be successful.');
         }
 
         return redirect()->back();
@@ -289,8 +315,26 @@ class CampaignInfluencerController extends Controller
 
         $campaign_influencer = $this->campaignInfluencerService->update($data, $id);
 
+        $brand = $this->userService->find($brand_id);
+
+        try {
+            $mailData = [
+                'title' => 'Brand Denied Notification',
+                'influencer_name' => ($campaign_influencer->first_name ?? '') . ' ' . ($campaign_influencer->last_name ?? ''),
+                'brand_name' => $brand->additionalInfo->first_name ?? '',
+                'campaign_name' => $campaign_influencer->campaign->title ?? '',
+            ];
+            \Mail::to($brand->email ?? '')->send(new BrandDenyMail($mailData));
+        } catch (\Exception $exception) {
+            $send_success = false;
+        }
+
         if ($campaign_influencer) {
-            notifier()->success('Brand denied successfully.');
+            if ($send_success) {
+                notifier()->success('Brand denied successfully.');
+            } else {
+                notifier()->warning('Brand denied successfully but mail not send due to connection error.');
+            }
         } else {
             notifier()->error('Brand can not be denied.');
         }
@@ -311,5 +355,32 @@ class CampaignInfluencerController extends Controller
         }
 
         return view('cms::campaign.influencer.index', compact('campaignInfluencers'));
+    }
+
+    public function report(Request $request, $id)
+    {
+        $request->validate([
+            'report_details' => 'required|max:10000'
+        ]);
+
+        $campaign_influencer = $this->campaignInfluencerService->find($id);
+
+        if (empty($campaign_influencer)) {
+            notifier()->error('Influencer not found in this campaign!');
+            return redirect()->back();
+        }
+
+        // get data
+        $data = $request->except(['_token', '_method']);
+
+        $campaign_influencer = $this->campaignInfluencerService->update($data, $id);
+
+        if ($campaign_influencer) {
+            notifier()->success('Reported successfully.');
+        } else {
+            notifier()->error('Report can not be successful.');
+        }
+
+        return redirect()->back();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Modules\Cms\DataTables;
 
+use App\Helpers\AuthManager;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
@@ -46,6 +47,13 @@ class BrandDataTable extends DataTable
             return $query->where('name', 'Brand');
         });
 
+        $user->leftJoin('user_additional_infos as brand_additional_infos', 'brand_additional_infos.user_id', 'users.id');
+
+        $user->select([
+            'users.*',
+            'brand_additional_infos.first_name as brand_name'
+        ]);
+
         // return data
         return $user;
     }
@@ -64,7 +72,7 @@ class BrandDataTable extends DataTable
             ->dom('Bflrtip')
             ->orderBy(1)
             ->buttons(
-                //Button::make('create'),
+                Button::make('create'),
                 Button::make('export'),
                 Button::make('print'),
                 Button::make('reload')
@@ -86,7 +94,7 @@ class BrandDataTable extends DataTable
                 ->title('Sl'),
             Column::computed('image')->title('Image'),
             Column::make('email'),
-            Column::make('phone'),
+            Column::make('brand_name')->name('brand_additional_infos.first_name'),
             Column::computed('action')
                 ->exportable(false)
                 ->printable(false)

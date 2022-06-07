@@ -351,12 +351,15 @@
                                                                                 </div>
                                                                                 <div class="modal-body">
                                                                                     <div class="row">
+                                                                                        @if(isset($campaign_influencer->campaign->briefing_pdf))
+                                                                                            <div class="col-md-12">
+                                                                                                <a href="{{ $campaign_influencer->campaign->briefing_pdf->file_url }}" class="btn btn-primary mb-2">Click to open Briefing PDF</a>
+                                                                                            </div>
+                                                                                        @endif
                                                                                         <div class="col-md-12">
                                                                                             <span class="d-block font-weight-bold">Additional Info</span>
                                                                                             <div class="form-group">
-                                                                                                <textarea rows="3" class="form-control" readonly>
-                                                                                                    {{ $brands[$index]->additionalInfo->about ?? 'N/A' }}
-                                                                                                </textarea>
+                                                                                                <textarea rows="3" class="form-control text-left bg-white" readonly>{{ $campaign_influencer->campaign->additional_info ?? 'No additional info here' }}</textarea>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>

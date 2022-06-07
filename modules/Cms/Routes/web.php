@@ -35,6 +35,8 @@ Route::get('campaign-influencer-manager', 'CampaignInfluencerController@campaign
 Route::post('campaign/{id}/active-status/update', 'CampaignController@updateActiveStatus')->name('campaign.active-status.update');
 // Brand routes...
 Route::resource('brand', 'BrandController');
+Route::get('brand/{id}/content', 'BrandController@content')->name('brand.content');
+Route::put('brand/{id}/content-upload', 'BrandController@contentUpload')->name('brand.content.upload');
 // Product routes...
 Route::resource('product', 'ProductController');
 // Influencer category routes...
@@ -43,6 +45,7 @@ Route::resource('influencer-category', 'InfluencerCategoryController');
 Route::resource('campaign-influencer', 'CampaignInfluencerController');
 Route::put('campaign-influencer/{id}/feedback', 'CampaignInfluencerController@feedback')->name('campaign-influencer.feedback');
 Route::put('campaign-influencer/{id}/reminder', 'CampaignInfluencerController@reminder')->name('campaign-influencer.reminder');
+Route::put('campaign-influencer/{id}/report', 'CampaignInfluencerController@report')->name('campaign-influencer.report');
 Route::put('campaign-influencer/{id}/brand/{brand_id}/remove', 'CampaignInfluencerController@brandRemove')->name('campaign-influencer.brand.remove');
 
 // Logistic routes...

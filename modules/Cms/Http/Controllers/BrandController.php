@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 
 // services...
 use Modules\Cms\DataTables\BrandDataTable;
+use Modules\Cms\Http\Requests\BrandStoreRequest;
+use Modules\Cms\Http\Requests\BrandUpdateRequest;
+use Modules\Cms\Http\Requests\FaqStoreRequest;
 use Modules\Cms\Services\CampaignInfluencerService;
 use Modules\Cms\Services\CampaignService;
 use Modules\Ums\Services\UserService;
@@ -66,11 +69,64 @@ class BrandController extends Controller
         return view('cms::brand.index', compact('campaign_influencers'));
     }
 
+    /**
+     * Create brand
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create()
+    {
+        // return view
+        return view('cms::brand.create');
+    }
+
+    /**
+     * Store faq
+     *
+     * @param FaqStoreRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(BrandStoreRequest $request)
+    {
+        $data = $request->all();
+        // create brand
+        $data['is_process_completed'] = true;
+        $data['is_brand'] = true;
+        $data['terms_conditions'] = true;
+        $data['subscribe'] = true;
+        $data['password'] = bcrypt($data['password']);
+
+        $brand = $this->userService->create($data);
+
+        $brand->assignRole(['Brand']);
+        $brand->uploadFiles();
+
+        $data['first_name'] = $data['brand_name'];
+        $data['name'] = $data['brand_name'];
+        $data['email'] = $data['business_email'];
+        $data['phone'] = $data['mobile'];
+
+        // check if faq created
+        if ($brand) {
+
+            $brand->businessInfo()->create($data);
+            $brand->additionalInfo()->create($data);
+
+            // flash notification
+            notifier()->success('Brand created successfully.');
+        } else {
+            // flash notification
+            notifier()->error('Brand cannot be created.');
+        }
+        // redirect back
+        return redirect()->back();
+    }
+
     public function show($id)
     {
         $brand = $this->userService->find($id);
 
-        if (empty($brand)) {
+        if (empty($brand) || !$brand->is_brand) {
             // flash notification
             notifier()->error('Brand not found!');
             // redirect back
@@ -81,6 +137,60 @@ class BrandController extends Controller
     }
 
     public function edit($id)
+    {
+        $brand = $this->userService->find($id);
+
+        if (empty($brand) || !$brand->is_brand) {
+            // flash notification
+            notifier()->error('Brand not found!');
+            // redirect back
+            return redirect()->back();
+        }
+
+        return view('cms::brand.edit', compact('brand'));
+    }
+
+    public function update(BrandUpdateRequest $request, $id)
+    {
+        $data = $request->all();
+        // create brand
+        $brand = $this->userService->update($data, $id);
+
+        $brand->uploadFiles();
+
+        $additional_data = [
+            'first_name' => $data['brand_name'],
+        ];
+
+        $business_data = [
+            'name' => $data['brand_name'],
+            'address' => $data['address'],
+            'zip_code' => $data['zip_code'],
+            'city' => $data['city'],
+            'country_code' => $data['country_code'],
+            'email' => $data['business_email'],
+            'phone' => $data['mobile'],
+            'vat_number' => $data['vat_number'],
+            'registration_number' => $data['registration_number'],
+        ];
+
+        // check if faq created
+        if ($brand) {
+
+            $brand->additionalInfo()->update($additional_data);
+            $brand->businessInfo()->update($business_data);
+
+            // flash notification
+            notifier()->success('Brand updated successfully.');
+        } else {
+            // flash notification
+            notifier()->error('Brand updated be created.');
+        }
+        // redirect back
+        return redirect()->back();
+    }
+
+    public function content($id)
     {
         $campaign_influencer = $this->campaignInfluencerService->find($id);
 
@@ -94,7 +204,7 @@ class BrandController extends Controller
         return view('cms::brand.edit', compact('campaign_influencer'));
     }
 
-    public function update(Request $request, $id)
+    public function contentUpload(Request $request, $id)
     {
         $data = $request->all();
         // get campaign
@@ -124,10 +234,10 @@ class BrandController extends Controller
         // check if campaign updated
         if ($campaign) {
             // flash notification
-            notifier()->success('File uploaded successfully.');
+            notifier()->success('Content uploaded successfully.');
         } else {
             // flash notification
-            notifier()->error('File cannot be uploaded successfully.');
+            notifier()->error('Content cannot be uploaded successfully.');
         }
         // redirect back
         return redirect()->back();

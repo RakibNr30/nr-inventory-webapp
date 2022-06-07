@@ -10,8 +10,14 @@
                     <div class="card card-gray-dark card-outline">
                         <div class="card-header">
                             <h3 class="card-title mt-1">Edit Influencer</h3>
-                            <a href="{{ route('backend.cms.campaign.influencer-manager.list') }}" type="button"
-                               class="btn btn-success btn-sm text-white float-right">View Influencer List</a>
+                            @if(\App\Helpers\AuthManager::isSuperAdmin() || \App\Helpers\AuthManager::isAdmin())
+                                <a href="{{ route('backend.ums.influencer.list') }}" type="button"
+                                   class="btn btn-success btn-sm text-white float-right">View Influencer List</a>
+                            @endif
+                            @if(\App\Helpers\AuthManager::isInfluencerManager())
+                                <a href="{{ route('backend.cms.campaign.influencer-manager.list') }}" type="button"
+                                   class="btn btn-success btn-sm text-white float-right">View Influencer List</a>
+                            @endif
                         </div>
                         {!! Form::open(['url' => route('backend.ums.influencer.update', [$user->id]), 'method' => 'put', 'files' => true]) !!}
                         <div class="card-body">

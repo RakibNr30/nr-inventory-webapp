@@ -57,8 +57,18 @@
                                                     <th>Tiktok Profile</th>
                                                     <th>Tiktok Follower</th>
                                                     <th>Start Date</th>
+                                                    <th>Cooperation duration</th>
                                                     <th>Fee</th>
                                                     <th>Content Type</th>
+                                                    <th>Personal Notes</th>
+                                                    <th>Coupon</th>
+                                                    <th>Briefing Reminder</th>
+                                                    <th>Content Reminder</th>
+                                                    <th>Missing Content Reminder</th>
+                                                    <th>Accepted Internally</th>
+                                                    <th>Accepted by Partner</th>
+                                                    <th>Deadline</th>
+                                                    <th>Contact person</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -115,6 +125,14 @@
                                                         </td>
                                                         <td>
                                                             {{ $campaignInfluencer->start_date ?? '-' }}
+                                                        </td>
+                                                        <td>
+                                                            {{ $campaignInfluencer->cycle_count }}
+                                                            @if ($campaign->cycle_time_unit == 1)
+                                                                Months
+                                                            @elseif ($campaign->cycle_time_unit == 2)
+                                                                Weeks
+                                                            @endif
                                                         </td>
                                                         <td>
                                                             {{ $campaignInfluencer->fee }}&euro;
@@ -328,7 +346,7 @@
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td>
-                                                                                                {{ $campaign->cycle_count }}
+                                                                                                {{ $campaignInfluencer->cycle_count }}
                                                                                                 @if ($campaign->cycle_time_unit == 1)
                                                                                                     Months
                                                                                                 @elseif ($campaign->cycle_time_unit == 2)
@@ -397,6 +415,42 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+
+                                                        <td>{{ $campaignInfluencer->personal_notes ?? '-' }}</td>
+                                                        <td>{{ $campaignInfluencer->internal_individual_coupon_code ?? $campaignInfluencer->individual_coupon_code ?? '-' }}</td>
+                                                        <td>{{ count($campaignInfluencer->briefing_reminders_at ?? []) }}. Reminder</td>
+                                                        <td>{{ count($campaignInfluencer->content_reminders_at ?? []) }}. Reminder</td>
+                                                        <td>{{ count($campaignInfluencer->missing_content_reminders_at ?? []) }}. Reminder</td>
+                                                        <td>
+                                                            @if($campaignInfluencer->accept_status == 0)
+                                                                <span class="badge badge-dark">Pending</span>
+                                                            @endif
+                                                            @if($campaignInfluencer->accept_status == -1)
+                                                                <span class="badge badge-danger">Denied</span>
+                                                            @endif
+                                                            @if($campaignInfluencer->accept_status == 1)
+                                                                <span class="badge badge-success">Accept</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($campaignInfluencer->campaign_accept_status_by_influencer == 0)
+                                                                <span class="badge badge-dark">Pending</span>
+                                                            @endif
+                                                            @if($campaignInfluencer->campaign_accept_status_by_influencer == -1)
+                                                                <span class="badge badge-danger">Denied</span>
+                                                            @endif
+                                                            @if($campaignInfluencer->campaign_accept_status_by_influencer == 1)
+                                                                <span class="badge badge-success">Accept</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ Carbon::parse($campaignInfluencer->available_until)->format('m.d.Y') }}</td>
+                                                        <td>
+                                                            @php
+                                                            $user = \Modules\Ums\Entities\User::query()->find($campaignInfluencer->campaign_manager_id)
+                                                            @endphp
+
+                                                            {{ $user->additionalInfo->first_name ?? '' }} {{ $user->additionalInfo->last_name ?? '' }}
+                                                        </td>
                                                     </tr>
                                                 @endforeach
                                                 </tbody>
@@ -462,12 +516,15 @@
                                                                     </div>
                                                                     <div class="modal-body">
                                                                         <div class="row">
+                                                                            @if(isset($brand->briefing_pdf))
+                                                                                <div class="col-md-12">
+                                                                                    <a href="{{ $brand->briefing_pdf->file_url }}" class="btn btn-primary mb-2">Click to open Briefing PDF</a>
+                                                                                </div>
+                                                                            @endif
                                                                             <div class="col-md-12">
                                                                                 <span class="d-block font-weight-bold">Additional Info</span>
                                                                                 <div class="form-group">
-                                                                                    <textarea rows="3" class="form-control" readonly>
-                                                                                        {{ $brand->additionalInfo->about ?? 'N/A' }}
-                                                                                    </textarea>
+                                                                                    <textarea rows="3" class="form-control bg-white" readonly>{{ $brand->additionalInfo->about ?? 'N/A' }}</textarea>
                                                                                 </div>
                                                                             </div>
                                                                         </div>

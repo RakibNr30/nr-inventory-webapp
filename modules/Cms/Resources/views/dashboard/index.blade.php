@@ -102,6 +102,9 @@
                     @endif
 
                     @if(\App\Helpers\AuthManager::isBrand())
+                        @php
+                            $auth_brand = \Modules\Ums\Entities\User::query()->find(auth()->user()->id);
+                        @endphp
                         <div class="card card-gray-dark card-outline">
                             <div class="card-header">
                                 <h3 class="card-title">Dashboard</h3>
@@ -162,7 +165,7 @@
                                                                 <td>
                                                                 </td>
                                                                 <td>
-                                                                    <a class="btn btn-primary btn-sm text-white">
+                                                                    <a href="{{ $auth_brand->reporting_tool_link ?? '' }}" target="_blank" class="btn btn-primary btn-sm text-white">
                                                                         Open
                                                                     </a>
                                                                 </td>
@@ -226,9 +229,6 @@
                                                                     </a>
 
                                                                     <div class="modal fade" id="modal-lg-cd" style="display: none;" aria-hidden="true">
-                                                                        @php
-                                                                            $auth_brand = \Modules\Ums\Entities\User::query()->findOrFail(auth()->user()->id);
-                                                                        @endphp
                                                                         <div class="modal-dialog modal-lg">
                                                                             <div class="modal-content text-left">
                                                                                 <div class="modal-header">
@@ -254,10 +254,10 @@
                                                                                 <div class="modal-body">
                                                                                     <div class="row">
                                                                                         <div class="col-md-12">
-                                                                                            <span class="d-block font-weight-bold">Additional Info</span>
+<!--                                                                                            <span class="d-block font-weight-bold">Additional Info</span>-->
                                                                                             <div class="form-group">
                                                                                                 <span>
-                                                                                                    {{ $auth_brand->additionalInfo->about ?? 'N/A' }}
+                                                                                                    {{ $auth_brand->additionalInfo->about ?? 'No details about company' }}
                                                                                                 </span>
                                                                                             </div>
                                                                                         </div>

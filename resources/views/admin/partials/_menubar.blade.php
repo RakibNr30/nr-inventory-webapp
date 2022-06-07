@@ -10,9 +10,9 @@
     </a>
     <div class="sidebar">
         <div class="user-panel custom-user-image mt-3 pb-3 mb-3 d-flex">
-            <div class="image elevation-2" style="background-image: url({{ $user->avatar->file_url ?? ($user->additionalInfo->gender == 1 ?
-                 config('core.image.default.avatar_male') :
-                 config('core.image.default.avatar_female')) }})">
+            <div class="image elevation-2" style="background-image: url({{ $user->avatar->file_url ?? (\App\Helpers\AuthManager::isBrand() ? config('core.image.default.logo_preview') :
+                                                    ($user->additionalInfo->gender == 2 ? config('core.image.default.avatar_female') : config('core.image.default.avatar_male'))) }})"
+            >
             </div>
             <div class="info">
                 <a href="{{ url('/backend/profile/additional-info') }}" class="d-block">

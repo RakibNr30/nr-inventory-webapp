@@ -407,6 +407,34 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group">
+                                        <label for="briefing_pdf" class="@error('briefing_pdf') text-danger @enderror">Briefing PDF</label>
+                                        <div class="custom-file">
+                                            <input type="file" name="briefing_pdf" value="{{ old('briefing_pdf') }}" class="custom-file-input @error('briefing_pdf') is-invalid @enderror" id="customFile">
+                                            <label class="custom-file-label font-weight-normal" for="customFile">Choose file</label>
+                                        </div>
+                                        @error('briefing_pdf')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                        @if(isset($campaign->briefing_pdf))
+                                            <a href="{{ $campaign->briefing_pdf->file_url }}" class="btn btn-link" target="_blank">Click to open Briefing PDF</a>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="additional_info" class="@error('additional_info') text-danger @enderror">Additional Info</label>
+                                        <textarea id="additional_info" name="additional_info" rows="3"
+                                                  class="form-control @error('additional_info') is-invalid @enderror"
+                                                  placeholder="Enter additional info">{{ old('additional_info') ?? $campaign->additional_info }}</textarea>
+                                        @error('additional_info')
+                                        <span class="invalid-feedback"
+                                              role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
                                         <label for="personal_notes" class="@error('personal_notes') text-danger @enderror">Personal Notes</label>
                                         <textarea id="personal_notes" name="personal_notes" class="form-control" rows="3" placeholder="Enter extra agreements">{{ old('personal_notes') ?? $campaign->personal_notes }}</textarea>
                                         @error('personal_notes')

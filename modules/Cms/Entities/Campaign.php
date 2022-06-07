@@ -53,6 +53,7 @@ class Campaign extends BaseModel implements hasMedia
         'extra_content_4_value',
         'extra_content_5',
         'extra_content_5_value',
+        'additional_info',
         'personal_notes',
 		'offer_signed',
 		'start_of_recurring_bill',
@@ -105,6 +106,7 @@ class Campaign extends BaseModel implements hasMedia
         'extra_content_4_value' => 'integer',
         'extra_content_5' => 'string',
         'extra_content_5_value' => 'integer',
+		'additional_info' => 'string',
 		'personal_notes' => 'string',
 		'offer_signed' => 'integer',
 		'start_of_recurring_bill' => 'datetime',
@@ -135,6 +137,19 @@ class Campaign extends BaseModel implements hasMedia
         return null;
     }
 
+    // get briefing pdf attribute
+    public function getBriefingPdfAttribute()
+    {
+        $media = $this->getMedia(config('core.media_collection.campaign.briefing_pdf'));
+        if (isset($media[0])) {
+            return json_decode(json_encode([
+                'file_name' => $media[0]->file_name,
+                'file_url' => $media[0]->getUrl()
+            ]));
+        }
+        return null;
+    }
+
     public function uploadFiles()
     {
         // check for logo
@@ -146,6 +161,17 @@ class Campaign extends BaseModel implements hasMedia
             // upload new file to collection
             $this->addMediaFromRequest('logo')
                 ->toMediaCollection(config('core.media_collection.campaign.logo'));
+        }
+
+        // check for briefing pdf
+        if (request()->hasFile('briefing_pdf')) {
+            // remove old file from collection
+            if ($this->hasMedia(config('core.media_collection.campaign.briefing_pdf'))) {
+                $this->clearMediaCollection(config('core.media_collection.campaign.briefing_pdf'));
+            }
+            // upload new file to collection
+            $this->addMediaFromRequest('briefing_pdf')
+                ->toMediaCollection(config('core.media_collection.campaign.briefing_pdf'));
         }
     }
 

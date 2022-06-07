@@ -281,13 +281,14 @@ return [
             'avatar' => 'testimonial_avatar',
         ],
         'user' => [
-            'avatar' => 'user_avatar',
+            'avatar' => 'user_avatar'
         ],
         'user_additional_info' => [
             'image' => 'user_additional_info_image'
         ],
         'campaign' => [
             'logo' => 'campaign_logo',
+            'briefing_pdf' => 'campaign_briefing_pdf'
         ],
         'brand' => [
             'logo' => 'brand_logo',

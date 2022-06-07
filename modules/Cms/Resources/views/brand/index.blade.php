@@ -124,11 +124,11 @@
                                                                 </div>
                                                                 <div class="col-md-8">
                                                                     <div class="row">
-                                                                        @if($campaign_influencer->campaign->individual_coupon_code_brand)
+                                                                        @if($campaign_influencer->campaign->individual_coupon_code_brand || $campaign_influencer->campaign->individual_coupon_code_internal)
                                                                             <div class="col-md-6">
                                                                                 <div class="form-group">
                                                                                     <label class="brand-input-label">Individual Coupon Code</label>
-                                                                                    <input value="{{ $campaign_influencer->individual_coupon_code ?? '' }}"
+                                                                                    <input value="{{ $campaign_influencer->internal_individual_coupon_code ?? $campaign_influencer->individual_coupon_code ?? '' }}"
                                                                                            type="text"
                                                                                            class="form-control"
                                                                                            placeholder="Individual Coupon Code" autofocus
@@ -137,11 +137,11 @@
                                                                                 </div>
                                                                             </div>
                                                                         @endif
-                                                                        @if($campaign_influencer->campaign->individual_swipe_up_link_brand)
+                                                                        @if($campaign_influencer->campaign->individual_swipe_up_link_brand || $campaign_influencer->campaign->individual_swipe_up_link_internal)
                                                                             <div class="col-md-6">
                                                                                 <div class="form-group">
                                                                                     <label class="brand-input-label">Individual Swipe-up Link</label>
-                                                                                    <input value="{{ $campaign_influencer->individual_swipe_up_link ?? '' }}"
+                                                                                    <input value="{{ $campaign_influencer->internal_individual_swipe_up_link ?? $campaign_influencer->individual_swipe_up_link ?? '' }}"
                                                                                            type="text"
                                                                                            class="form-control"
                                                                                            placeholder="Individual Swipe-up Link" autofocus
@@ -178,11 +178,11 @@
                                         </td>
                                         <td style="width: 140px !important;">
                                             @if(!$uploaded_content)
-                                                <a href="{{ route('backend.cms.brand.edit', [$campaign_influencer->id]) }}" class="btn btn-primary btn-sm">
+                                                <a href="{{ route('backend.cms.brand.content', [$campaign_influencer->id]) }}" class="btn btn-primary btn-sm">
                                                     <i class="fa fa-upload"></i> Upload Files
                                                 </a>
                                             @else
-                                                <a href="{{ route('backend.cms.brand.edit', [$campaign_influencer->id]) }}" class="btn text-primary font-weight-bold">
+                                                <a href="{{ route('backend.cms.brand.content', [$campaign_influencer->id]) }}" class="btn text-primary font-weight-bold">
                                                     View Content <span class="badge badge-danger">{{ $uploaded_content }}</span>
                                                 </a>
                                             @endif

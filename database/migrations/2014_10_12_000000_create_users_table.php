@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration
             $table->boolean('is_brand')->nullable()->default(false);
             $table->boolean('is_influencer')->nullable()->default(false);
             $table->boolean('is_pre_selected')->nullable()->default(false);
+            $table->string('reporting_tool_link')->nullable();
             $table->json('categories')->nullable();
             $table->boolean('terms_conditions')->nullable();
             $table->boolean('subscribe')->nullable();

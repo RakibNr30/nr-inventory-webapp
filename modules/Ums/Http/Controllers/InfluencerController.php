@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 // requests...
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Modules\Cms\Services\CampaignInfluencerService;
 use Modules\Cms\Services\CampaignService;
 use Modules\Cms\Services\DashboardService;
@@ -105,6 +106,8 @@ class InfluencerController extends Controller
      * User list
      *
      * @return \Illuminate\View\View
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function index()
     {
@@ -167,6 +170,8 @@ class InfluencerController extends Controller
         $data['is_influencer'] = true;
         $data['is_process_completed'] = true;
         $data['categories'] = array_map('intval', $data['categories'] ?? []);
+        $data['terms_conditions'] = true;
+        $data['subscribe'] = true;
 
         // create user
         $user = $this->userService->create($data);
@@ -228,7 +233,7 @@ class InfluencerController extends Controller
         // get user
         $user = $this->userService->find($id);
         // check if user doesn't exists
-        if (empty($user)) {
+        if (empty($user) || !$user->is_influencer) {
             // flash notification
             notifier()->error('Influencer not found!');
             // redirect back
@@ -317,6 +322,16 @@ class InfluencerController extends Controller
         }
         // redirect back
         return redirect()->back();
+    }
+
+    public function list()
+    {
+        if (!AuthManager::isAdmin() && !AuthManager::isSuperAdmin())
+            abort(404);
+
+        $influencers = $this->userService->influencers();
+
+        return view('ums::influencer.list', compact('influencers'));
     }
 
     /**

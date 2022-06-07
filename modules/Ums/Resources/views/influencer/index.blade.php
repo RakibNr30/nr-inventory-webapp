@@ -11,6 +11,13 @@
                         <div class="card-header">
                             <h3 class="card-title">Influencer List</h3>
                             @if(\App\Helpers\AuthManager::isAdmin() ||
+                                \App\Helpers\AuthManager::isSuperAdmin())
+                                <a href="{{ route('backend.ums.influencer.list') }}" type="button" class="btn btn-primary btn-sm text-white ml-2 float-right">
+                                    All Registered Influencer
+                                </a>
+                            @endif
+
+                            @if(\App\Helpers\AuthManager::isAdmin() ||
                                 \App\Helpers\AuthManager::isSuperAdmin() ||
                                 \App\Helpers\AuthManager::isInfluencerManager())
                                 <a href="{{ route('backend.ums.influencer.create') }}" type="button" class="btn btn-success btn-sm text-white float-right">
@@ -85,9 +92,9 @@
                                 <table class="table table-striped projects">
                                     <tbody>
                                     @foreach($influencers->groupBy('campaign_id') as $campaign_index => $campaign_influencers)
-                                        <td colspan="6" class="text-center" style="background: #c5c9c9">
-                                            <h5>
-                                                {{ $campaign_influencers[0]->campaign->title ?? '' }}
+                                        <td colspan="6" class="" style="background: linear-gradient(90deg, rgba(21,250,155,1) 0%, rgb(54,51,51) 0%, rgba(255,255,255,1) 100%);">
+                                            <h5 class="text-white">
+                                                Campaign: {{ $campaign_influencers[0]->campaign->title ?? '' }}
                                             </h5>
                                         </td>
                                         @foreach($campaign_influencers as $index => $influencer)
@@ -105,6 +112,18 @@
                                                         {{ $influencer->user->additionalInfo->first_name ?? '' }}
                                                         {{ $influencer->user->additionalInfo->last_name ?? '' }}
                                                     </a>
+                                                    @if($influencer->accept_status == 0)
+                                                        <span class="badge badge-dark ml-2">Pending</span>
+                                                    @endif
+                                                    @if($influencer->accept_status == -1)
+                                                        <span class="badge badge-danger ml-2">Denied</span>
+                                                    @endif
+                                                    @if($influencer->accept_status == 1)
+                                                        <span class="badge badge-success ml-2">Accepted</span>
+                                                    @endif
+                                                    @if($influencer->is_add_to_favourite)
+                                                        <span class="badge badge-info ml-2">Favourite</span>
+                                                    @endif
                                                     <br>
                                                     @if(count($influencer->content_types))
                                                         <small class="text-primary font-weight-bold">
@@ -277,7 +296,7 @@
                                                         @if(!$influencer->is_add_to_favourite)
                                                             {!! Form::open(['url' => route('backend.cms.campaign-influencer.update', [$influencer->id]), 'method' => 'put']) !!}
                                                             <input type="hidden" name="is_add_to_favourite" value="1">
-                                                            <button class="btn btn-secondary btn-sm">
+                                                            <button class="btn btn-default btn-sm">
                                                                 Add to favourites
                                                             </button>
                                                             {!! Form::close() !!}
@@ -285,16 +304,54 @@
                                                         @if($influencer->is_add_to_favourite)
                                                             {!! Form::open(['url' => route('backend.cms.campaign-influencer.update', [$influencer->id]), 'method' => 'put']) !!}
                                                             <input type="hidden" name="is_add_to_favourite" value="0">
-                                                            <button class="btn btn-success btn-sm">
+                                                            <button class="btn btn-link btn-sm">
                                                                 Remove from favourites
                                                             </button>
                                                             {!! Form::close() !!}
                                                         @endif
-                                                        <a class="btn btn-info btn-sm" href="#">
+                                                        <a class="btn btn-info btn-sm" data-toggle="modal" href="#modal-lg-bc-{{ $campaign_index }}{{ $index }}">
                                                             <i class="fas fa-ellipsis-v">
                                                             </i>
                                                         </a>
+
+                                                        <div class="modal fade" id="modal-lg-bc-{{ $campaign_index }}{{ $index }}" style="display: none;" aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h4 class="modal-title text-lg font-weight-bold">
+                                                                            Report this influencer?
+                                                                        </h4>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">×</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    {!! Form::open(['url' => route('backend.cms.campaign-influencer.report', [$influencer->id]), 'method' => 'put']) !!}
+                                                                    <div class="modal-body">
+                                                                        <div class="form-group text-left mt-2">
+                                                                            <label for="report_details" class="@error('report_details') text-danger @enderror">Report details</label>
+                                                                            <textarea id="report_details" rows="4" name="report_details" class="form-control" placeholder="Enter report details" required autofocus>{{ old('report_details') ?? $influencer->report_details }}</textarea>
+                                                                            @error('report_details')
+                                                                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                                            @enderror
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="modal-footer justify-content-between">
+                                                                        <button type="button" class="btn btn-primary" data-dismiss="modal">
+                                                                            Close
+                                                                        </button>
+                                                                        <div class="form-group">
+                                                                            <button type="submit" class="btn btn-danger" name="is_reported" value="{{ 1 }}">
+                                                                                Report
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    {!! Form::close() !!}
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
+
                                                 </td>
                                             </tr>
                                         @endforeach

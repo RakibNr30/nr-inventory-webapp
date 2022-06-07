@@ -67,7 +67,7 @@ class CampaignService
      */
     public function find($id)
     {
-        return $this->campaignRepository->model
+        /*return $this->campaignRepository->model
             ->with(
                 [
                     'campaignInfluencers' => function (HasMany $query) {
@@ -76,6 +76,10 @@ class CampaignService
                     }
                 ]
             )
+            ->find($id);*/
+
+        return $this->campaignRepository->model
+            ->with('campaignInfluencers')
             ->find($id);
     }
 

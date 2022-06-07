@@ -38,8 +38,6 @@ class CreateCampaignsTable extends Migration
             $table->boolean('influencer_shipping_address_brand')->nullable()->default(false);
             $table->json('campaign_goals')->nullable();
             $table->longText('desired_content_notes')->nullable();
-
-            // new
             $table->integer('instagram_story')->nullable()->default(0);
             $table->integer('instagram_feed')->nullable()->default(0);
             $table->integer('instagram_reel')->nullable()->default(0);
@@ -55,7 +53,7 @@ class CreateCampaignsTable extends Migration
             $table->integer('extra_content_4_value')->nullable()->default(0);
             $table->string('extra_content_5')->nullable();
             $table->integer('extra_content_5_value')->nullable()->default(0);
-
+            $table->longText('additional_info')->nullable();
             $table->longText('personal_notes')->nullable();
             $table->boolean('offer_signed')->nullable()->default(false);
             $table->timestamp('start_of_recurring_bill')->nullable()->comment('when first content is online');

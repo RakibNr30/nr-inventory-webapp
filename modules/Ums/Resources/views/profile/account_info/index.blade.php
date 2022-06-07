@@ -20,7 +20,9 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <div class="form-group">
-                                            <label for="avatar" class="@error('avatar') text-danger @enderror">Upload Avatar</label>
+                                            <label for="avatar" class="@error('avatar') text-danger @enderror">
+                                                {{ \App\Helpers\AuthManager::isBrand() ? 'Upload Logo' : 'Upload Avatar' }}
+                                            </label>
                                             <div class="custom-file">
                                                 <input type="file" name="avatar" value="{{ old('avatar') }}" class="custom-file-input @error('avatar') is-invalid @enderror" id="customFile">
                                                 <label class="custom-file-label font-weight-normal" for="customFile">Choose file</label>
@@ -29,10 +31,14 @@
                                             <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                             <div class="image-output">
-                                                <img src="{{ $user->avatar->file_url ??
+                                                @if(\App\Helpers\AuthManager::isBrand())
+                                                    <img src="{{ $user->avatar->file_url ?? config('core.image.default.logo_preview') }}">
+                                                @else
+                                                    <img src="{{ $user->avatar->file_url ??
                                                         ($user->additionalInfo->gender == 2 ?
                                                         config('core.image.default.avatar_female') :
                                                         config('core.image.default.avatar_male')) }}">
+                                                @endif
                                             </div>
                                         </div>
                                     </div>

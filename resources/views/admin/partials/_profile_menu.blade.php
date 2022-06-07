@@ -6,9 +6,10 @@
             @endphp
             <div class="text-center">
                 <div class="profile-user-img img-fluid img-circle"
-                     style="background-image: url({{ $user->avatar->file_url ?? ($user->additionalInfo->gender == 1 ?
-                     config('core.image.default.avatar_male') :
-                     config('core.image.default.avatar_female')) }})">
+                     style="background-image: url({{ $user->avatar->file_url ?? (\App\Helpers\AuthManager::isBrand() ? config('core.image.default.logo_preview') :
+                                                    ($user->additionalInfo->gender == 2 ? config('core.image.default.avatar_female') : config('core.image.default.avatar_male'))) }})"
+                >
+
                 </div>
             </div>
             <h3 class="profile-username text-center">{{ $user->additionalInfo->first_name ?? '' }} {{ $user->additionalInfo->last_name ?? '' }}</h3>

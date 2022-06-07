@@ -24,12 +24,19 @@ class BrandStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|max:255',
-			'details' => "max:4294967295",
-            'logo' => 'sometimes|image|max:1024',
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'brand_name' => 'required|max:255',
+            'avatar' => 'sometimes|image|max:1024',
+            'reporting_tool_link' => 'required|max:255',
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'zip_code' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'country_code' => 'required|string|max:255',
+            'business_email' => 'required|string|email|max:255',
+            'mobile' => 'required|string|max:255',
+            'vat_number' => 'required|string|max:255',
+            'registration_number' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users|confirmed',
             'password' => 'required|string|min:8|confirmed',
         ];
     }
