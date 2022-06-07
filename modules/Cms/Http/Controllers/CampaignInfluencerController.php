@@ -69,7 +69,7 @@ class CampaignInfluencerController extends Controller
     /**
      * Store campaign influencer
      *
-     * @param CampaignStoreRequest $request
+     * @param CampaignInfluencerStoreRequest $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -77,33 +77,42 @@ class CampaignInfluencerController extends Controller
     {
         $data = $request->all();
 
-        $campaign_influencer = CampaignInfluencer::query()
-            ->where('campaign_id', $id)
-            ->where('influencer_id', $data['influencer_id'])
-            ->first();
-
-        if ($campaign_influencer) {
-            // flash notification
-            notifier()->error('Influencer already added to this campaign.');
-            // redirect to
-            return redirect()->route('backend.cms.campaign.influencer.create', [$id]);
-        }
-
         if (isset($data['brand_ids']))
             $data['brand_ids'] = array_map('intval', $data['brand_ids'] ?? []);
 
-        $data['campaign_id'] = $id;
         $data['campaign_manager_id'] = Campaign::query()->find($id)->created_by ?? null;
 
-        // create campaign
-        $campaign = $this->campaignInfluencerService->create($data);
-        // check if campaign created
-        if ($campaign) {
-            // flash notification
-            notifier()->success('Influencer added successfully to campaign.');
+        $brandsCampaignIds = Campaign::query()
+            ->whereIn('brand_id', $data['brand_ids'])
+            ->where('is_active', 1)
+            ->get()->pluck('id')->toArray();
+
+        $brandsCampaignIds[] = intval($id);
+
+        $brandsCampaignIds = array_unique($brandsCampaignIds);
+
+        $alreadyAddedCount = 0;
+        $addedCount = 0;
+
+        foreach ($brandsCampaignIds as $campaignId) {
+            $campaign_influencer = CampaignInfluencer::query()
+                ->where('campaign_id', $campaignId)
+                ->where('influencer_id', $data['influencer_id'])
+                ->first();
+
+            if ($campaign_influencer) {
+                $alreadyAddedCount++;
+            } else {
+                $data['campaign_id'] = $campaignId;
+                $this->campaignInfluencerService->create($data);
+                $addedCount++;
+            }
+        }
+
+        if ($addedCount > 0) {
+            notifier()->success('This influencer added to ' . $addedCount . ' campaign');
         } else {
-            // flash notification
-            notifier()->error('Influencer cannot be added successfully to campaign.');
+            notifier()->success('This influencer can not be added any campaign');
         }
 
         // redirect to
