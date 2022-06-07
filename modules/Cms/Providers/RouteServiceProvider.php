@@ -48,7 +48,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapWebRoutes()
     {
         Route::prefix('backend')
-            ->middleware(['web', 'auth', 'register'])
+            ->middleware(['web', 'auth', 'register', 'verified'])
             ->name('backend.cms.')
             ->namespace($this->moduleNamespace)
             ->group(module_path('Cms', '/Routes/web.php'));

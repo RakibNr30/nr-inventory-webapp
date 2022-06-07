@@ -6,6 +6,7 @@ use App\Helpers\AuthManager;
 use App\Http\Controllers\Controller;
 
 // requests...
+use App\Mail\RegisterMail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -182,7 +183,7 @@ class InfluencerController extends Controller
         // check if user created
         if ($user) {
             $data['user_id'] = $user->id;
-            $this->userAdditionalInfoService->create($data);
+            $userAdditionalInfo = $this->userAdditionalInfoService->create($data);
 
             $data['first_name'] = $data['shipping_first_name'];
             $data['last_name'] = $data['shipping_last_name'];
@@ -190,10 +191,29 @@ class InfluencerController extends Controller
             $this->userShippingInfoService->create($data);
             $this->userSocialAccountInfoService->create($data);
 
-            notifier()->success('Influencer added successfully.');
+            $send_success = true;
+
+            try {
+                $mailData = [
+                    'title' => 'Registration',
+                    'first_name' => $userAdditionalInfo->first_name ?? '',
+                    'last_name' => $userAdditionalInfo->last_name ?? '',
+                    'register_as' => 'Influencer',
+                    'login_url' => env('APP_URL') . '/login'
+                ];
+                \Mail::to($user->email ?? '')->send(new RegisterMail($mailData));
+            } catch (\Exception $exception) {
+                $send_success = false;
+            }
+
+            if ($send_success) {
+                notifier()->success('Influencer added successfully.');
+            } else {
+                notifier()->warning('Influencer added successfully but mail not send due to connection error.');
+            }
         } else {
             // flash notification
-            notifier()->error('Influencer cannot be added successfully.');
+            notifier()->error('Influencer cannot be added.');
         }
         // redirect back
         return redirect()->back();

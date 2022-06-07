@@ -1,7 +1,6 @@
 @extends('auth.layouts.master')
 @section('title', 'Email Verification')
 @section('content')
-    {{--
     <div class="card">
         <div class="card-body login-card-body">
             <p class="login-box-msg">Email verification.</p>
@@ -31,5 +30,4 @@
             </div>
         </div>
     </div>
-    --}}
 @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\VerifiesEmails;
+use Illuminate\Http\Request;
 
 class VerificationController extends Controller
 {
@@ -26,6 +27,19 @@ class VerificationController extends Controller
      * @var string
      */
     protected $redirectTo = '/backend/dashboard';
+
+    /**
+     * The user has been verified.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return mixed
+     */
+    protected function verified(Request $request)
+    {
+        notifier()->success('Email verified successfully');
+
+        return redirect()->route('register.almost-ready');
+    }
 
     /**
      * Create a new controller instance.

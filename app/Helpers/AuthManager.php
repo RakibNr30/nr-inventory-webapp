@@ -45,6 +45,10 @@ class AuthManager
         return $user->is_process_completed ?? null;
     }
 
+    public static function isVerified($user) {
+        return (bool)$user->email_verified_at;
+    }
+
     public static function getRole() {
         $user = User::query()->findOrFail(auth()->user()->id);
         if ($user) {

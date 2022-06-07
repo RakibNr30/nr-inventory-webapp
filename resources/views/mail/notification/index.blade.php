@@ -1,6 +1,7 @@
 @component('mail::message')
-    # {{ $data['title'] ?? '' }}
+# {{ $data['title'] ?? '' }}
 
-    Thanks,<br>
-    {{ config('app.name') }}
+
+Thanks,<br>
+{{ config('app.name') }}
 @endcomponent

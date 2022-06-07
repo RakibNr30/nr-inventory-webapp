@@ -1,9 +1,18 @@
 @component('mail::message')
-    # {{ $data['title'] ?? '' }}
+# {{ $data['title'] ?? '' }}
 
-    Dear, {{ $data['first_name'] }} {{ $data['first_name'] }}<br>
-    You successfully registered as #{{ $data['role'] ?? '' }}<br><br>
+Dear, {{ $data['first_name'] }} {{ $data['first_name'] }}
+You successfully registered as <b>#{{ $data['register_as'] ?? '' }}</b>
 
-    Thanks,<br>
-    {{ config('app.name') }}
+
+You can login now,<br>
+
+@component('mail::button', ['url' => $data['login_url'] ?? ''])
+LOGIN
+@endcomponent
+
+
+
+Thanks,<br>
+{{ config('app.name') }}
 @endcomponent

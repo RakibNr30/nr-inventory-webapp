@@ -1,9 +1,9 @@
 @component('mail::message')
-    # {{ $data['title'] ?? '' }}
+# {{ $data['title'] ?? '' }}
 
-    Dear, {{ $data['first_name'] }} {{ $data['first_name'] }}<br>
-    You successfully registered as #{{ $data['role'] ?? '' }}<br><br>
+Dear, {{ $data['first_name'] }} {{ $data['first_name'] }}<br>
+You successfully registered as #{{ $data['role'] ?? '' }}<br><br>
 
-    Thanks,<br>
-    {{ config('app.name') }}
+Thanks,<br>
+{{ config('app.name') }}
 @endcomponent

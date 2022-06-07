@@ -6,6 +6,7 @@ use App\Helpers\AuthManager;
 use App\Http\Controllers\Controller;
 
 // requests...
+use App\Mail\RegisterMail;
 use Illuminate\Http\Request;
 
 // services...
@@ -110,10 +111,28 @@ class BrandController extends Controller
         if ($brand) {
 
             $brand->businessInfo()->create($data);
-            $brand->additionalInfo()->create($data);
+            $brandAdditionalInfo = $brand->additionalInfo()->create($data);
 
-            // flash notification
-            notifier()->success('Brand created successfully.');
+            $send_success = true;
+
+            try {
+                $mailData = [
+                    'title' => 'Registration',
+                    'first_name' => $brandAdditionalInfo->first_name ?? '',
+                    'last_name' => $brandAdditionalInfo->last_name ?? '',
+                    'register_as' => 'Brand',
+                    'login_url' => env('APP_URL') . '/login'
+                ];
+                \Mail::to($brand->email ?? '')->send(new RegisterMail($mailData));
+            } catch (\Exception $exception) {
+                $send_success = false;
+            }
+
+            if ($send_success) {
+                notifier()->success('Brand created successfully.');
+            } else {
+                notifier()->warning('Brand created successfully but mail not send due to connection error.');
+            }
         } else {
             // flash notification
             notifier()->error('Brand cannot be created.');

@@ -139,7 +139,14 @@ class RegisterController extends Controller
      * @param  mixed  $user
      * @return mixed
      */
+
     protected function registered(Request $request, $user) {
+
+        if (!AuthManager::isVerified($user)) {
+            //auth()->logout();
+            return redirect()->route('verification.notice');
+        }
+
         if (!AuthManager::isProcessCompleted($user)) {
             auth()->logout();
             session(['user_id' => $user->id]);
@@ -202,12 +209,16 @@ class RegisterController extends Controller
         $user = tap($user)->update($user_data);
         $user->additionalInfo->update($user_additional_data);
 
+        $register_as = '';
+
         if ($user->hasRole("Influencer")) {
             $user->shippingInfo->update($user_shipping_data);
             $user->socialAccountInfo->update($user_social_data);
+            $register_as = 'Influencer';
         }
         if ($user->hasRole("Brand")) {
             $user->businessInfo->update($user_business_data);
+            $register_as = 'Brand';
         }
 
         // upload files
@@ -222,6 +233,8 @@ class RegisterController extends Controller
                 'title' => 'Registration',
                 'first_name' => $user->additionalInfo->first_name ?? '',
                 'last_name' => $user->additionalInfo->last_name ?? '',
+                'register_as' => $register_as,
+                'login_url' => env('APP_URL') . '/login'
             ];
             \Mail::to($user->email ?? '')->send(new RegisterMail($mailData));
         } catch (\Exception $exception) {

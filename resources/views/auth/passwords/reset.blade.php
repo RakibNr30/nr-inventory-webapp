@@ -1,7 +1,6 @@
 @extends('auth.layouts.master')
 @section('title', 'Reset Password')
 @section('content')
-    {{--
     <div class="card">
         <div class="card-body login-card-body">
             <p class="login-box-msg">Reset your forgotten password.</p>
@@ -60,5 +59,4 @@
             </div>
         </div>
     </div>
-    --}}
 @endsection

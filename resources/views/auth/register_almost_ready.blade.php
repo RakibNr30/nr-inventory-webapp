@@ -15,6 +15,7 @@
                 </a>
             </div>
             <div class="card-body login-card-body">
+                @include('admin.partials._alert')
                 <p class="register-box-msg">
                     Before getting started we need more important information from you.
                 </p>

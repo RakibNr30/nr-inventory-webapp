@@ -1,7 +1,6 @@
 @extends('auth.layouts.master')
 @section('title', 'Reset Password')
 @section('content')
-    {{--
     <div class="card">
         <div class="card-body login-card-body">
             <p class="login-box-msg">Reset your forgotten password</p>
@@ -32,7 +31,7 @@
                 </div>
             </div>
             {!! Form::close() !!}
-            <div class="social-auth-links text-center mb-3">
+<!--            <div class="social-auth-links text-center mb-3">
                 <p>- OR -</p>
                 <a href="#" class="btn btn-block btn-primary">
                     <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
@@ -40,7 +39,7 @@
                 <a href="#" class="btn btn-block btn-danger">
                     <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
                 </a>
-            </div>
+            </div>-->
             <p class="mb-1">
                 <a href="{{ route('login') }}">Login to your account</a>
             </p>
@@ -49,5 +48,4 @@
             </p>
         </div>
     </div>
-    --}}
 @endsection

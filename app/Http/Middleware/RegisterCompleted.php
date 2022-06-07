@@ -18,6 +18,13 @@ class RegisterCompleted
     public function handle($request, Closure $next)
     {
         if (auth()->user()) {
+            if (!AuthManager::isVerified(auth()->user()) &&
+                (AuthManager::isInfluencer() || AuthManager::isBrand())
+            ) {
+                auth()->logout();
+                return redirect()->route('verification.notice');
+            }
+
             if (!AuthManager::isProcessCompleted(auth()->user()) &&
                 (AuthManager::isInfluencer() || AuthManager::isBrand())
             ) {
