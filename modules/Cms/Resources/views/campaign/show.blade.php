@@ -182,16 +182,20 @@
                                                                                             {{ $influencer->email ?? '' }}
                                                                                         </span>
                                                                                         <span class="d-block text-sm">
-                                                                                            <i class="fab fa-instagram mr-2"></i>
-                                                                                            <a href="https://www.instagram.com/{{ $influencer->socialAccountInfo->instagram_username }}" >
-                                                                                                {{ '@' . $influencer->socialAccountInfo->tiktok_username }}
-                                                                                            </a>
+                                                                                            @if($influencer->socialAccountInfo->instagram_username)
+                                                                                                <i class="fab fa-instagram mr-2"></i>
+                                                                                                <a href="https://www.instagram.com/{{ $influencer->socialAccountInfo->instagram_username }}" >
+                                                                                                    {{ '@' . $influencer->socialAccountInfo->instagram_username }}
+                                                                                                </a>
+                                                                                            @endif
                                                                                         </span>
                                                                                         <span class="d-block text-sm">
-                                                                                            <i class="fab fa-tiktok mr-2"></i>
-                                                                                            <a href="https://www.tiktok.com/{{ '@' . $influencer->socialAccountInfo->tiktok_username }}">
-                                                                                                {{ '@' . $influencer->socialAccountInfo->tiktok_username }}
-                                                                                            </a>
+                                                                                            @if($influencer->socialAccountInfo->tiktok_username)
+                                                                                                <i class="fab fa-tiktok mr-2"></i>
+                                                                                                <a href="https://www.tiktok.com/{{ '@' . $influencer->socialAccountInfo->tiktok_username }}">
+                                                                                                    {{ '@' . $influencer->socialAccountInfo->tiktok_username }}
+                                                                                                </a>
+                                                                                            @endif
                                                                                         </span>
                                                                                     </div>
                                                                                     <div class="ml-4 d-inline-block">

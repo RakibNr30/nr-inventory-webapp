@@ -102,7 +102,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="gender"
                                                    class="@error('gender') text-danger @enderror">Gender</label>
@@ -120,7 +120,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="dob" class="@error('dob') text-danger @enderror">Date of
                                                 Birth</label>
@@ -128,24 +128,6 @@
                                                    type="text" class="form-control datepicker @error('dob') is-invalid @enderror"
                                                    placeholder="Enter dob" autofocus>
                                             @error('dob')
-                                            <span class="invalid-feedback"
-                                                  role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="blood_group" class="@error('blood_group') text-danger @enderror">Blood
-                                                Group</label>
-                                            <select id="blood_group" name="blood_group"
-                                                    class="form-control @error('blood_group') is-invalid @enderror">
-                                                <option value="">Select Blood Group</option>
-                                                @foreach(config('core.blood_groups') as $blood_group_key => $blood_group)
-                                                    <option
-                                                        value="{{ $blood_group_key }}" {{ $blood_group_key == $userAdditionalInfo->blood_group ? 'selected' : '' }}>{{ $blood_group }}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('blood_group')
                                             <span class="invalid-feedback"
                                                   role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror

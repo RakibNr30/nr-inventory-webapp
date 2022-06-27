@@ -57,6 +57,19 @@
                     </span>
                         @enderror
                     </div>
+                    <div class="input-group mb-3">
+                        <input id="phone" name="phone" placeholder="Phone Number" value="{{ old('phone') }}" type="text" class="form-control @error('phone') is-invalid @enderror" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-phone"></span>
+                            </div>
+                        </div>
+                        @error('phone')
+                        <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                        @enderror
+                    </div>
                 </template>
                 <template v-if="nameToggle == 2">
                     <div class="input-group mb-3">

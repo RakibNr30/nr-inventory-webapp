@@ -181,6 +181,8 @@ class CampaignInfluencerController extends Controller
 
                 $brand = $this->userService->find($campaign_influencer->campaign->brand_id ?? '');
 
+                $send_success = true;
+
                 try {
                     $mailData = [
                         'title' => 'Campaign Accept/Deny Notification',
@@ -325,6 +327,8 @@ class CampaignInfluencerController extends Controller
         $campaign_influencer = $this->campaignInfluencerService->update($data, $id);
 
         $brand = $this->userService->find($brand_id);
+
+        $send_success = true;
 
         try {
             $mailData = [

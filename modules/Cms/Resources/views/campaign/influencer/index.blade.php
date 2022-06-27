@@ -29,6 +29,7 @@
                                                     <th>Instagram Follower</th>
                                                     <th>Tiktok Profile</th>
                                                     <th>Tiktok Follower</th>
+                                                    <th>Campaign</th>
                                                     <th>Briefing Reminder</th>
                                                     <th>Content Reminder</th>
                                                     <th>Missing Content Reminder</th>
@@ -95,6 +96,9 @@
                                                         </td>
                                                         <td>
                                                             {{ \App\Helpers\NumberManager::shortFormat($influencer->socialAccountInfo->tiktok_followers ?? 0) }}
+                                                        </td>
+                                                        <td>
+                                                            {{ $campaign->title ?? '-' }}
                                                         </td>
                                                         <td>
                                                             {{ $campaignInfluencer->briefing_reminder ? 'Yes' : 'None' }}

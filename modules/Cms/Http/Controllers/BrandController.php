@@ -220,7 +220,7 @@ class BrandController extends Controller
             return redirect()->back();
         }
 
-        return view('cms::brand.edit', compact('campaign_influencer'));
+        return view('cms::brand.content', compact('campaign_influencer'));
     }
 
     public function contentUpload(Request $request, $id)

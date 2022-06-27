@@ -63,6 +63,7 @@ class RegisterController extends Controller
                 'first_name' => ['required', 'string', 'max:255'],
                 'last_name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'confirmed'],
+                'phone' => ['required', 'string', 'max:255'],
                 'password' => ['required', 'string', 'min:8', 'confirmed'],
             ]);
         }
@@ -87,6 +88,7 @@ class RegisterController extends Controller
         if ($data['login_as'] == 1) {
             $user = User::query()->create([
                 'email' => $data['email'],
+                'phone' => $data['phone'],
                 'password' => Hash::make($data['password']),
                 "is_influencer" => true,
             ]);
