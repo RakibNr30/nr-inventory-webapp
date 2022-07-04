@@ -138,7 +138,7 @@
                                                     @endif
                                                     <div class="mt-1">
                                                         @if(\App\Helpers\AuthManager::isBrand())
-                                                            @if($influencer->accept_status == 0)
+                                                            @if($influencer->accept_status == 0 && $influencer->campaign_accept_status_by_influencer != -1)
                                                                 <button name="accept_status" value="1" class="btn btn-primary btn-xs">
                                                                     <i class="fas fa-check">
                                                                     </i>
@@ -167,7 +167,7 @@
                                                         @endif
 
                                                         @if(!\App\Helpers\AuthManager::isBrand() && !\App\Helpers\AuthManager::isInfluencer())
-                                                            @if($influencer->accept_status == 1 && ($influencer->campaign->individual_coupon_code_internal || $influencer->campaign->individual_swipe_up_link_internal))
+                                                            @if($influencer->accept_status == 1 && ($influencer->campaign->individual_coupon_code_internal || $influencer->campaign->individual_swipe_up_link_internal) && $influencer->campaign_accept_status_by_influencer != -1)
                                                                 <button name="internal_accept_status" value="1" class="btn btn-primary btn-xs">
                                                                     Modify
                                                                 </button>
@@ -293,7 +293,18 @@
 
                                                 <td>
                                                     <div class="text-center" style="width: 200px;">
-                                                        @if(!$influencer->is_add_to_favourite)
+                                                        @if($influencer->campaign_accept_status_by_influencer == -1)
+                                                            Influencer: <span class="text-danger"><i class="fas fa-close"></i>Denied</span>
+                                                        @endif
+                                                        @if($influencer->campaign_accept_status_by_influencer == 0)
+                                                            Influencer: <span class="text-secondary"><i class="fas fa-cog"></i>Pending</span>
+                                                        @endif
+                                                        @if($influencer->campaign_accept_status_by_influencer == 1)
+                                                            Influencer: <span class="text-success"><i class="fas fa-check"></i>Accepted</span>
+                                                        @endif
+                                                        <br>
+
+                                                        @if(!$influencer->is_add_to_favourite && $influencer->campaign_accept_status_by_influencer != -1)
                                                             {!! Form::open(['url' => route('backend.cms.campaign-influencer.update', [$influencer->id]), 'method' => 'put']) !!}
                                                             <input type="hidden" name="is_add_to_favourite" value="1">
                                                             <button class="btn btn-default btn-sm">
@@ -309,47 +320,40 @@
                                                             </button>
                                                             {!! Form::close() !!}
                                                         @endif
-                                                        <a class="btn btn-info btn-sm" data-toggle="modal" href="#modal-lg-bc-{{ $campaign_index }}{{ $index }}">
-                                                            <i class="fas fa-ellipsis-v">
-                                                            </i>
-                                                        </a>
-
-                                                        <div class="modal fade" id="modal-lg-bc-{{ $campaign_index }}{{ $index }}" style="display: none;" aria-hidden="true">
-                                                            <div class="modal-dialog modal-lg">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h4 class="modal-title text-lg font-weight-bold">
-                                                                            Report this influencer?
-                                                                        </h4>
-                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                            <span aria-hidden="true">×</span>
-                                                                        </button>
-                                                                    </div>
-                                                                    {!! Form::open(['url' => route('backend.cms.campaign-influencer.report', [$influencer->id]), 'method' => 'put']) !!}
-                                                                    <div class="modal-body">
-                                                                        <div class="form-group text-left mt-2">
-                                                                            <label for="report_details" class="@error('report_details') text-danger @enderror">Report details</label>
-                                                                            <textarea id="report_details" rows="4" name="report_details" class="form-control" placeholder="Enter report details" required autofocus>{{ old('report_details') ?? $influencer->report_details }}</textarea>
-                                                                            @error('report_details')
-                                                                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                                                            @enderror
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="modal-footer justify-content-between">
-                                                                        <button type="button" class="btn btn-primary" data-dismiss="modal">
-                                                                            Close
-                                                                        </button>
-                                                                        <div class="form-group">
-                                                                            <button type="submit" class="btn btn-danger" name="is_reported" value="{{ 1 }}">
+                                                        @if($influencer->is_reported)
+                                                            <a class="btn btn-info btn-sm" data-toggle="modal" href="#modal-lg-bc-{{ $campaign_index }}{{ $index }}">
+                                                                <i class="fas fa-ellipsis-v">
+                                                                </i>
+                                                            </a>
+                                                            <div class="modal fade" id="modal-lg-bc-{{ $campaign_index }}{{ $index }}" style="display: none;" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h4 class="modal-title text-lg font-weight-bold">
                                                                                 Report
+                                                                            </h4>
+                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                <span aria-hidden="true">×</span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <div class="form-group text-left mt-2">
+                                                                                <label for="report_details" class="@error('report_details') text-danger @enderror">Report details</label>
+                                                                                <p>
+                                                                                    {{ $influencer->report_details }}
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="modal-footer justify-content-between">
+                                                                            <button type="button" class="btn btn-primary" data-dismiss="modal">
+                                                                                Close
                                                                             </button>
                                                                         </div>
                                                                     </div>
-                                                                    {!! Form::close() !!}
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        @endif
                                                     </div>
 
                                                 </td>

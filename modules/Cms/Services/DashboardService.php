@@ -204,6 +204,7 @@ class DashboardService
         $statistics = new \stdClass();
         $influencers = $this->campaignInfluencerRepository->model
             ->whereJsonContains('brand_ids', auth()->user()->id)
+            ->orWhereJsonContains('denied_brand_ids', auth()->user()->id)
             ->get();
 
         $statistics->overall_influencers = $influencers

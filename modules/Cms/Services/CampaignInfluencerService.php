@@ -117,6 +117,7 @@ class CampaignInfluencerService
     {
         return $this->campaignInfluencerRepository->model
             ->whereJsonContains('brand_ids', auth()->user()->id)
+            ->orWhereJsonContains('denied_brand_ids', auth()->user()->id)
             ->paginate($limit);
     }
 

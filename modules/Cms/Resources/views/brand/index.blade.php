@@ -117,6 +117,11 @@
                                                         </div>
                                                         <div class="modal-body">
                                                             <div class="row">
+                                                                @if(isset($campaign_influencer->campaign->briefing_pdf))
+                                                                    <div class="col-md-12">
+                                                                        <a href="{{ $campaign_influencer->campaign->briefing_pdf->file_url }}" class="btn btn-primary mb-2">Click to open Briefing PDF</a>
+                                                                    </div>
+                                                                @endif
                                                                 <div class="col-md-4">
                                                                     <span class="d-block font-weight-bold">Additional Info</span>
                                                                     <hr>

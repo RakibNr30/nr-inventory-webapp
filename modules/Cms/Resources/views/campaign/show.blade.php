@@ -65,7 +65,7 @@
                                                     <th>Briefing Reminder</th>
                                                     <th>Content Reminder</th>
                                                     <th>Missing Content Reminder</th>
-                                                    <th>Accepted Internally</th>
+                                                    <th>Accepted by influencer</th>
                                                     <th>Accepted by Partner</th>
                                                     <th>Deadline</th>
                                                     <th>Contact person</th>
@@ -426,17 +426,6 @@
                                                         <td>{{ count($campaignInfluencer->content_reminders_at ?? []) }}. Reminder</td>
                                                         <td>{{ count($campaignInfluencer->missing_content_reminders_at ?? []) }}. Reminder</td>
                                                         <td>
-                                                            @if($campaignInfluencer->accept_status == 0)
-                                                                <span class="badge badge-dark">Pending</span>
-                                                            @endif
-                                                            @if($campaignInfluencer->accept_status == -1)
-                                                                <span class="badge badge-danger">Denied</span>
-                                                            @endif
-                                                            @if($campaignInfluencer->accept_status == 1)
-                                                                <span class="badge badge-success">Accept</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
                                                             @if($campaignInfluencer->campaign_accept_status_by_influencer == 0)
                                                                 <span class="badge badge-dark">Pending</span>
                                                             @endif
@@ -444,6 +433,17 @@
                                                                 <span class="badge badge-danger">Denied</span>
                                                             @endif
                                                             @if($campaignInfluencer->campaign_accept_status_by_influencer == 1)
+                                                                <span class="badge badge-success">Accept</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($campaignInfluencer->accept_status == 0)
+                                                                <span class="badge badge-dark">Pending</span>
+                                                            @endif
+                                                            @if($campaignInfluencer->accept_status == -1)
+                                                                <span class="badge badge-danger">Denied</span>
+                                                            @endif
+                                                            @if($campaignInfluencer->accept_status == 1)
                                                                 <span class="badge badge-success">Accept</span>
                                                             @endif
                                                         </td>
