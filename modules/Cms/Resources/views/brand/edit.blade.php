@@ -19,7 +19,7 @@
                                     <h5>Company Details</h5>
                                     <hr>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="brand_name" class="@error('brand_name') text-danger @enderror">Brand Name</label>
                                         <input id="brand_name" name="brand_name" value="{{ old('brand_name') ?? $brand->additionalInfo->first_name ?? '' }}" type="text" class="form-control @error('brand_name') is-invalid @enderror" placeholder="Enter brand name" autofocus>
@@ -28,7 +28,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="avatar" class="@error('avatar') text-danger @enderror">Upload Logo</label>
                                         <div class="custom-file">
@@ -45,11 +45,20 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="reporting_tool_link" class="@error('reporting_tool_link') text-danger @enderror">Reporting Tool Link</label>
                                         <input id="reporting_tool_link" name="reporting_tool_link" value="{{ old('reporting_tool_link') ?? $brand->reporting_tool_link }}" type="text" class="form-control @error('reporting_tool_link') is-invalid @enderror" placeholder="Enter reporting tool link" autofocus>
                                         @error('reporting_tool_link')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="brand_priority" class="@error('brand_priority') text-danger @enderror">Priority</label>
+                                        <input id="brand_priority" name="brand_priority" value="{{ old('brand_priority') ?? $brand->brand_priority }}" type="number" min="0" class="form-control @error('brand_priority') is-invalid @enderror" placeholder="Enter priority" autofocus>
+                                        @error('brand_priority')
                                         <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                         @enderror
                                     </div>

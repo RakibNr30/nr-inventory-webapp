@@ -10,7 +10,10 @@
                     <div class="card card-gray-dark card-outline">
                         <div class="card-header">
                             <h3 class="card-title">Logistic List</h3>
-                            <a href="{{ route('backend.cms.logistic.create') }}" type="button" class="btn btn-primary btn-sm text-white float-right">
+                            <a href="{{ route('backend.ums.user-prefix.index') }}" type="button" class="btn btn-primary btn-sm text-white float-right">
+                                Influencer ID Prefix
+                            </a>
+                            <a href="{{ route('backend.cms.logistic.create') }}" type="button" class="btn btn-success btn-sm text-white float-right mr-2">
                                 Add Warehouse Product
                             </a>
                         </div>

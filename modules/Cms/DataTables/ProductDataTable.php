@@ -41,6 +41,7 @@ class ProductDataTable extends DataTable
         $product->select([
             'products.*',
             'brands.id as brand_id',
+            'brands.brand_priority as priority',
             'brand_additional_infos.first_name as brand_name'
         ]);
 
@@ -82,7 +83,7 @@ class ProductDataTable extends DataTable
             Column::computed('DT_RowIndex')
                 ->title('Sl'),
             Column::make('title'),
-            Column::make('priority'),
+            Column::make('priority')->name('brands.priority'),
             Column::make('stock_amount'),
             Column::make('brand_name')->name('brand_additional_infos.first_name'),
             Column::computed('action')

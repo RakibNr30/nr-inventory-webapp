@@ -20,6 +20,7 @@ class CreateUsersTable extends Migration
             $table->string('password')->default('$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
             $table->boolean('is_process_completed')->default(false);
             $table->boolean('is_brand')->nullable()->default(false);
+            $table->unsignedBigInteger('brand_priority')->nullable();
             $table->boolean('is_influencer')->nullable()->default(false);
             $table->boolean('is_pre_selected')->nullable()->default(false);
             $table->string('reporting_tool_link')->nullable();

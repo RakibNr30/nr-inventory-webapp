@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 
 // requests...
 use App\Mail\RegisterMail;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 // services...
@@ -16,6 +17,7 @@ use Modules\Cms\Http\Requests\BrandUpdateRequest;
 use Modules\Cms\Http\Requests\FaqStoreRequest;
 use Modules\Cms\Services\CampaignInfluencerService;
 use Modules\Cms\Services\CampaignService;
+use Modules\Ums\Entities\User;
 use Modules\Ums\Services\UserService;
 
 class BrandController extends Controller
@@ -60,7 +62,10 @@ class BrandController extends Controller
         $campaign_influencers = $this->campaignService->influencerCampaigns();
 
         $campaign_influencers = $campaign_influencers->filter(function ($value) {
-            return $value->campaign->is_active == 1;
+            $available_until = \Carbon\Carbon::parse($value->available_until);
+            return $value->campaign->is_active == 1 &&
+                $value->campaign_accept_status_by_influencer == 1 &&
+                Carbon::now()->lt($available_until);
         });
 
         if (AuthManager::isSuperAdmin() || AuthManager::isAdmin()) {
@@ -220,7 +225,9 @@ class BrandController extends Controller
             return redirect()->back();
         }
 
-        return view('cms::brand.content', compact('campaign_influencer'));
+        $contents = $this::getContents($campaign_influencer);
+
+        return view('cms::brand.content', compact('campaign_influencer', 'contents'));
     }
 
     public function contentUpload(Request $request, $id)
@@ -236,16 +243,23 @@ class BrandController extends Controller
             return redirect()->back();
         }
 
+        $contents = $this::getContents($campaign);
+
         // upload content files
         if(count($campaign->content_types)) {
-            foreach($campaign->content_types as $index => $content_type) {
-                $media_collection = 'campaign_influencer_content_' . $id . '_' . \Str::snake($content_type);
-                if ($request->hasFile($media_collection)) {
-                    if ($campaign->hasMedia($media_collection)) {
-                        $campaign->clearMediaCollection($media_collection);
+            $contentIndex = 0;
+            foreach($campaign->brand_ids as $brand_id) {
+                foreach($campaign->content_types as $content_type) {
+                    $contents[$contentIndex] = $contents[$contentIndex] < $campaign->current_cycle ? ($contents[$contentIndex] + 1) : $contents[$contentIndex];
+                    $media_collection = 'campaign_influencer_content_' . $id . '_' . $brand_id . '_' . \Str::snake($content_type) . '_' . ($contents[$contentIndex]);
+                    if ($request->hasFile($media_collection)) {
+                        if ($campaign->hasMedia($media_collection)) {
+                            $campaign->clearMediaCollection($media_collection);
+                        }
+                        $campaign->addMedia($request->file($media_collection))->toMediaCollection($media_collection);
+                        $campaign = tap($campaign)->update(['is_content_uploaded' => true]);
                     }
-                    $campaign->addMedia($request->file($media_collection))->toMediaCollection($media_collection);
-                    $campaign = tap($campaign)->update(['is_content_uploaded' => true]);
+                    $contentIndex++;
                 }
             }
         }
@@ -260,5 +274,22 @@ class BrandController extends Controller
         }
         // redirect back
         return redirect()->back();
+    }
+
+    public static function getContents($campaign_influencer): array
+    {
+        $contents = [];
+        foreach($campaign_influencer->brands as $brand) {
+            foreach($campaign_influencer->content_types as $content_type) {
+                $uploadedContents = 0;
+                foreach (range(1, $campaign_influencer->current_cycle) as $cycle) {
+                    $media_collection = 'campaign_influencer_content_' . $campaign_influencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . $cycle;
+                    $uploadedContents += (isset($campaign_influencer->getMedia($media_collection)[0]));
+                }
+                $contents[] = $uploadedContents;
+            }
+        }
+
+        return $contents;
     }
 }

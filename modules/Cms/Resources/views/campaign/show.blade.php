@@ -2,7 +2,7 @@
 
 @section('content')
     @php
-    use \Carbon\Carbon;
+        use \Carbon\Carbon;
     @endphp
     <div class="content-header pt-2"></div>
     <div class="content">
@@ -76,7 +76,24 @@
                                                     <tr>
                                                         @php
                                                             $influencer = $campaignInfluencer->user ?? null;
-                                                            $campaign = $campaignInfluencer->campaign ?? null;
+                                                            $contents = \Modules\Cms\Http\Controllers\BrandController::getContents($campaignInfluencer);
+                                                        @endphp
+
+                                                        @php
+                                                            $uploaded_content = 0;
+                                                            $contentIndex = 0;
+                                                            foreach ($campaignInfluencer->brands as $index1 => $brand) {
+                                                                foreach($campaignInfluencer->content_types as $index2 => $content_type) {
+                                                                    $contents[$contentIndex] = $contents[$contentIndex] < $campaignInfluencer->current_cycle ? ($contents[$contentIndex] + 1) : $contents[$contentIndex];
+                                                                    $media_collection_first = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_1';
+                                                                    $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . ($contents[$contentIndex]);
+
+                                                                    $uploaded_content += isset($campaignInfluencer->getMedia($media_collection_first)[0]);
+                                                                    $contentIndex++;
+                                                                }
+                                                            }
+                                                            $total_contents = count($campaignInfluencer->content_types ?? []) * count($campaignInfluencer->brands ?? []);
+                                                            $missing_contents = $total_contents - $uploaded_content;
                                                         @endphp
 
                                                         <td>
@@ -96,6 +113,10 @@
                                                                         {{ $influencer->additionalInfo->first_name ?? '' }}
                                                                         {{ $influencer->additionalInfo->last_name ?? '' }}
                                                                     </a>
+                                                                    @php
+                                                                        $notifications = count($campaignInfluencer->content_reminders_at ?? []) + (!$missing_contents && (Carbon::now()->gt(Carbon::parse($campaignInfluencer->available_until)))) ? $missing_contents : 0;
+                                                                    @endphp
+                                                                    <span class="badge badge-danger">{{ $notifications == 0 ? '' : $notifications }}</span>
                                                                 </li>
                                                             </ul>
                                                         </td>
@@ -148,16 +169,6 @@
                                                             </small>
                                                             {{-- modal --}}
                                                             <div class="modal fade" id="modal-xl-{{ $index }}" style="display: none;" aria-hidden="true">
-
-                                                                @php
-                                                                    $uploaded_content = 0;
-                                                                    foreach($campaignInfluencer->content_types as $index => $content_type) {
-                                                                        $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . \Str::snake($content_type);
-                                                                        $uploaded_content += isset($campaignInfluencer->getMedia($media_collection)[0]);
-                                                                    }
-                                                                    $missing_contents = count($campaignInfluencer->content_types ?? []) - $uploaded_content;
-                                                                @endphp
-
                                                                 <div class="modal-dialog modal-xl">
                                                                     <div class="modal-content">
                                                                         <div class="modal-header">
@@ -175,7 +186,8 @@
                                                                                         <h4 class="modal-title">
                                                                                             <span class="d-block font-weight-bold text-md">
                                                                                                 {{ $influencer->additionalInfo->first_name ?? '' }}
-                                                                                                    {{ $influencer->additionalInfo->last_name ?? '' }}
+                                                                                                {{ $influencer->additionalInfo->last_name ?? '' }}
+                                                                                                <span class="badge badge-danger">{{ count($campaignInfluencer->content_reminders_at ?? []) == 0 ? '' : count($campaignInfluencer->content_reminders_at ?? []) }}</span>
                                                                                             </span>
                                                                                         </h4>
                                                                                         <span class="d-block text-sm text-gray">
@@ -268,7 +280,7 @@
                                                                                         </span>
                                                                                         <span class="d-block text-sm mt-1">
                                                                                             <button name="missing_content_reminder" value="{{ 1 }}" class="btn btn-primary btn-sm"
-                                                                                                {{ (count($campaignInfluencer->content_types ?? []) > $uploaded_content) && (Carbon::now()->gt(Carbon::parse($campaignInfluencer->available_until))) ? '' : 'disabled' }}
+                                                                                                {{ ($total_contents > $uploaded_content) && (Carbon::now()->gt(Carbon::parse($campaignInfluencer->available_until))) ? '' : 'disabled' }}
                                                                                             >
                                                                                                 Send out
                                                                                             </button>
@@ -296,17 +308,9 @@
                                                                                             <th class="align-middle">Content</th>
                                                                                         </tr>
                                                                                         <tr>
-                                                                                            @php
-                                                                                                $start_date = \Carbon\Carbon::parse($campaign->start_date);
-                                                                                                if ($campaign->cycle_time_unit == 1)
-                                                                                                    $next_deadline = $start_date->addMonths($campaign->cycle_count);
-                                                                                                else if ($campaign->cycle_time_unit == 2)
-                                                                                                    $next_deadline = $start_date->addWeeks($campaign->cycle_count);
-                                                                                            @endphp
-
                                                                                             <td>{{ $campaign->title ?? '' }}</td>
                                                                                             <td>{{ $campaignInfluencer->campaign->start_date ?? '' }}</td>
-                                                                                            <td>{{ $next_deadline->format('d.m.Y') ?? '' }}, {{ $next_deadline->diffInDays() }} days</td>
+                                                                                            <td>{{ $campaignInfluencer->next_deadline->format('d.m.Y') ?? '' }}, {{ $campaignInfluencer->next_deadline->diffInDays() }} days</td>
                                                                                             <td>
                                                                                                 <div class="tooltip2">
                                                                                                     {{ count($campaignInfluencer->briefing_reminders_at ?? []) }}. Reminder
@@ -358,54 +362,168 @@
                                                                                                 @endif
                                                                                             </td>
                                                                                             <td>
-                                                                                                {{ $uploaded_content }} / {{ count($campaignInfluencer->content_types ?? []) }}
+                                                                                                {{ $uploaded_content }} / {{ $total_contents }}
                                                                                             </td>
                                                                                         </tr>
                                                                                     </table>
                                                                                 </div>
                                                                                 <div class="col-md-12">
                                                                                     <div class="row">
+                                                                                        @php
+                                                                                            $available_until = \Carbon\Carbon::parse($campaignInfluencer->available_until);
+                                                                                            $contents = \Modules\Cms\Http\Controllers\BrandController::getContents($campaignInfluencer);
+                                                                                            $contentIndex = 0;
+                                                                                        @endphp
+
+                                                                                        @foreach($campaignInfluencer->brands as $index1 => $brand)
+                                                                                                <div class="col-md-12 {{ $index1 != 0 ? 'mt-3' : '' }}">
+                                                                                                    <h4>
+                                                                                                        Brand: {{ $brand->additionalInfo->first_name ?? '' }}
+                                                                                                    </h4>
+                                                                                                </div>
+                                                                                                @php
+                                                                                                    $available_until = \Carbon\Carbon::parse($campaignInfluencer->available_until);
+                                                                                                @endphp
+                                                                                                @foreach($campaignInfluencer->content_types as $index2 => $content_type)
+                                                                                                    @php
+                                                                                                        $contents[$contentIndex] = $contents[$contentIndex] < $campaignInfluencer->current_cycle ? ($contents[$contentIndex] + 1) : $contents[$contentIndex];
+                                                                                                        $media_collection_first = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_1';
+                                                                                                        $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . ($contents[$contentIndex]);
+                                                                                                    @endphp
+                                                                                                    <div class="col-md-4">
+                                                                                                        <div class="card">
+                                                                                                            <div class="card-body">
+                                                                                                                <div class="form-group">
+                                                                                                                    <label for="logo" class="@error('logo') text-danger @enderror">
+                                                                                                                        {{ $content_type }} ({{ ($contents[$contentIndex]) . '/' . $campaignInfluencer->cycle_count }})
+                                                                                                                    </label>
+                                                                                                                    @if(isset($campaignInfluencer->getMedia($media_collection_first)[0]))
+                                                                                                                        <br>
+                                                                                                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm mt-2" data-toggle="modal" data-target="#modal-xl-1-{{ $index1 }}-{{ $index2 }}">
+                                                                                                                            Content View
+                                                                                                                        </a>
+
+                                                                                                                        <div class="modal fade" id="modal-xl-1-{{ $index1 }}-{{ $index2 }}" style="display: none;" aria-hidden="true">
+                                                                                                                            <div class="modal-dialog modal-xl">
+                                                                                                                                <div class="modal-content">
+                                                                                                                                    <div class="modal-header">
+                                                                                                                                        <h4 class="modal-title text-lg font-weight-bold">
+                                                                                                                                            {{ $content_type }} - {{ $brand->additionalInfo->first_name ?? '' }}
+                                                                                                                                        </h4>
+                                                                                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                                                                            <span aria-hidden="true">×</span>
+                                                                                                                                        </button>
+                                                                                                                                    </div>
+                                                                                                                                    <div class="modal-body">
+                                                                                                                                        <div class="row">
+                                                                                                                                            @foreach(range(1, $campaignInfluencer->current_cycle) as $index3 => $cycle)
+                                                                                                                                                @php
+                                                                                                                                                    $media_collection_single = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . $cycle;
+                                                                                                                                                @endphp
+                                                                                                                                                <div class="col-md-4">
+                                                                                                                                                    <div class="card">
+                                                                                                                                                        <div class="card-body">
+                                                                                                                                                            <div class="form-group text-center">
+                                                                                                                                                                @if(isset($campaignInfluencer->getMedia($media_collection_single)[0]))
+                                                                                                                                                                    <div class="image-output" style="border: 1px solid #bebebe">
+                                                                                                                                                                        <a href="{{ $campaignInfluencer->getMedia($media_collection_single)[0]->getUrl() }}" target="_blank">
+                                                                                                                                                                            <img src="{{ $campaignInfluencer->getMedia($media_collection_single)[0]->getUrl() }}" class="w-100" style="height: 100px" />
+                                                                                                                                                                        </a>
+                                                                                                                                                                    </div>
+                                                                                                                                                                @else
+                                                                                                                                                                    <div class="m-auto pt-3 text-center">
+                                                                                                                                                                        <i class="fa fa-exclamation-circle text-danger"></i>
+                                                                                                                                                                        <span class="d-block text-danger">Content Not Uploaded</span>
+                                                                                                                                                                    </div>
+                                                                                                                                                                @endif
+                                                                                                                                                            </div>
+                                                                                                                                                        </div>
+                                                                                                                                                    </div>
+                                                                                                                                                </div>
+                                                                                                                                            @endforeach
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                    <div class="modal-footer justify-content-between">
+                                                                                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        </div>
+
+                                                                                                                    @else
+                                                                                                                        <div class="m-auto pt-3 text-center">
+                                                                                                                            <i class="fa fa-exclamation-circle text-danger"></i>
+                                                                                                                            <span class="d-block text-danger">Content Not Uploaded</span>
+                                                                                                                        </div>
+                                                                                                                    @endif
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    @php
+                                                                                                    $contentIndex++;
+                                                                                                    @endphp
+                                                                                                @endforeach
+                                                                                        @endforeach
+
                                                                                         @foreach($campaignInfluencer->content_types as $index => $content_type)
                                                                                             @php
                                                                                                 $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . \Str::snake($content_type);
+                                                                                                $admin_media_collection = 'admin_campaign_influencer_content_' . $campaignInfluencer->id . '_' . \Str::snake($content_type);
                                                                                             @endphp
                                                                                             <div class="col-md-4">
                                                                                                 <div class="card">
                                                                                                     <div class="card-header">
                                                                                                         <div class="card-title">
-                                                                                                            {{ $content_type }}
+                                                                                                            <strong>{{ $content_type }}</strong> - Review
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <div class="card-body">
                                                                                                         <div class="form-group text-center">
-                                                                                                            @error($media_collection)
-                                                                                                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                                                                                            @enderror
-                                                                                                            @if(isset($campaignInfluencer->getMedia($media_collection)[0]))
-                                                                                                                {!! Form::open(['url' => route('backend.cms.campaign-influencer.feedback', [$campaignInfluencer->id]), 'method' => 'put']) !!}
-                                                                                                                <div class="image-output" style="border: 1px solid #bebebe">
-                                                                                                                    <img src="{{ $campaignInfluencer->getMedia($media_collection)[0]->getUrl() }}" class="w-100" style="height: 100px" />
+                                                                                                            {!! Form::open(['url' => route('backend.cms.campaign-influencer.feedbackContent', [$campaignInfluencer->id]), 'method' => 'put', 'files' => true]) !!}
+                                                                                                            @if(\Carbon\Carbon::now()->lt($available_until))
+                                                                                                                <div class="custom-file">
+                                                                                                                    <input type="file" name="{{ $admin_media_collection }}" value="{{ old($admin_media_collection) }}" class="custom-file-input @error($admin_media_collection) is-invalid @enderror" id="customFile">
+                                                                                                                    <label class="custom-file-label font-weight-normal" for="customFile">Choose file</label>
                                                                                                                 </div>
-                                                                                                                <div class="form-group text-left mt-2">
-                                                                                                                    <label>Grade</label>
-                                                                                                                    <input name="grade_{{ \Str::snake($content_type) }}" value="{{ old('grade_' . \Str::snake($content_type)) ?? $campaignInfluencer->feedback['grade_' . \Str::snake($content_type)] ?? '' }}" type="number" min="0" placeholder="Grade" class="form-control" required />
+                                                                                                                @error($admin_media_collection)
+                                                                                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                                                                                @enderror
+                                                                                                                <div class="mt-2">
+                                                                                                                    <button class="btn btn-success">Upload</button>
                                                                                                                 </div>
-                                                                                                                <div class="form-group text-left mt-2">
-                                                                                                                    <label>Feedback</label>
-                                                                                                                    <textarea name="feedback_{{ \Str::snake($content_type) }}" rows="3" class="form-control" required>
-                                                                                                                    {{ old('feedback_' . \Str::snake($content_type)) ?? $campaignInfluencer->feedback['feedback_' . \Str::snake($content_type)] ?? '' }}
-                                                                                                                </textarea>
+                                                                                                            @endif
+                                                                                                            @if(isset($campaignInfluencer->getMedia($admin_media_collection)[0]))
+                                                                                                                <div class="image-output" style="width: 100%">
+                                                                                                                    <img src="{{ $campaignInfluencer->getMedia($admin_media_collection)[0]->getUrl() }}" class="w-100" style="height: 200px" />
                                                                                                                 </div>
-                                                                                                                <div class="form-group text-left mt-2">
-                                                                                                                    <button class="btn btn-primary btn-sm">Send</button>
-                                                                                                                </div>
-                                                                                                                {!! Form::close() !!}
+                                                                                                                <a href="{{ $campaignInfluencer->getMedia($admin_media_collection)[0]->getUrl() }}" class="btn btn-primary btn-sm mt-2" download>
+                                                                                                                    Download
+                                                                                                                </a>
                                                                                                             @else
                                                                                                                 <div class="m-auto pt-3 text-center">
                                                                                                                     <i class="fa fa-exclamation-circle text-danger"></i>
-                                                                                                                    <span class="d-block text-danger">Content Not Uploaded</span>
+                                                                                                                    <span class="d-block text-danger">Content Not Uploaded By Internal</span>
                                                                                                                 </div>
                                                                                                             @endif
+                                                                                                            {!! Form::close() !!}
+                                                                                                        </div>
+                                                                                                        <div class="col-md-12"><hr></div>
+                                                                                                        <div class="form-group text-center">
+                                                                                                            {!! Form::open(['url' => route('backend.cms.campaign-influencer.feedback', [$campaignInfluencer->id]), 'method' => 'put']) !!}
+                                                                                                            <div class="form-group text-left mt-2">
+                                                                                                                <label>Grade</label>
+                                                                                                                <input name="grade_{{ \Str::snake($content_type) }}" value="{{ old('grade_' . \Str::snake($content_type)) ?? $campaignInfluencer->feedback['grade_' . \Str::snake($content_type)] ?? '' }}" type="number" min="0" placeholder="Grade" class="form-control" required />
+                                                                                                            </div>
+                                                                                                            <div class="form-group text-left mt-2">
+                                                                                                                <label>Feedback</label>
+                                                                                                                <textarea name="feedback_{{ \Str::snake($content_type) }}" rows="3" class="form-control" required>{{ old('feedback_' . \Str::snake($content_type)) ?? $campaignInfluencer->feedback['feedback_' . \Str::snake($content_type)] ?? '' }}</textarea>
+                                                                                                            </div>
+                                                                                                            <div class="form-group text-left mt-2">
+                                                                                                                <button class="btn btn-primary btn-sm">Send</button>
+                                                                                                            </div>
+                                                                                                            {!! Form::close() !!}
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
@@ -450,7 +568,7 @@
                                                         <td>{{ Carbon::parse($campaignInfluencer->available_until)->format('m.d.Y') }}</td>
                                                         <td>
                                                             @php
-                                                            $user = \Modules\Ums\Entities\User::query()->find($campaignInfluencer->campaign_manager_id)
+                                                                $user = \Modules\Ums\Entities\User::query()->find($campaignInfluencer->campaign_manager_id)
                                                             @endphp
 
                                                             {{ $user->additionalInfo->first_name ?? '' }} {{ $user->additionalInfo->last_name ?? '' }}
@@ -480,7 +598,7 @@
                                 @if(count($brands))
                                     <div class="brand-list">
                                         <div class="row">
-                                            @foreach($brands as $index => $brand)
+                                            @foreach($brands as $index1 => $brand)
                                                 <div class="col-lg-4 col-6">
                                                     <div class="small-box bg-gradient-secondary">
                                                         <div class="inner text-justify">
@@ -490,12 +608,12 @@
                                                         </div>
 
                                                         <a class="small-box-footer"
-                                                           data-toggle="modal" href="#modal-lg-{{ $index }}"
+                                                           data-toggle="modal" href="#modal-lg-{{ $index1 }}"
                                                         >
                                                             More Info <i class="fas fa-arrow-circle-right"></i>
                                                         </a>
 
-                                                        <div class="modal fade" id="modal-lg-{{ $index }}" style="display: none;" aria-hidden="true">
+                                                        <div class="modal fade" id="modal-lg-{{ $index1 }}" style="display: none;" aria-hidden="true">
                                                             <div class="modal-dialog modal-lg text-dark">
                                                                 <div class="modal-content text-left">
                                                                     <div class="modal-header">
@@ -659,17 +777,17 @@
         $("input[name=is_active]").on('switchChange.bootstrapSwitch',function (e, data) {
             $.ajaxSetup({
                 headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token()}}'
-                    }
-                });
-                $.ajax({
-                    url: '{{ route('backend.cms.campaign.active-status.update', [$campaign->id]) }}',
-                    method: 'POST',
-                    data: {
-                        is_active: data ? 1 : 0
-                    },
-                    success: function(){}
-                })
+                    'X-CSRF-TOKEN': '{{ csrf_token()}}'
+                }
             });
+            $.ajax({
+                url: '{{ route('backend.cms.campaign.active-status.update', [$campaign->id]) }}',
+                method: 'POST',
+                data: {
+                    is_active: data ? 1 : 0
+                },
+                success: function(){}
+            })
+        });
     </script>
 @stop

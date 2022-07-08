@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLogisticsTable extends Migration
+class CreateUserPrefixesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateLogisticsTable extends Migration
      */
     public function up()
     {
-        Schema::create('logistics', function (Blueprint $table) {
+        Schema::create('user_prefixes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('influencer_id')->nullable();
-            $table->integer('product_count')->nullable();
-            $table->unsignedBigInteger('product_id')->nullable();
-            $table->boolean('is_shipped_out')->default(false);
+            $table->string('prefix')->nullable();
             $table->commonFields();
         });
     }
@@ -30,6 +27,6 @@ class CreateLogisticsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('logistics');
+        Schema::dropIfExists('user_prefixes');
     }
 }

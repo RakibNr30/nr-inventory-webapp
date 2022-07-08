@@ -3,6 +3,7 @@
 namespace Modules\Cms\Entities;
 
 use App\BaseModel;
+use Carbon\Carbon;
 use Modules\Ums\Entities\User;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
@@ -39,6 +40,7 @@ class CampaignInfluencer extends BaseModel implements HasMedia
 		'shipping_address',
 		'feedback',
 		'is_content_uploaded',
+		'admin_is_content_uploaded',
 		'briefing_reminder',
 		'briefing_reminders_at',
 		'content_reminder',
@@ -78,6 +80,7 @@ class CampaignInfluencer extends BaseModel implements HasMedia
         'shipping_address' => 'string',
         'feedback' => 'array',
         'is_content_uploaded' => 'integer',
+        'admin_is_content_uploaded' => 'integer',
         'briefing_reminder' => 'integer',
         'briefing_reminders_at' => 'array',
         'content_reminder' => 'integer',
@@ -94,5 +97,40 @@ class CampaignInfluencer extends BaseModel implements HasMedia
 
     public function campaign() {
         return $this->hasOne(Campaign::class, 'id', 'campaign_id');
+    }
+
+    public function getBrandsAttribute()
+    {
+        return User::query()->whereIn('id', $this->brand_ids)->get();
+    }
+
+    public function getCurrentCycleAttribute()
+    {
+        $campaign = $this->campaign;
+        $current_cycle = 1;
+        if ($campaign->cycle_time_unit == 1) {
+            $current_cycle = Carbon::parse($this->start_date)->diffInMonths() + 1;
+        }
+        if ($campaign->cycle_time_unit == 2) {
+            $current_cycle = Carbon::parse($this->start_date)->diffInWeeks() + 1;
+        }
+
+        return $current_cycle;
+    }
+
+    public function getNextDeadlineAttribute()
+    {
+        $campaign = $this->campaign;
+        $next_deadline = null;
+        if ($campaign->cycle_time_unit == 1) {
+            $current_cycle = Carbon::parse($this->start_date)->diffInMonths() + 1;
+            $next_deadline = Carbon::parse($this->start_date)->addMonths($current_cycle);
+        }
+        if ($campaign->cycle_time_unit == 2) {
+            $current_cycle = Carbon::parse($this->start_date)->diffInWeeks() + 1;
+            $next_deadline = Carbon::parse($this->start_date)->addWeeks($current_cycle);
+        }
+
+        return $next_deadline;
     }
 }

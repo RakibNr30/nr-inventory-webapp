@@ -27,6 +27,7 @@ class BrandStoreRequest extends FormRequest
             'brand_name' => 'required|max:255',
             'avatar' => 'sometimes|image|max:1024',
             'reporting_tool_link' => 'required|max:255',
+            'brand_priority' => "required|max:99999999",
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'zip_code' => 'required|string|max:255',

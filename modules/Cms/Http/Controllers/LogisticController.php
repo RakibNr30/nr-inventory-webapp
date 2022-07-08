@@ -4,6 +4,8 @@ namespace Modules\Cms\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Cms\Entities\CampaignInfluencer;
+use Modules\Cms\Entities\Product;
 use Modules\Cms\Http\Requests\LogisticStoreRequest;
 use Modules\Cms\DataTables\LogisticDataTable;
 use Modules\Cms\Services\LogisticService;
@@ -56,6 +58,24 @@ class LogisticController extends Controller
     public function index(LogisticDataTable $datatable)
     {
         return $datatable->render('cms::logistic.index');
+
+        $campaignInfluencers = CampaignInfluencer::all();
+
+        $campaignInfluencerBrandIds = $campaignInfluencers->filter(function ($value) {
+            return $value->accept_status == 1 && $value->campaign_accept_status_by_influencer == 1;
+        })->pluck('brand_ids')->toArray();
+
+        $campaignInfluencerIds = $campaignInfluencers->filter(function ($value) {
+            return $value->accept_status == 1 && $value->campaign_accept_status_by_influencer == 1;
+        })->pluck('influencer_id')->toArray();
+
+        $campaignInfluencerBrandIds = array_reduce($campaignInfluencerBrandIds, function ($array1, $array2) {
+            return array_merge($array1, $array2);
+        }, []);
+
+        $campaignInfluencerBrandIds = array_unique($campaignInfluencerBrandIds);
+
+        $products = Product::query()->whereIn('brand_id', $campaignInfluencerBrandIds);
     }
 
     /**
@@ -83,19 +103,6 @@ class LogisticController extends Controller
     public function store(LogisticStoreRequest $request)
     {
         $data = $request->all();
-
-        $influencer = $this->userService->find($data['influencer_id']);
-        $product = $this->productService->find($data['product_id']);
-
-        $data['first_name'] = $influencer->shippingInfo->first_name ?? null;
-        $data['last_name'] = $influencer->shippingInfo->last_name ?? null;
-        $data['shipping_address'] = $influencer->shippingInfo->address ?? null;
-        $data['zip'] = $influencer->shippingInfo->zip_code ?? null;
-        $data['city'] = $influencer->shippingInfo->city ?? null;
-        $data['country_code'] = $influencer->shippingInfo->country_code ?? null;
-        $data['email'] = $influencer->email ?? null;
-        $data['product_name'] = $product->title ?? null;
-        $data['product_order'] = $product->priority ?? null;
 
         // create logistic
         $logistic = $this->logisticService->create($data);

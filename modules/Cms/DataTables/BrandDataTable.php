@@ -95,6 +95,7 @@ class BrandDataTable extends DataTable
             Column::computed('image')->title('Image'),
             Column::make('email'),
             Column::make('brand_name')->name('brand_additional_infos.first_name'),
+            Column::make('brand_priority')->title('Priority'),
             Column::computed('action')
                 ->exportable(false)
                 ->printable(false)

@@ -77,42 +77,27 @@ class CampaignInfluencerController extends Controller
     {
         $data = $request->all();
 
+        $campaign_influencer = CampaignInfluencer::query()
+            ->where('campaign_id', $id)
+            ->where('influencer_id', $data['influencer_id'])
+            ->first();
+
+        if ($campaign_influencer) {
+            notifier()->error('This influencer already added to this campaign');
+            return redirect()->back();
+        }
+
         if (isset($data['brand_ids']))
             $data['brand_ids'] = array_map('intval', $data['brand_ids'] ?? []);
 
-        $data['campaign_manager_id'] = Campaign::query()->find($id)->created_by ?? null;
+        $data['campaign_id'] = $id;
 
-        $brandsCampaignIds = Campaign::query()
-            ->whereIn('brand_id', $data['brand_ids'])
-            ->where('is_active', 1)
-            ->get()->pluck('id')->toArray();
+        $campaign = $this->campaignInfluencerService->create($data);
 
-        $brandsCampaignIds[] = intval($id);
-
-        $brandsCampaignIds = array_unique($brandsCampaignIds);
-
-        $alreadyAddedCount = 0;
-        $addedCount = 0;
-
-        foreach ($brandsCampaignIds as $campaignId) {
-            $campaign_influencer = CampaignInfluencer::query()
-                ->where('campaign_id', $campaignId)
-                ->where('influencer_id', $data['influencer_id'])
-                ->first();
-
-            if ($campaign_influencer) {
-                $alreadyAddedCount++;
-            } else {
-                $data['campaign_id'] = $campaignId;
-                $this->campaignInfluencerService->create($data);
-                $addedCount++;
-            }
-        }
-
-        if ($addedCount > 0) {
-            notifier()->success('This influencer added to ' . $addedCount . ' campaign');
+        if ($campaign) {
+            notifier()->success('Influencer added successfully to this campaign');
         } else {
-            notifier()->success('This influencer can not be added any campaign');
+            notifier()->error('Influencer can not be added to this campaign');
         }
 
         // redirect to
@@ -241,6 +226,44 @@ class CampaignInfluencerController extends Controller
             notifier()->error('Commented can not be successful.');
         }
 
+        return redirect()->back();
+    }
+
+    public function feedbackContent(Request $request, $id)
+    {
+        $data = $request->all();
+        // get campaign
+        $campaign = $this->campaignInfluencerService->find($id);
+        // check if campaign doesn't exists
+        if (empty($campaign)) {
+            // flash notification
+            notifier()->error('Campaign not found!');
+            // redirect back
+            return redirect()->back();
+        }
+        // upload content files
+        if(count($campaign->content_types)) {
+            foreach($campaign->content_types as $index => $content_type) {
+                $media_collection = 'admin_campaign_influencer_content_' . $id . '_' . \Str::snake($content_type);
+                if ($request->hasFile($media_collection)) {
+                    if ($campaign->hasMedia($media_collection)) {
+                        $campaign->clearMediaCollection($media_collection);
+                    }
+                    $campaign->addMedia($request->file($media_collection))->toMediaCollection($media_collection);
+                    $campaign = tap($campaign)->update(['admin_is_content_uploaded' => true]);
+                }
+            }
+        }
+
+        // check if campaign updated
+        if ($campaign) {
+            // flash notification
+            notifier()->success('Content uploaded successfully.');
+        } else {
+            // flash notification
+            notifier()->error('Content cannot be uploaded successfully.');
+        }
+        // redirect back
         return redirect()->back();
     }
 

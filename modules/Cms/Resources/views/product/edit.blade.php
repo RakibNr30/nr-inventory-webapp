@@ -50,7 +50,7 @@
                                         @enderror
                                     </div>
                                 </div>-->
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="image" class="@error('image') text-danger @enderror">Upload Image</label>
                                         <div class="custom-file">
@@ -67,7 +67,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+<!--                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="priority" class="@error('priority') text-danger @enderror">Priority</label>
                                         <input id="priority" name="priority" value="{{ old('priority') ?? $product->priority }}" type="number" min="0" class="form-control @error('priority') is-invalid @enderror" placeholder="Enter priority" autofocus>
@@ -75,8 +75,8 @@
                                         <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                         @enderror
                                     </div>
-                                </div>
-                                <div class="col-md-4">
+                                </div>-->
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="stock_amount" class="@error('stock_amount') text-danger @enderror">Stock Amount</label>
                                         <input id="stock_amount" name="stock_amount" value="{{ old('stock_amount') ?? $product->stock_amount }}" type="number" min="0" class="form-control @error('stock_amount') is-invalid @enderror" placeholder="Enter stock amount" autofocus>

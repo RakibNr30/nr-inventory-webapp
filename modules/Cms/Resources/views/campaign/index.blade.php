@@ -356,12 +356,12 @@
                                                                                                 <a href="{{ $campaign_influencer->campaign->briefing_pdf->file_url }}" class="btn btn-primary mb-2">Click to open Briefing PDF</a>
                                                                                             </div>
                                                                                         @endif
-                                                                                        <div class="col-md-12">
+<!--                                                                                    <div class="col-md-12">
                                                                                             <span class="d-block font-weight-bold">Additional Info</span>
                                                                                             <div class="form-group">
                                                                                                 <textarea rows="3" class="form-control text-left bg-white" readonly>{{ $campaign_influencer->campaign->additional_info ?? 'No additional info here' }}</textarea>
                                                                                             </div>
-                                                                                        </div>
+                                                                                        </div>-->
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="modal-footer justify-content-between">

@@ -293,16 +293,17 @@
 
                                                 <td>
                                                     <div class="text-center" style="width: 200px;">
-                                                        @if($influencer->campaign_accept_status_by_influencer == -1)
-                                                            Influencer: <span class="text-danger"><i class="fas fa-close"></i>Denied</span>
-                                                        @endif
-                                                        @if($influencer->campaign_accept_status_by_influencer == 0)
-                                                            Influencer: <span class="text-secondary"><i class="fas fa-cog"></i>Pending</span>
-                                                        @endif
-                                                        @if($influencer->campaign_accept_status_by_influencer == 1)
-                                                            Influencer: <span class="text-success"><i class="fas fa-check"></i>Accepted</span>
-                                                        @endif
-                                                        <br>
+                                                        <div class="mb-1">
+                                                            @if($influencer->campaign_accept_status_by_influencer == -1)
+                                                                Influencer: <span class="text-danger"><i class="fas fa-close"></i>Denied</span>
+                                                            @endif
+                                                            @if($influencer->campaign_accept_status_by_influencer == 0)
+                                                                Influencer: <span class="text-secondary"><i class="fas fa-cog"></i>Pending</span>
+                                                            @endif
+                                                            @if($influencer->campaign_accept_status_by_influencer == 1)
+                                                                Influencer: <span class="text-success"><i class="fas fa-check"></i>Accepted</span>
+                                                            @endif
+                                                        </div>
 
                                                         @if(!$influencer->is_add_to_favourite && $influencer->campaign_accept_status_by_influencer != -1)
                                                             {!! Form::open(['url' => route('backend.cms.campaign-influencer.update', [$influencer->id]), 'method' => 'put']) !!}

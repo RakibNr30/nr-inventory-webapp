@@ -26,6 +26,8 @@ Route::resource('user-language', 'UserLanguageController');*/
 Route::resource('influencer', 'InfluencerController');
 Route::get('influencer-list', 'InfluencerController@list')->name('influencer.list');
 
+Route::resource('user-prefix', 'UserPrefixController')->only(['index', 'update']);
+
 // User profile routes
 Route::prefix('profile')->name('profile-')->group(function () {
     // User Account Info routes...
