@@ -45,7 +45,7 @@
                                                 <tr>
                                                     @php
                                                         $available_until = \Carbon\Carbon::parse($campaign_influencer->available_until);
-                                                        $contents = \Modules\Cms\Http\Controllers\BrandController::getContents($campaign_influencer, $brand->id);
+                                                        $contents = \Modules\Cms\Http\Controllers\BrandController::getContents($campaign_influencer);
                                                         \Carbon\Carbon::setLocale('en');
                                                         $uploaded_content = 0;
                                                         $contentIndex = 0;
@@ -57,22 +57,19 @@
                                                             $uploaded_content += isset($campaign_influencer->getMedia($media_collection_first)[0]);
                                                             $contentIndex++;
                                                         }
-                                                        $total_contents = count($campaignInfluencer->content_types ?? []);
+                                                        $total_contents = count($campaignInfluencer->content_types ?? []) * count($campaignInfluencer->brands ?? []);
                                                         $missing_contents = $total_contents - $uploaded_content;
                                                     @endphp
 
                                                     @php
                                                         $reviewed = 0;
-                                                        $contentIndex = 0;
                                                         foreach($campaign_influencer->content_types as $index => $content_type) {
-                                                        $admin_review = 'grade_' . $campaign_influencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . ($contents[$contentIndex]);
-                                                            $reviewed += isset($campaign_influencer->feedback[$admin_review]);
-                                                            $contentIndex++;
+                                                            $reviewed += isset($campaign_influencer->feedback['grade_' . \Str::snake($content_type)]);
                                                         }
                                                     @endphp
 
                                                     @php
-                                                        $brands = $campaign_influencer->brands;
+                                                        $brands = Modules\Ums\Entities\User::query()->whereIn('id', $campaign_influencer->brand_ids)->get();
                                                     @endphp
 
                                                     <td>
@@ -215,15 +212,15 @@
                                                     </td>
                                                     <td>
                                                         @if($reviewed)
-                                                            <button type="button" class="btn text-primary font-weight-bold" data-toggle="modal" data-target="#modal-xl-1-{{ $index }}-{{ $index1 }}">
+                                                            <button type="button" class="btn text-primary font-weight-bold" data-toggle="modal" data-target="#modal-xl-1-{{ $index }}">
                                                                 View
                                                             </button>
-                                                            <span class="badge badge-success">{{ $reviewed }}</span>
+                                                            <span class="badge badge-success">{{ $reviewed ? $reviewed : '' }}</span>
                                                         @else
                                                             Not Available
                                                         @endif
 
-                                                        <div class="modal fade" id="modal-xl-1-{{ $index }}-{{ $index1 }}" style="display: none;" aria-hidden="true">
+                                                        <div class="modal fade" id="modal-xl-1-{{ $index }}" style="display: none;" aria-hidden="true">
                                                             <div class="modal-dialog modal-xl">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
@@ -236,36 +233,28 @@
                                                                     </div>
                                                                     <div class="modal-body">
                                                                         <div class="row">
-                                                                            @foreach($campaign_influencer->content_types as $content_type)
-                                                                                @foreach(range(1, $campaign_influencer->cycle_count) as $cycle)
-                                                                                    @php
-                                                                                        $admin_review_grade = 'grade_' . $campaign_influencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . $cycle;
-                                                                                        $admin_review_feedback = 'feedback_' . $campaign_influencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . $cycle;
-                                                                                    @endphp
-
-                                                                                    <div class="col-md-4">
-                                                                                        <div class="card">
-                                                                                            <div class="card-header">
-                                                                                                <div class="card-title">
-                                                                                                    {{ $content_type }} (cycle {{ $cycle }}/{{ $campaign_influencer->cycle_count }})
-                                                                                                </div>
+                                                                            @foreach($campaign_influencer->content_types as $index => $content_type)
+                                                                                <div class="col-md-4">
+                                                                                    <div class="card">
+                                                                                        <div class="card-header">
+                                                                                            <div class="card-title">
+                                                                                                {{ $content_type }}
                                                                                             </div>
-                                                                                            <div class="card-body">
-                                                                                                <div class="form-group text-center">
-                                                                                                    <div class="form-group text-left mt-2">
-                                                                                                        <label>Grade</label>
-                                                                                                        <input value="{{ $campaign_influencer->feedback[$admin_review_grade] ?? '' }}" type="number" min="0" placeholder="Grade" class="form-control" readonly />
-                                                                                                    </div>
-                                                                                                    <div class="form-group text-left mt-2">
-                                                                                                        <label>Feedback</label>
-                                                                                                        <textarea rows="3" class="form-control" readonly>{{ $campaign_influencer->feedback[$admin_review_feedback] ?? '' }}</textarea>
-                                                                                                    </div>
+                                                                                        </div>
+                                                                                        <div class="card-body">
+                                                                                            <div class="form-group text-center">
+                                                                                                <div class="form-group text-left mt-2">
+                                                                                                    <label>Grade</label>
+                                                                                                    <input value="{{ $campaign_influencer->feedback['grade_' . \Str::snake($content_type)] ?? '' }}" type="number" min="0" placeholder="Grade" class="form-control" readonly />
+                                                                                                </div>
+                                                                                                <div class="form-group text-left mt-2">
+                                                                                                    <label>Feedback</label>
+                                                                                                    <textarea rows="3" class="form-control" readonly>{{ $campaign_influencer->feedback['feedback_' . \Str::snake($content_type)] ?? '' }}</textarea>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
-                                                                                @endforeach
-                                                                                <div class="col-12"></div>
+                                                                                </div>
                                                                             @endforeach
                                                                         </div>
                                                                     </div>

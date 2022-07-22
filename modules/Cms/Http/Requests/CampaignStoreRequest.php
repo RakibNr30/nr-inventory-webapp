@@ -56,7 +56,7 @@ class CampaignStoreRequest extends FormRequest
             'extra_content_4_value' => 'sometimes',
             'extra_content_5' => 'sometimes|max:255',
             'extra_content_5_value' => 'sometimes',
-            'briefing_pdf' => 'required|mimes:pdf|max:8192',
+            'briefing_pdf' => 'required|mimes:pdf',
             'additional_info' => 'required|max:4294967295',
             'personal_notes' => 'max:4294967295',
             'offer_signed' => 'required',

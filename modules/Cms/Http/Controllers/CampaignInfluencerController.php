@@ -62,8 +62,11 @@ class CampaignInfluencerController extends Controller
         $brands = $this->userService->brands();
         $campaign = $this->campaignService->find(\request()->id);
 
+        $brandIds = $brands->pluck('id')->toArray();
+        $brandCampaigns = Campaign::query()->whereIn('brand_id', $brandIds)->get();
+
         // return view
-        return view('cms::campaign.influencer.create', compact('influencers','brands', 'campaign'));
+        return view('cms::campaign.influencer.create', compact('influencers','brands', 'campaign', 'brandCampaigns'));
     }
 
     /**
@@ -204,7 +207,7 @@ class CampaignInfluencerController extends Controller
         return redirect()->back();
     }
 
-    public function feedback(Request $request, $id)
+    public function feedback(Request $request, $id, $brand_id)
     {
         $campaign_influencer = $this->campaignInfluencerService->find($id);
 
@@ -229,7 +232,7 @@ class CampaignInfluencerController extends Controller
         return redirect()->back();
     }
 
-    public function feedbackContent(Request $request, $id)
+    public function feedbackContent(Request $request, $id, $brand_id)
     {
         $data = $request->all();
         // get campaign
@@ -241,17 +244,23 @@ class CampaignInfluencerController extends Controller
             // redirect back
             return redirect()->back();
         }
+        $contents = BrandController::getContents($campaign, $brand_id);
         // upload content files
         if(count($campaign->content_types)) {
+            $contentIndex = 0;
             foreach($campaign->content_types as $index => $content_type) {
-                $media_collection = 'admin_campaign_influencer_content_' . $id . '_' . \Str::snake($content_type);
-                if ($request->hasFile($media_collection)) {
-                    if ($campaign->hasMedia($media_collection)) {
-                        $campaign->clearMediaCollection($media_collection);
+                $contents[$contentIndex] = $contents[$contentIndex] < $campaign->current_cycle ? ($contents[$contentIndex] + 1) : $contents[$contentIndex];
+                $admin_media_collection = 'admin_campaign_influencer_content_' . $id . '_' . $brand_id . '_' . \Str::snake($content_type) . '_' . ($contents[$contentIndex]);
+                //$media_collection = 'admin_campaign_influencer_content_' . $id . '_' . \Str::snake($content_type);
+                if ($request->hasFile($admin_media_collection)) {
+                    if ($campaign->hasMedia($admin_media_collection)) {
+                        $campaign->clearMediaCollection($admin_media_collection);
                     }
-                    $campaign->addMedia($request->file($media_collection))->toMediaCollection($media_collection);
+                    $campaign->addMedia($request->file($admin_media_collection))->toMediaCollection($admin_media_collection);
                     $campaign = tap($campaign)->update(['admin_is_content_uploaded' => true]);
                 }
+
+                $contentIndex++;
             }
         }
 

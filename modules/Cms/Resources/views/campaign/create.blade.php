@@ -43,7 +43,7 @@
                                                     class="form-control select2 @error('brand_id') is-invalid @enderror" data-placeholder="Select a brand">
                                                 <option value="">Select a brand</option>
                                                 @foreach($brands as $brand)
-                                                    <option value="{{ $brand->id }}">{{ $brand->additionalInfo->first_name ?? '' }}</option>
+                                                    <option value="{{ $brand->id }}" {{ old('brand_ids') == $brand->id ? 'selected' : '' }}>{{ $brand->additionalInfo->first_name ?? '' }}</option>
                                                 @endforeach
                                             </select>
                                             @error('brand_id')
