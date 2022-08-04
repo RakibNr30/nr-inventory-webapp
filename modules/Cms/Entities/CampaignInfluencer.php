@@ -49,6 +49,9 @@ class CampaignInfluencer extends BaseModel implements HasMedia
 		'missing_content_reminders_at',
 		'campaign_manager_id',
 		'is_pre_selected',
+		'is_brand_campaign',
+		'parent_campaign_influencer_id',
+		'base_campaign_influencer_ids',
     ];
 
     protected $hidden = [
@@ -89,6 +92,9 @@ class CampaignInfluencer extends BaseModel implements HasMedia
         'missing_content_reminders_at' => 'array',
         'campaign_manager_id' => 'integer',
         'is_pre_selected' => 'integer',
+        'is_brand_campaign' => 'integer',
+        'parent_campaign_influencer_id' => 'integer',
+        'base_campaign_influencer_ids' => 'array',
     ];
 
     public function user() {
@@ -132,5 +138,10 @@ class CampaignInfluencer extends BaseModel implements HasMedia
         }
 
         return $next_deadline;
+    }
+
+    public function getBaseCampaignInfluencersAttribute()
+    {
+        return CampaignInfluencer::query()->whereIn('id', $this->base_campaign_influencer_ids)->get();
     }
 }

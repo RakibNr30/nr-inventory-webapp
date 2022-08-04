@@ -201,10 +201,16 @@ class DashboardService
      */
     public function statisticsBrand()
     {
+        $campaignIds = Campaign::query()->where('brand_id', auth()->user()->id)->get()->pluck('id')->toArray();
+
         $statistics = new \stdClass();
-        $influencers = $this->campaignInfluencerRepository->model
+        /*$influencers = $this->campaignInfluencerRepository->model
             ->whereJsonContains('brand_ids', auth()->user()->id)
             ->orWhereJsonContains('denied_brand_ids', auth()->user()->id)
+            ->get();*/
+
+        $influencers = $this->campaignInfluencerRepository->model
+            ->whereIn('campaign_id', $campaignIds)
             ->get();
 
         $statistics->overall_influencers = $influencers

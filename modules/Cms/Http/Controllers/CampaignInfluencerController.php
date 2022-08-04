@@ -63,7 +63,7 @@ class CampaignInfluencerController extends Controller
         $campaign = $this->campaignService->find(\request()->id);
 
         $brandIds = $brands->pluck('id')->toArray();
-        $brandCampaigns = Campaign::query()->whereIn('brand_id', $brandIds)->get();
+        $brandCampaigns = Campaign::query()->whereIn('brand_id', $brandIds)->where('id', '!=', $campaign->id)->get();
 
         // return view
         return view('cms::campaign.influencer.create', compact('influencers','brands', 'campaign', 'brandCampaigns'));
@@ -77,6 +77,73 @@ class CampaignInfluencerController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(CampaignInfluencerStoreRequest $request, $id)
+    {
+        $data = $request->all();
+
+        if (isset($data['brand_ids']))
+            $data['brand_ids'] = array_map('intval', $data['brand_ids'] ?? []);
+
+        $data['campaign_manager_id'] = Campaign::query()->find($id)->created_by ?? null;
+
+        $brandsCampaignIds = Campaign::query()
+            ->whereIn('brand_id', $data['brand_ids'])
+            ->where('is_active', 1)
+            ->get()->pluck('id')->toArray();
+
+        //$brandsCampaignIds[] = intval($id);
+
+        $parent_campaign_influencer = CampaignInfluencer::query()
+            ->where('campaign_id', $id)
+            ->where('influencer_id', $data['influencer_id'])
+            ->first();
+
+        if ($parent_campaign_influencer) {
+            notifier()->error('This influencer already added to this campaign');
+        } else {
+            $data['campaign_id'] = $id;
+            $parent_campaign_influencer = $this->campaignInfluencerService->create($data);
+        }
+
+        //$brandsCampaignIds = array_unique($brandsCampaignIds);
+
+        $alreadyAddedCount = 0;
+        $addedCount = 0;
+
+        $base_campaign_influencer_ids = [];
+
+        foreach ($brandsCampaignIds as $campaignId) {
+            $campaign_influencer = CampaignInfluencer::query()
+                ->where('campaign_id', $campaignId)
+                ->where('influencer_id', $data['influencer_id'])
+                ->first();
+
+            if ($campaign_influencer) {
+                $alreadyAddedCount++;
+            } else {
+                //if ($campaignId == intval($id)) continue;
+
+                $data['campaign_id'] = $campaignId;
+                $data['is_brand_campaign'] = true;
+                $data['parent_campaign_influencer_id'] = $parent_campaign_influencer->id;
+                $base_campaign_influencer = $this->campaignInfluencerService->create($data);
+                $base_campaign_influencer_ids[] = $base_campaign_influencer->id;
+                $addedCount++;
+            }
+        }
+
+        $this->campaignInfluencerService->update(['base_campaign_influencer_ids' => $base_campaign_influencer_ids], $parent_campaign_influencer->id);
+
+        if ($addedCount > 0) {
+            notifier()->success('This influencer added to ' . $addedCount . ' campaign');
+        } else {
+            notifier()->error('This influencer can not be added any campaign');
+        }
+
+        // redirect to
+        return redirect()->route('backend.cms.campaign.influencer.create', [$id]);
+    }
+
+    /*public function store(CampaignInfluencerStoreRequest $request, $id)
     {
         $data = $request->all();
 
@@ -105,7 +172,7 @@ class CampaignInfluencerController extends Controller
 
         // redirect to
         return redirect()->route('backend.cms.campaign.influencer.create', [$id]);
-    }
+    }*/
 
     /**
      * Update user
@@ -133,6 +200,15 @@ class CampaignInfluencerController extends Controller
                 $request->validate([
                     'denied_reason' => 'required|max:10000'
                 ]);
+
+                foreach ($campaign_influencer->base_campaign_influencer_ids ?? [] as $baseCamInfId) {
+                    $this->campaignInfluencerService->delete($baseCamInfId);
+                }
+            }
+            if ($data['campaign_accept_status_by_influencer'] == 1) {
+                foreach ($campaign_influencer->base_campaign_influencer_ids ?? [] as $baseCamInfId) {
+                    $this->campaignInfluencerService->update($data, $baseCamInfId);
+                }
             }
         }
 
@@ -207,7 +283,7 @@ class CampaignInfluencerController extends Controller
         return redirect()->back();
     }
 
-    public function feedback(Request $request, $id, $brand_id)
+    public function feedback(Request $request, $id)
     {
         $campaign_influencer = $this->campaignInfluencerService->find($id);
 
@@ -232,9 +308,8 @@ class CampaignInfluencerController extends Controller
         return redirect()->back();
     }
 
-    public function feedbackContent(Request $request, $id, $brand_id)
+    public function feedbackContent(Request $request, $id)
     {
-        $data = $request->all();
         // get campaign
         $campaign = $this->campaignInfluencerService->find($id);
         // check if campaign doesn't exists
@@ -244,23 +319,15 @@ class CampaignInfluencerController extends Controller
             // redirect back
             return redirect()->back();
         }
-        $contents = BrandController::getContents($campaign, $brand_id);
-        // upload content files
-        if(count($campaign->content_types)) {
-            $contentIndex = 0;
-            foreach($campaign->content_types as $index => $content_type) {
-                $contents[$contentIndex] = $contents[$contentIndex] < $campaign->current_cycle ? ($contents[$contentIndex] + 1) : $contents[$contentIndex];
-                $admin_media_collection = 'admin_campaign_influencer_content_' . $id . '_' . $brand_id . '_' . \Str::snake($content_type) . '_' . ($contents[$contentIndex]);
-                //$media_collection = 'admin_campaign_influencer_content_' . $id . '_' . \Str::snake($content_type);
-                if ($request->hasFile($admin_media_collection)) {
-                    if ($campaign->hasMedia($admin_media_collection)) {
-                        $campaign->clearMediaCollection($admin_media_collection);
-                    }
-                    $campaign->addMedia($request->file($admin_media_collection))->toMediaCollection($admin_media_collection);
-                    $campaign = tap($campaign)->update(['admin_is_content_uploaded' => true]);
-                }
 
-                $contentIndex++;
+        // upload content files
+        foreach(range(1, $campaign->cycle_count) as $cycle) {
+            $admin_media_collection = 'admin_campaign_influencer_content_' . $campaign->id. '_' . $cycle;
+            if ($request->file($admin_media_collection)) {
+                foreach ($request->file($admin_media_collection) as $file) {
+                    $campaign->addMedia($file)->toMediaCollection($admin_media_collection);
+                }
+                $campaign = tap($campaign)->update(['admin_is_content_uploaded' => true]);
             }
         }
 
@@ -357,6 +424,25 @@ class CampaignInfluencerController extends Controller
         $data['brand_denied_reasons'] = $brand_denied_reasons;
 
         $campaign_influencer = $this->campaignInfluencerService->update($data, $id);
+
+        $this->campaignInfluencerService->delete($data['base_campaign_influencer_id']);
+
+        $baseCampaignInfluencerIds = [];
+
+        foreach ($campaign_influencer->base_campaign_influencer_ids ?? [] as $baseCamInfId) {
+            if ($baseCamInfId != $data['base_campaign_influencer_id']) {
+                $baseCampaignInfluencerIds[] = $baseCamInfId;
+            }
+        }
+
+        $campaign_influencer->update(['base_campaign_influencer_ids' => $baseCampaignInfluencerIds]);
+
+        foreach ($baseCampaignInfluencerIds as $baseCamInfId) {
+            $this->campaignInfluencerService->update([
+                'denied_brand_ids' => $denied_brand_ids,
+                'brand_denied_reasons' => $brand_denied_reasons
+            ], $baseCamInfId);
+        }
 
         $brand = $this->userService->find($brand_id);
 

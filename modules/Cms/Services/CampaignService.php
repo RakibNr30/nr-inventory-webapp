@@ -198,6 +198,7 @@ class CampaignService
         return $this->campaignInfluencerRepository->model
             ->with(['campaign'])
             ->where('influencer_id', auth()->user()->id)
+            ->where('is_brand_campaign', false)
             ->orderByDesc('start_date')
             ->get();
     }

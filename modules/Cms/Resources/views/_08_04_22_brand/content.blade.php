@@ -11,47 +11,51 @@
                             <h3 class="card-title mt-1">Upload Content</h3>
                             <a href="{{ route('backend.cms.brand.index') }}" type="button" class="btn btn-success btn-sm text-white float-right">View Brand List</a>
                         </div>
-                        {!! Form::open(['url' => route('backend.cms.brand.content.upload', [$campaign_influencer->id]), 'method' => 'put', 'files' => true]) !!}
+                        {!! Form::open(['url' => route('backend.cms.brand.content.upload', [$brandCampaign->id, $campaign_influencer->id]), 'method' => 'put', 'files' => true]) !!}
                         <div class="card-body">
+                            @php
+                            $contentIndex = 0;
+                            @endphp
                             <div class="row">
                                 <div class="col-md-12 mb-2">
-                                    Brand: <h4 class="font-weight-bold">{{ $campaign_influencer->campaign->brand->additionalInfo->first_name ?? '' }}</h4>
+                                    Brand: <h4 class="font-weight-bold">{{ $brandCampaign->additionalInfo->first_name ?? '' }}</h4>
                                 </div>
                                 @php
                                     $available_until = \Carbon\Carbon::parse($campaign_influencer->available_until);
                                 @endphp
-                                @foreach(range(1, $campaign_influencer->cycle_count) as $cycle)
+                                @foreach($campaign_influencer->content_types as $index1 => $content_type)
                                     @php
-                                        $media_collection = 'campaign_influencer_content_' . $campaign_influencer->id . '_' . $cycle;
-                                        $get_media_collections = $campaign_influencer->getMedia($media_collection);
+                                        $contents[$contentIndex] = $contents[$contentIndex] < $campaign_influencer->current_cycle ? ($contents[$contentIndex] + 1) : $contents[$contentIndex];
+                                        $media_collection_first = 'campaign_influencer_content_' . $campaign_influencer->id . '_' . $brandCampaign->id . '_' . \Str::snake($content_type) . '_1';
+                                        $media_collection = 'campaign_influencer_content_' . $campaign_influencer->id . '_' . $brandCampaign->id . '_' . \Str::snake($content_type) . '_' . ($contents[$contentIndex]);
                                     @endphp
                                     <div class="col-md-4">
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="form-group">
                                                     <label>
-                                                        Cycle {{ $cycle . '/' . $campaign_influencer->cycle_count }}
+                                                        {{ $content_type }} ({{ ($contents[$contentIndex]) . '/' . $campaign_influencer->cycle_count }})
                                                     </label>
                                                     @if(\Carbon\Carbon::now()->lt($available_until))
                                                         <div class="custom-file">
-                                                            <input type="file" name="{{ $media_collection }}[]" value="{{ old($media_collection) }}" class="custom-file-input @error($media_collection) is-invalid @enderror" id="customFile" multiple {{ $cycle == $campaign_influencer->current_cycle ? '' : 'disabled' }}>
+                                                            <input type="file" name="{{ $media_collection }}" value="{{ old($media_collection) }}" class="custom-file-input @error($media_collection) is-invalid @enderror" id="customFile">
                                                             <label class="custom-file-label font-weight-normal" for="customFile">Choose file</label>
                                                         </div>
                                                         @error($media_collection)
                                                         <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                         @enderror
                                                     @endif
-                                                    @if(count($get_media_collections))
-                                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm mt-2" data-toggle="modal" data-target="#modal-xl-1-{{ $cycle }}">
+                                                    @if(isset($campaign_influencer->getMedia($media_collection_first)[0]))
+                                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm mt-2" data-toggle="modal" data-target="#modal-xl-1-{{ $index1 }}">
                                                             View Content
                                                         </a>
 
-                                                        <div class="modal fade" id="modal-xl-1-{{ $cycle }}" style="display: none;" aria-hidden="true">
+                                                        <div class="modal fade" id="modal-xl-1-{{ $index1 }}" style="display: none;" aria-hidden="true">
                                                             <div class="modal-dialog modal-xl">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
                                                                         <h4 class="modal-title text-lg font-weight-bold">
-                                                                            Cycle {{ $cycle }}
+                                                                            {{ $content_type }}
                                                                         </h4>
                                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                             <span aria-hidden="true">×</span>
@@ -59,30 +63,38 @@
                                                                     </div>
                                                                     <div class="modal-body">
                                                                         <div class="row">
-                                                                            @foreach($get_media_collections as $index2 => $file)
+                                                                            @foreach(range(1, $campaign_influencer->current_cycle) as $index2 => $cycle)
+                                                                                @php
+                                                                                    $media_collection_single = 'campaign_influencer_content_' . $campaign_influencer->id . '_' . $brandCampaign->id . '_' . \Str::snake($content_type) . '_' . $cycle;
+                                                                                @endphp
                                                                                 <div class="col-md-4">
                                                                                     <div class="card">
                                                                                         <div class="card-header">
-                                                                                            File: {{ $index2 + 1 }}
+                                                                                            Cycle: {{ $index2 + 1 }}
                                                                                         </div>
                                                                                         <div class="card-body">
                                                                                             <div class="form-group text-center">
-                                                                                                @if($file)
+                                                                                                @if(isset($campaign_influencer->getMedia($media_collection_single)[0]))
                                                                                                     <div class="image-output" style="border: 1px solid #bebebe">
-                                                                                                        @if(\App\Helpers\FileHelper::getType($file->mime_type) == 'video')
+                                                                                                        @if(\App\Helpers\FileHelper::getType($campaign_influencer->getMedia($media_collection_single)[0]->mime_type) == 'video')
                                                                                                             <video width="100%" height="200" controls>
-                                                                                                                <source src="{{ $file->getUrl() }}" type="{{ $file->mime_type }}">
+                                                                                                                <source src="{{ $campaign_influencer->getMedia($media_collection_single)[0]->getUrl() }}" type="{{ $campaign_influencer->getMedia($media_collection_single)[0]->mime_type }}">
                                                                                                                 Your browser does not support the video tag.
                                                                                                             </video>
-                                                                                                        @elseif(\App\Helpers\FileHelper::getType($file->mime_type) == 'image')
-                                                                                                            <a href="{{ $file->getUrl() }}" target="_blank">
-                                                                                                                <img src="{{ $file->getUrl() }}" class="w-100" style="height: 100px"  alt="#"/>
+                                                                                                        @elseif(\App\Helpers\FileHelper::getType($campaign_influencer->getMedia($media_collection_single)[0]->mime_type) == 'image')
+                                                                                                            <a href="{{ $campaign_influencer->getMedia($media_collection_single)[0]->getUrl() }}" target="_blank">
+                                                                                                                <img src="{{ $campaign_influencer->getMedia($media_collection_single)[0]->getUrl() }}" class="w-100" style="height: 100px" />
                                                                                                             </a>
                                                                                                         @else
-                                                                                                            <a class="btn btn-info" href="{{ $file->getUrl() }}" download="">
+                                                                                                            <a class="btn btn-info" href="{{ $campaign_influencer->getMedia($media_collection_single)[0]->getUrl() }}" download="">
                                                                                                                 Download File
                                                                                                             </a>
                                                                                                         @endif
+                                                                                                    </div>
+                                                                                                @else
+                                                                                                    <div class="m-auto pt-3 text-center">
+                                                                                                        <i class="fa fa-exclamation-circle text-danger"></i>
+                                                                                                        <span class="d-block text-danger">Content Not Uploaded</span>
                                                                                                     </div>
                                                                                                 @endif
                                                                                             </div>
@@ -98,15 +110,20 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+
                                                     @else
-                                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm mt-2 disabled" disabled>
-                                                            View Content
-                                                        </a>
+                                                        <div class="m-auto pt-3 text-center">
+                                                            <i class="fa fa-exclamation-circle text-danger"></i>
+                                                            <span class="d-block text-danger">Content Not Uploaded</span>
+                                                        </div>
                                                     @endif
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    @php
+                                        $contentIndex++;
+                                    @endphp
                                 @endforeach
                             </div>
 

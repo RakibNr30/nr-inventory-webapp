@@ -80,18 +80,13 @@
 
                                                         @php
                                                             $uploaded_content = 0;
-                                                            foreach ($campaignInfluencer->brands as $index1 => $brand) {
-                                                                $contentIndex = 0;
-                                                                $contents = \Modules\Cms\Http\Controllers\BrandController::getContents($campaignInfluencer, $brand->id);
-                                                                foreach($campaignInfluencer->content_types as $index2 => $content_type) {
-                                                                    $contents[$contentIndex] = $contents[$contentIndex] < $campaignInfluencer->current_cycle ? ($contents[$contentIndex] + 1) : $contents[$contentIndex];
-                                                                    $media_collection_first = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_1';
-                                                                    $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . ($contents[$contentIndex]);
-                                                                    $uploaded_content += isset($campaignInfluencer->getMedia($media_collection_first)[0]);
-                                                                    $contentIndex++;
-                                                                }
+
+                                                            foreach(range(1, $campaignInfluencer->cycle_count) as $index_cycle => $cycle) {
+                                                                $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . $cycle;
+                                                                $get_media_collections = $campaignInfluencer->getMedia($media_collection);
+                                                                $uploaded_content += count($get_media_collections) == true;
                                                             }
-                                                            $total_contents = count($campaignInfluencer->content_types ?? []);
+                                                            $total_contents = $campaignInfluencer->cycle_count;
                                                             $missing_contents = $total_contents - $uploaded_content;
                                                         @endphp
 
@@ -372,186 +367,88 @@
                                                                                             $available_until = \Carbon\Carbon::parse($campaignInfluencer->available_until);
                                                                                         @endphp
 
-                                                                                        @foreach($campaignInfluencer->brands as $index1 => $brand)
-                                                                                            <div class="col-md-12 {{ $index1 != 0 ? 'mt-3' : '' }}">
-                                                                                                <h4>
-                                                                                                    Brand: {{ $brand->additionalInfo->first_name ?? '' }}
-                                                                                                </h4>
-                                                                                            </div>
+                                                                                        @foreach(range(1, $campaignInfluencer->cycle_count) as $index_cycle => $cycle)
                                                                                             @php
-                                                                                                $available_until = \Carbon\Carbon::parse($campaignInfluencer->available_until);
-                                                                                                $contents = \Modules\Cms\Http\Controllers\BrandController::getContents($campaignInfluencer, $brand->id);
-                                                                                                $contentIndex = 0;
-                                                                                            @endphp
-                                                                                            @foreach($campaignInfluencer->content_types as $index2 => $content_type)
-                                                                                                @php
-                                                                                                    $contents[$contentIndex] = $contents[$contentIndex] < $campaignInfluencer->current_cycle ? ($contents[$contentIndex] + 1) : $contents[$contentIndex];
-                                                                                                    $media_collection_first = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_1';
-                                                                                                    $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . ($contents[$contentIndex]);
-                                                                                                    $admin_media_collection = 'admin_campaign_influencer_content_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . ($contents[$contentIndex]);
-                                                                                                    $admin_grade = 'grade_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . ($contents[$contentIndex]);
-                                                                                                    $admin_feedback = 'feedback_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . ($contents[$contentIndex]);
-                                                                                                @endphp
-                                                                                                <div class="col-md-4">
-                                                                                                    <div class="card">
-                                                                                                        <div class="card-body">
-                                                                                                            <div class="form-group">
-                                                                                                                <label for="logo" class="@error('logo') text-danger @enderror">
-                                                                                                                    {{ $content_type }} (cycle {{ ($contents[$contentIndex]) . '/' . $campaignInfluencer->cycle_count }})
-                                                                                                                </label>
-                                                                                                                @if(isset($campaignInfluencer->getMedia($media_collection_first)[0]))
-                                                                                                                    <br>
-                                                                                                                    <a href="javascript:void(0)" class="btn btn-primary btn-sm mt-2" data-toggle="modal" data-target="#modal-xl-1-{{ $index1 }}-{{ $index2 }}">
-                                                                                                                        Content View
-                                                                                                                    </a>
+                                                                                                $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . $cycle;
+                                                                                                $get_media_collections = $campaignInfluencer->getMedia($media_collection);
 
-                                                                                                                    <div class="modal fade" id="modal-xl-1-{{ $index1 }}-{{ $index2 }}" style="display: none;" aria-hidden="true">
-                                                                                                                        <div class="modal-dialog modal-xl">
-                                                                                                                            <div class="modal-content">
-                                                                                                                                <div class="modal-header">
-                                                                                                                                    <h4 class="modal-title text-lg font-weight-bold">
-                                                                                                                                        {{ $content_type }} - {{ $brand->additionalInfo->first_name ?? '' }}
-                                                                                                                                    </h4>
-                                                                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                                                                                        <span aria-hidden="true">×</span>
-                                                                                                                                    </button>
-                                                                                                                                </div>
-                                                                                                                                <div class="modal-body">
-                                                                                                                                    <div class="row">
-                                                                                                                                        @foreach(range(1, $campaignInfluencer->current_cycle) as $index3 => $cycle)
-                                                                                                                                            @php
-                                                                                                                                                $media_collection_single = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . $brand->id . '_' . \Str::snake($content_type) . '_' . $cycle;
-                                                                                                                                            @endphp
-                                                                                                                                            <div class="col-md-4">
-                                                                                                                                                <div class="card">
-                                                                                                                                                    <div class="card-body">
-                                                                                                                                                        <div class="form-group text-center">
-                                                                                                                                                            @if(isset($campaignInfluencer->getMedia($media_collection_single)[0]))
-                                                                                                                                                                <div class="image-output" style="border: 1px solid #bebebe">
-                                                                                                                                                                    @if(\App\Helpers\FileHelper::getType($campaignInfluencer->getMedia($media_collection_single)[0]->mime_type) == 'video')
-                                                                                                                                                                        <video width="100%" height="200" controls>
-                                                                                                                                                                            <source src="{{ $campaignInfluencer->getMedia($media_collection_single)[0]->getUrl() }}" type="{{ $campaignInfluencer->getMedia($media_collection_single)[0]->mime_type }}">
-                                                                                                                                                                            Your browser does not support the video tag.
-                                                                                                                                                                        </video>
-                                                                                                                                                                    @elseif(\App\Helpers\FileHelper::getType($campaignInfluencer->getMedia($media_collection_single)[0]->mime_type) == 'image')
-                                                                                                                                                                        <a href="{{ $campaignInfluencer->getMedia($media_collection_single)[0]->getUrl() }}" target="_blank">
-                                                                                                                                                                            <img src="{{ $campaignInfluencer->getMedia($media_collection_single)[0]->getUrl() }}" class="w-100" style="height: 100px" />
-                                                                                                                                                                        </a>
-                                                                                                                                                                    @else
-                                                                                                                                                                        <a class="btn btn-info" href="{{ $campaignInfluencer->getMedia($media_collection_single)[0]->getUrl() }}" download="">
-                                                                                                                                                                            Download File
-                                                                                                                                                                        </a>
-                                                                                                                                                                    @endif
-                                                                                                                                                                </div>
-                                                                                                                                                            @else
-                                                                                                                                                                <div class="m-auto pt-3 text-center">
-                                                                                                                                                                    <i class="fa fa-exclamation-circle text-danger"></i>
-                                                                                                                                                                    <span class="d-block text-danger">Content Not Uploaded</span>
-                                                                                                                                                                </div>
-                                                                                                                                                            @endif
-                                                                                                                                                        </div>
-                                                                                                                                                    </div>
-                                                                                                                                                </div>
-                                                                                                                                            </div>
-                                                                                                                                        @endforeach
-                                                                                                                                    </div>
-                                                                                                                                </div>
-                                                                                                                                <div class="modal-footer justify-content-between">
-                                                                                                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                                                                                                                                </div>
-                                                                                                                            </div>
-                                                                                                                        </div>
-                                                                                                                    </div>
-
-                                                                                                                @else
-                                                                                                                    <div class="m-auto pt-3 text-center">
-                                                                                                                        <i class="fa fa-exclamation-circle text-danger"></i>
-                                                                                                                        <span class="d-block text-danger">Content Not Uploaded</span>
-                                                                                                                    </div>
-                                                                                                                @endif
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </div>
-
-                                                                                                    <div class="card">
-                                                                                                        <div class="card-header">
-                                                                                                            <div class="card-title">
-                                                                                                                <strong>{{ $content_type }}</strong> - Review
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div class="card-body">
-                                                                                                            <div class="form-group text-center">
-                                                                                                                {!! Form::open(['url' => route('backend.cms.campaign-influencer.feedbackContent', [$campaignInfluencer->id, $brand->id]), 'method' => 'put', 'files' => true]) !!}
-                                                                                                                @if(\Carbon\Carbon::now()->lt($available_until))
-                                                                                                                    <div class="custom-file">
-                                                                                                                        <input type="file" name="{{ $admin_media_collection }}" value="{{ old($admin_media_collection) }}" class="custom-file-input @error($admin_media_collection) is-invalid @enderror" id="customFile">
-                                                                                                                        <label class="custom-file-label font-weight-normal" for="customFile">Choose file</label>
-                                                                                                                    </div>
-                                                                                                                    @error($admin_media_collection)
-                                                                                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                                                                                                    @enderror
-                                                                                                                    <div class="mt-2">
-                                                                                                                        <button class="btn btn-success">Upload</button>
-                                                                                                                    </div>
-                                                                                                                @endif
-                                                                                                                @if(isset($campaignInfluencer->getMedia($admin_media_collection)[0]))
-                                                                                                                    <div class="image-output" style="width: 100%">
-                                                                                                                        <img src="{{ $campaignInfluencer->getMedia($admin_media_collection)[0]->getUrl() }}" class="w-100" style="height: 200px" />
-                                                                                                                    </div>
-                                                                                                                    <a href="{{ $campaignInfluencer->getMedia($admin_media_collection)[0]->getUrl() }}" class="btn btn-primary btn-sm mt-2" download>
-                                                                                                                        Download
-                                                                                                                    </a>
-                                                                                                                @else
-                                                                                                                    <div class="m-auto pt-3 text-center">
-                                                                                                                        <i class="fa fa-exclamation-circle text-danger"></i>
-                                                                                                                        <span class="d-block text-danger">Content Not Uploaded By Internal</span>
-                                                                                                                    </div>
-                                                                                                                @endif
-                                                                                                                {!! Form::close() !!}
-                                                                                                            </div>
-                                                                                                            <div class="col-md-12"><hr></div>
-                                                                                                            <div class="form-group text-center">
-                                                                                                                {!! Form::open(['url' => route('backend.cms.campaign-influencer.feedback', [$campaignInfluencer->id, $brand->id]), 'method' => 'put']) !!}
-                                                                                                                <div class="form-group text-left mt-2">
-                                                                                                                    <label>Grade</label>
-                                                                                                                    <input name="{{ $admin_grade }}" value="{{ old($admin_grade) ?? $campaignInfluencer->feedback[$admin_grade] ?? '' }}" type="number" min="0" placeholder="Grade" class="form-control" required />
-                                                                                                                </div>
-                                                                                                                <div class="form-group text-left mt-2">
-                                                                                                                    <label>Feedback</label>
-                                                                                                                    <textarea name="{{ $admin_feedback }}" rows="3" class="form-control" required>{{ old($admin_feedback) ?? $campaignInfluencer->feedback[$admin_feedback] ?? '' }}</textarea>
-                                                                                                                </div>
-                                                                                                                <div class="form-group text-left mt-2">
-                                                                                                                    <button class="btn btn-primary btn-sm">Send</button>
-                                                                                                                </div>
-                                                                                                                {!! Form::close() !!}
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                @php
-                                                                                                $contentIndex++;
-                                                                                                @endphp
-                                                                                            @endforeach
-                                                                                        @endforeach
-
-                                                                                        {{--@foreach($campaignInfluencer->content_types as $index => $content_type1)
-                                                                                            @php
-                                                                                                $media_collection = 'campaign_influencer_content_' . $campaignInfluencer->id . '_' . \Str::snake($content_type1);
-                                                                                                $admin_media_collection = 'admin_campaign_influencer_content_' . $campaignInfluencer->id . '_' . \Str::snake($content_type1);
+                                                                                                $admin_media_collection = 'admin_campaign_influencer_content_' . $campaignInfluencer->id . '_' . $cycle;
+                                                                                                $admin_grade = 'grade_' . $campaignInfluencer->id . '_' . $cycle;
+                                                                                                $admin_feedback = 'feedback_' . $campaignInfluencer->id . '_' . $cycle;
+                                                                                                $get_admin_media_collections = $campaignInfluencer->getMedia($admin_media_collection);
                                                                                             @endphp
                                                                                             <div class="col-md-4">
                                                                                                 <div class="card">
                                                                                                     <div class="card-header">
-                                                                                                        <div class="card-title">
-                                                                                                            <strong>{{ $content_type1 }}</strong> - Review
-                                                                                                        </div>
+                                                                                                        Cycle {{ $index_cycle + 1 . '/' . $campaignInfluencer->cycle_count }}
                                                                                                     </div>
                                                                                                     <div class="card-body">
-                                                                                                        <div class="form-group text-center">
+
+                                                                                                            @if(count($get_media_collections))
+                                                                                                                <a href="javascript:void(0)" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-xl-1-{{ $index }}-{{ $index_cycle }}">
+                                                                                                                    Content View
+                                                                                                                </a>
+                                                                                                                <div class="modal fade" id="modal-xl-1-{{ $index }}-{{ $index_cycle }}" style="display: none;" aria-hidden="true">
+                                                                                                                    <div class="modal-dialog modal-xl">
+                                                                                                                        <div class="modal-content">
+                                                                                                                            <div class="modal-header">
+                                                                                                                                <h4 class="modal-title text-lg font-weight-bold">
+                                                                                                                                    Cycle {{ $cycle }}
+                                                                                                                                </h4>
+                                                                                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                                                                    <span aria-hidden="true">×</span>
+                                                                                                                                </button>
+                                                                                                                            </div>
+                                                                                                                            <div class="modal-body">
+                                                                                                                                <div class="row">
+                                                                                                                                    @foreach($get_media_collections as $index2 => $file)
+                                                                                                                                        <div class="col-md-4">
+                                                                                                                                            <div class="card">
+                                                                                                                                                <div class="card-body">
+                                                                                                                                                    <div class="form-group text-center">
+                                                                                                                                                        @if($file)
+                                                                                                                                                            <div class="image-output" style="border: 1px solid #bebebe">
+                                                                                                                                                                @if(\App\Helpers\FileHelper::getType($file->mime_type) == 'video')
+                                                                                                                                                                    <video width="100%" height="200" controls>
+                                                                                                                                                                        <source src="{{ $file->getUrl() }}" type="{{ $file->mime_type }}">
+                                                                                                                                                                        Your browser does not support the video tag.
+                                                                                                                                                                    </video>
+                                                                                                                                                                @elseif(\App\Helpers\FileHelper::getType($file->mime_type) == 'image')
+                                                                                                                                                                    <a href="{{ $file->getUrl() }}" target="_blank">
+                                                                                                                                                                        <img src="{{ $file->getUrl() }}" class="w-100" style="height: 100px" />
+                                                                                                                                                                    </a>
+                                                                                                                                                                @else
+                                                                                                                                                                    <a class="btn btn-info" href="{{ $file->getUrl() }}" download="">
+                                                                                                                                                                        Download File
+                                                                                                                                                                    </a>
+                                                                                                                                                                @endif
+                                                                                                                                                            </div>
+                                                                                                                                                        @endif
+                                                                                                                                                    </div>
+                                                                                                                                                </div>
+                                                                                                                                            </div>
+                                                                                                                                        </div>
+                                                                                                                                    @endforeach
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                            <div class="modal-footer justify-content-between">
+                                                                                                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            @else
+                                                                                                                <a href="javascript:void(0)" class="btn btn-info btn-sm disabled" disabled>
+                                                                                                                    Content View
+                                                                                                                </a>
+                                                                                                            @endif
+                                                                                                    </div>
+                                                                                                    <div class="card-body border-top">
+                                                                                                        <div class="form-group text-left">
                                                                                                             {!! Form::open(['url' => route('backend.cms.campaign-influencer.feedbackContent', [$campaignInfluencer->id]), 'method' => 'put', 'files' => true]) !!}
                                                                                                             @if(\Carbon\Carbon::now()->lt($available_until))
                                                                                                                 <div class="custom-file">
-                                                                                                                    <input type="file" name="{{ $admin_media_collection }}" value="{{ old($admin_media_collection) }}" class="custom-file-input @error($admin_media_collection) is-invalid @enderror" id="customFile">
+                                                                                                                    <input type="file" name="{{ $admin_media_collection }}[]" value="{{ old($admin_media_collection) }}" class="custom-file-input @error($admin_media_collection) is-invalid @enderror" id="customFile" multiple>
                                                                                                                     <label class="custom-file-label font-weight-normal" for="customFile">Choose file</label>
                                                                                                                 </div>
                                                                                                                 @error($admin_media_collection)
@@ -561,18 +458,63 @@
                                                                                                                     <button class="btn btn-success">Upload</button>
                                                                                                                 </div>
                                                                                                             @endif
-                                                                                                            @if(isset($campaignInfluencer->getMedia($admin_media_collection)[0]))
-                                                                                                                <div class="image-output" style="width: 100%">
-                                                                                                                    <img src="{{ $campaignInfluencer->getMedia($admin_media_collection)[0]->getUrl() }}" class="w-100" style="height: 200px" />
-                                                                                                                </div>
-                                                                                                                <a href="{{ $campaignInfluencer->getMedia($admin_media_collection)[0]->getUrl() }}" class="btn btn-primary btn-sm mt-2" download>
-                                                                                                                    Download
+                                                                                                            @if(count($get_admin_media_collections))
+                                                                                                                <a href="javascript:void(0)" class="btn btn-outline-success btn-sm mt-2" data-toggle="modal" data-target="#modal-xl-1-2-{{ $index }}-{{ $index_cycle }}">
+                                                                                                                    Internal Content View
                                                                                                                 </a>
-                                                                                                            @else
-                                                                                                                <div class="m-auto pt-3 text-center">
-                                                                                                                    <i class="fa fa-exclamation-circle text-danger"></i>
-                                                                                                                    <span class="d-block text-danger">Content Not Uploaded By Internal</span>
+                                                                                                                <div class="modal fade" id="modal-xl-1-2-{{ $index }}-{{ $index_cycle }}" style="display: none;" aria-hidden="true">
+                                                                                                                    <div class="modal-dialog modal-xl">
+                                                                                                                        <div class="modal-content">
+                                                                                                                            <div class="modal-header">
+                                                                                                                                <h4 class="modal-title text-lg font-weight-bold">
+                                                                                                                                    Cycle {{ $cycle }}
+                                                                                                                                </h4>
+                                                                                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                                                                    <span aria-hidden="true">×</span>
+                                                                                                                                </button>
+                                                                                                                            </div>
+                                                                                                                            <div class="modal-body">
+                                                                                                                                <div class="row">
+                                                                                                                                    @foreach($get_admin_media_collections as $index2 => $file)
+                                                                                                                                        <div class="col-md-4">
+                                                                                                                                            <div class="card">
+                                                                                                                                                <div class="card-body">
+                                                                                                                                                    <div class="form-group text-center">
+                                                                                                                                                        @if($file)
+                                                                                                                                                            <div class="image-output" style="border: 1px solid #bebebe">
+                                                                                                                                                                @if(\App\Helpers\FileHelper::getType($file->mime_type) == 'video')
+                                                                                                                                                                    <video width="100%" height="200" controls>
+                                                                                                                                                                        <source src="{{ $file->getUrl() }}" type="{{ $file->mime_type }}">
+                                                                                                                                                                        Your browser does not support the video tag.
+                                                                                                                                                                    </video>
+                                                                                                                                                                @elseif(\App\Helpers\FileHelper::getType($file->mime_type) == 'image')
+                                                                                                                                                                    <a href="{{ $file->getUrl() }}" target="_blank">
+                                                                                                                                                                        <img src="{{ $file->getUrl() }}" class="w-100" style="height: 100px" />
+                                                                                                                                                                    </a>
+                                                                                                                                                                @else
+                                                                                                                                                                    <a class="btn btn-info" href="{{ $file->getUrl() }}" download="">
+                                                                                                                                                                        Download File
+                                                                                                                                                                    </a>
+                                                                                                                                                                @endif
+                                                                                                                                                            </div>
+                                                                                                                                                        @endif
+                                                                                                                                                    </div>
+                                                                                                                                                </div>
+                                                                                                                                            </div>
+                                                                                                                                        </div>
+                                                                                                                                    @endforeach
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                            <div class="modal-footer justify-content-between">
+                                                                                                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                    </div>
                                                                                                                 </div>
+                                                                                                            @else
+                                                                                                                <a href="javascript:void(0)" class="btn btn-outline-success btn-sm mt-2 disabled" disabled>
+                                                                                                                    Internal Content View
+                                                                                                                </a>
                                                                                                             @endif
                                                                                                             {!! Form::close() !!}
                                                                                                         </div>
@@ -581,11 +523,11 @@
                                                                                                             {!! Form::open(['url' => route('backend.cms.campaign-influencer.feedback', [$campaignInfluencer->id]), 'method' => 'put']) !!}
                                                                                                             <div class="form-group text-left mt-2">
                                                                                                                 <label>Grade</label>
-                                                                                                                <input name="grade_{{ \Str::snake($content_type1) }}" value="{{ old('grade_' . \Str::snake($content_type1)) ?? $campaignInfluencer->feedback['grade_' . \Str::snake($content_type1)] ?? '' }}" type="number" min="0" placeholder="Grade" class="form-control" required />
+                                                                                                                <input name="{{ $admin_grade }}" value="{{ old($admin_grade) ?? $campaignInfluencer->feedback[$admin_grade] ?? '' }}" type="number" min="0" placeholder="Grade" class="form-control" required />
                                                                                                             </div>
                                                                                                             <div class="form-group text-left mt-2">
                                                                                                                 <label>Feedback</label>
-                                                                                                                <textarea name="feedback_{{ \Str::snake($content_type1) }}" rows="3" class="form-control" required>{{ old('feedback_' . \Str::snake($content_type1)) ?? $campaignInfluencer->feedback['feedback_' . \Str::snake($content_type1)] ?? '' }}</textarea>
+                                                                                                                <textarea name="{{ $admin_feedback }}" rows="3" class="form-control" required>{{ old($admin_feedback) ?? $campaignInfluencer->feedback[$admin_feedback] ?? '' }}</textarea>
                                                                                                             </div>
                                                                                                             <div class="form-group text-left mt-2">
                                                                                                                 <button class="btn btn-primary btn-sm">Send</button>
@@ -595,7 +537,7 @@
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
-                                                                                        @endforeach--}}
+                                                                                        @endforeach
                                                                                     </div>
                                                                                 </div>
                                                                             </div>

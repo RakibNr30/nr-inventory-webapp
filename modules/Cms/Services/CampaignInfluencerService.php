@@ -2,6 +2,7 @@
 
 namespace Modules\Cms\Services;
 
+use Modules\Cms\Entities\Campaign;
 use Modules\Cms\Repositories\CampaignInfluencerRepository;
 use Modules\Ums\Repositories\UserRepository;
 
@@ -115,9 +116,15 @@ class CampaignInfluencerService
      */
     public function brandInfluencers($limit = 0)
     {
-        return $this->campaignInfluencerRepository->model
+        $campaignIds = Campaign::query()->where('brand_id', auth()->user()->id)->get()->pluck('id')->toArray();
+
+        /*return $this->campaignInfluencerRepository->model
             ->whereJsonContains('brand_ids', auth()->user()->id)
             ->orWhereJsonContains('denied_brand_ids', auth()->user()->id)
+            ->paginate($limit);*/
+
+        return $this->campaignInfluencerRepository->model
+            ->whereIn('campaign_id', $campaignIds)
             ->paginate($limit);
     }
 
@@ -146,8 +153,15 @@ class CampaignInfluencerService
      */
     public function brandFavouriteInfluencers($limit = 0)
     {
-        return $this->campaignInfluencerRepository->model
+        $campaignIds = Campaign::query()->where('brand_id', auth()->user()->id)->get()->pluck('id')->toArray();
+
+        /*return $this->campaignInfluencerRepository->model
             ->whereJsonContains('brand_ids', auth()->user()->id)
+            ->where('is_add_to_favourite', 1)
+            ->paginate($limit);*/
+
+        return $this->campaignInfluencerRepository->model
+            ->whereIn('campaign_id', $campaignIds)
             ->where('is_add_to_favourite', 1)
             ->paginate($limit);
     }

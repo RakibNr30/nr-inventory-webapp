@@ -257,12 +257,11 @@
                                                     $brands = Modules\Ums\Entities\User::query()
                                                     ->whereIn('id', $campaign_influencer->brand_ids ?? [])
                                                     ->whereNotIn('id', $campaign_influencer->denied_brand_ids ?? [])->get();
-                                                    $baseCampaignInfluencers = $campaign_influencer->base_campaign_influencers->take(5) ?? [];
                                                 @endphp
 
                                                 @for($index = 0; $index < 5; $index++)
                                                     <td>
-                                                        @if(isset($brands[$index]) && isset($baseCampaignInfluencers[$index]))
+                                                        @if(isset($brands[$index]))
                                                             <ul class="list-inline text-center">
                                                                 @if(($campaign_influencer->campaign_accept_status_by_influencer == 0) && (\Carbon\Carbon::now()->lt($available_until)) && ($campaign_influencer->campaign->is_active))
                                                                     @if(count($brands) > 1)
@@ -285,11 +284,12 @@
                                                                                 {!! Form::open(['url' => route('backend.cms.campaign-influencer.brand.remove', [$campaign_influencer->id, $brands[$index]->id]), 'method' => 'put']) !!}
                                                                                 <div class="modal-body">
                                                                                     <div class="form-group text-left mt-2">
-                                                                                        <input type="hidden" name="base_campaign_influencer_id" value="{{ $baseCampaignInfluencers[$index]->id }}">
                                                                                         <label for="brand_denied_reason" class="@error('brand_denied_reason') text-danger @enderror">
                                                                                             Write us if you don‘t want to show a specific brand or if you have any other concerns.
                                                                                         </label>
-                                                                                        <textarea id="brand_denied_reason" rows="4" name="brand_denied_reason" class="form-control" placeholder="Please give us feedback" required autofocus>{{ old('brand_denied_reason') }}</textarea>
+                                                                                        <textarea id="brand_denied_reason" rows="4" name="brand_denied_reason" class="form-control" placeholder="Please give us feedback" required autofocus>
+                                                                                            {{ old('brand_denied_reason') }}
+                                                                                        </textarea>
                                                                                         @error('brand_denied_reason')
                                                                                         <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                                                         @enderror

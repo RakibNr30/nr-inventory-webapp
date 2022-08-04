@@ -48,6 +48,9 @@ class CreateCampaignInfluencersTable extends Migration
             $table->json('missing_content_reminders_at')->nullable();
             $table->unsignedBigInteger('campaign_manager_id')->nullable();
             $table->boolean('is_pre_selected')->nullable()->default(false);
+            $table->boolean('is_brand_campaign')->nullable()->default(false);
+            $table->unsignedBigInteger('parent_campaign_influencer_id')->nullable();
+            $table->json('base_campaign_influencer_ids')->nullable();
 
             $table->commonFields();
         });
