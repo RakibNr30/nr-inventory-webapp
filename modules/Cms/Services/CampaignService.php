@@ -203,6 +203,20 @@ class CampaignService
             ->get();
     }
 
+    /**
+     * Get all campaign
+     *
+     * @return mixed
+     */
+    public function influencerBrandCampaigns($limit = 0)
+    {
+        return $this->campaignInfluencerRepository->model
+            ->with(['campaign'])
+            ->where('influencer_id', auth()->user()->id)
+            ->orderByDesc('start_date')
+            ->get();
+    }
+
     public function campaignWithInfluencers($filters, $limit = 0)
     {
         $campaigns = $this->campaignRepository->model

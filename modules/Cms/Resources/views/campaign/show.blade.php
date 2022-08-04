@@ -233,7 +233,7 @@
                                                                                         </span>
                                                                                         <span class="d-block text-sm mt-1">
                                                                                             <button name="briefing_reminder" value="{{ 1 }}" class="btn btn-primary btn-sm"
-                                                                                                {{ Carbon::now()->gt(Carbon::parse($campaignInfluencer->created_at)->addDays(2)) ? '' : 'disabled' }}
+                                                                                                {{ Carbon::now()->gt(Carbon::parse($campaignInfluencer->start_date)->addDays(2)) ? '' : 'disabled' }}
                                                                                             >
                                                                                                 Send out
                                                                                             </button>

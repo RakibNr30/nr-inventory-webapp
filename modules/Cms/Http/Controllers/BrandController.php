@@ -58,7 +58,7 @@ class BrandController extends Controller
      */
     public function index(BrandDataTable $dataTable)
     {
-        $campaign_influencers = $this->campaignService->influencerCampaigns();
+        $campaign_influencers = $this->campaignService->influencerBrandCampaigns();
 
         $campaign_influencers = $campaign_influencers->filter(function ($value) {
             $available_until = \Carbon\Carbon::parse($value->available_until);
