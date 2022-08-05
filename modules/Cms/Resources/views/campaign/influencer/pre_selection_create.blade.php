@@ -36,10 +36,15 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="brand_ids" class="@error('brand_ids') text-danger @enderror">Choose Brand Campaigns</label>
+                                        <span class="badge badge-danger">You are in {{ $campaign->title ?? '' }}. So {{ $campaign->title ?? '' }} automatically selected</span>
                                         <select id="brand_ids" name="brand_ids[]"
-                                                class="form-control select2 @error('brand_ids') is-invalid @enderror" data-placeholder="Select a brand" multiple>
-                                            @foreach($brands as $brand)
-                                                <option value="{{ $brand->id }}" {{ in_array($brand->id, old('brand_ids') ?? []) ? 'selected' : '' }}>{{ $brand->additionalInfo->first_name ?? '' }}</option>
+                                                class="form-control select2 @error('brand_ids') is-invalid @enderror" data-placeholder="Select a brand campaign" multiple>
+                                            @foreach($brandCampaigns->groupBy('brand_id') as $brandCampaigns)
+                                                <optgroup label="{{ $brandCampaigns[0]->brand->additionalInfo->first_name ?? '' }}">
+                                                    @foreach($brandCampaigns as $brandCampaign)
+                                                        <option value="{{ $brandCampaign->brand_id }}" {{ in_array($brandCampaign->brand_id, old('brand_ids') ?? []) ? 'selected' : '' }}>{{ $brandCampaign->title ?? '' }}</option>
+                                                    @endforeach
+                                                </optgroup>
                                             @endforeach
                                         </select>
                                         @error('brand_ids')

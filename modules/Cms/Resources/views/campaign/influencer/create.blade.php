@@ -37,6 +37,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="brand_ids" class="@error('brand_ids') text-danger @enderror">Choose Brand Campaigns</label>
+                                        <span class="badge badge-danger">You are in {{ $campaign->title ?? '' }}. So {{ $campaign->title ?? '' }} automatically selected</span>
                                         <select id="brand_ids" name="brand_ids[]"
                                                 class="form-control select2 @error('brand_ids') is-invalid @enderror" data-placeholder="Select a brand campaign" multiple>
                                             @foreach($brandCampaigns->groupBy('brand_id') as $brandCampaigns)

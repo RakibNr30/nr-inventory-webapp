@@ -217,7 +217,11 @@
                             <div class="card-header">
                                 <h3 class="card-title">Campaigns</h3>
                                 <br>
-                                <p class="text-sm text-primary">Choose a campaign you want to take part in.</p>
+                                <p class="text-sm text-primary mb-0">Choose a campaign you want to take part in.</p>
+                                <span>
+                                    <i class="fa fa-star text-danger"></i> Main campaign brand. Not removable.
+                                </span>
+                                <br>
                             </div>
 
                             @if(count($campaign_influencers))
@@ -254,21 +258,37 @@
                                                 </td>
 
                                                 @php
-                                                    $brands = Modules\Ums\Entities\User::query()
+                                                    $baseBrands = Modules\Ums\Entities\User::query()
                                                     ->whereIn('id', $campaign_influencer->brand_ids ?? [])
                                                     ->whereNotIn('id', $campaign_influencer->denied_brand_ids ?? [])->get();
                                                     $baseCampaignInfluencers = $campaign_influencer->base_campaign_influencers->take(5) ?? [];
+
+                                                    $brands[] = $campaign_influencer->campaign->brand ?? null;
+                                                    $campaignInfluencers[] = $campaign_influencer;
+
+                                                    foreach ($baseBrands as $baseBrand) {
+                                                        $brands[] = $baseBrand;
+                                                    }
+                                                    foreach ($baseCampaignInfluencers as $baseCampaignInfluencer) {
+                                                        $campaignInfluencers[] = $baseCampaignInfluencer;
+                                                    }
                                                 @endphp
 
                                                 @for($index = 0; $index < 5; $index++)
                                                     <td>
-                                                        @if(isset($brands[$index]) && isset($baseCampaignInfluencers[$index]))
+                                                        @if(isset($brands[$index]) && isset($campaignInfluencers[$index]))
                                                             <ul class="list-inline text-center">
                                                                 @if(($campaign_influencer->campaign_accept_status_by_influencer == 0) && (\Carbon\Carbon::now()->lt($available_until)) && ($campaign_influencer->campaign->is_active))
                                                                     @if(count($brands) > 1)
-                                                                        <span class="brand-close-btn" data-toggle="modal" href="#modal-lg-bc-{{ $c_index }}{{ $index }}">
-                                                                        <i class="fa fa-times-circle"></i>
-                                                                    </span>
+                                                                        @if($campaignInfluencers[$index]->id == $campaign_influencer->id)
+                                                                            <span class="brand-close-btn text-danger">
+                                                                                <i class="fa fa-star text-danger"></i>
+                                                                            </span>
+                                                                        @else
+                                                                            <span class="brand-close-btn" data-toggle="modal" href="#modal-lg-bc-{{ $c_index }}{{ $index }}">
+                                                                                <i class="fa fa-times-circle"></i>
+                                                                            </span>
+                                                                        @endif
                                                                     @endif
 
                                                                     <div class="modal fade" id="modal-lg-bc-{{ $c_index }}{{ $index }}" style="display: none;" aria-hidden="true">
@@ -285,7 +305,7 @@
                                                                                 {!! Form::open(['url' => route('backend.cms.campaign-influencer.brand.remove', [$campaign_influencer->id, $brands[$index]->id]), 'method' => 'put']) !!}
                                                                                 <div class="modal-body">
                                                                                     <div class="form-group text-left mt-2">
-                                                                                        <input type="hidden" name="base_campaign_influencer_id" value="{{ $baseCampaignInfluencers[$index]->id }}">
+                                                                                        <input type="hidden" name="base_campaign_influencer_id" value="{{ $campaignInfluencers[$index]->id }}">
                                                                                         <label for="brand_denied_reason" class="@error('brand_denied_reason') text-danger @enderror">
                                                                                             Write us if you don‘t want to show a specific brand or if you have any other concerns.
                                                                                         </label>

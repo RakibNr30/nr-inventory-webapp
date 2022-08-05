@@ -18,12 +18,9 @@ use Modules\Cms\Entities\Campaign;
 use Modules\Cms\Entities\CampaignInfluencer;
 use Modules\Cms\Http\Requests\CampaignInfluencerStoreRequest;
 use Modules\Cms\Http\Requests\CampaignInfluencerUpdateRequest;
-use Modules\Cms\Http\Requests\CampaignStoreRequest;
 use Modules\Cms\Services\CampaignInfluencerService;
 use Modules\Cms\Services\CampaignService;
 use Modules\Ums\Services\UserService;
-use phpDocumentor\Reflection\Types\Integer;
-use PhpParser\Node\Expr\Throw_;
 
 class CampaignInfluencerController extends Controller
 {

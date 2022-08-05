@@ -363,9 +363,12 @@ class CampaignController extends Controller
         $this->userService->update(['is_pre_selected' => true], $influencerId);
 
         $brands = $this->userService->brands();
+        $campaign = $this->campaignService->find(\request()->id);
+        $brandIds = $brands->pluck('id')->toArray();
+        $brandCampaigns = Campaign::query()->whereIn('brand_id', $brandIds)->where('id', '!=', $campaign->id)->get();
 
         // return view
-        return view('cms::campaign.influencer.pre_selection_create', compact('campaign', 'influencer', 'brands'));
+        return view('cms::campaign.influencer.pre_selection_create', compact('campaign', 'influencer', 'brands', 'brandCampaigns'));
     }
 
     /**

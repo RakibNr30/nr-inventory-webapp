@@ -83,9 +83,9 @@
                                                 </td>
                                                 <td>
                                                     @php
-                                                        foreach($campaign_influencer->content_types as $index_content => $content_type) {
+                                                        foreach($campaign_influencer->content_types ?? [] as $index_content => $content_type) {
                                                             print($content_type);
-                                                            if($index + 1 < count($campaign_influencer->content_types))
+                                                            if($index_content + 1 < count($campaign_influencer->content_types))
                                                                 print(', ');
                                                         }
                                                     @endphp
