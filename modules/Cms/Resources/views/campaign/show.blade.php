@@ -365,6 +365,12 @@
                                                                                     <div class="row">
                                                                                         @php
                                                                                             $available_until = \Carbon\Carbon::parse($campaignInfluencer->available_until);
+                                                                                            $contentTypes = '';
+                                                                                            foreach ($campaignInfluencer->content_types ?? [] as $key => $contentType) {
+                                                                                                $contentTypes .= $contentType;
+                                                                                                if (count($campaignInfluencer->content_types) > $key + 1)
+                                                                                                    $contentTypes .= ', ';
+                                                                                            }
                                                                                         @endphp
 
                                                                                         @foreach(range(1, $campaignInfluencer->cycle_count) as $index_cycle => $cycle)
@@ -380,7 +386,8 @@
                                                                                             <div class="col-md-4">
                                                                                                 <div class="card">
                                                                                                     <div class="card-header">
-                                                                                                        Cycle {{ $index_cycle + 1 . '/' . $campaignInfluencer->cycle_count }}
+                                                                                                        Cycle {{ $index_cycle + 1 . '/' . $campaignInfluencer->cycle_count }}<br>
+                                                                                                        <span class="badge p-0 font-weight-normal mb-2">{{ $contentTypes }}</span>
                                                                                                     </div>
                                                                                                     <div class="card-body">
 
@@ -400,6 +407,7 @@
                                                                                                                                 </button>
                                                                                                                             </div>
                                                                                                                             <div class="modal-body">
+                                                                                                                                <span class="badge badge-danger font-weight-normal mb-4">Uploaded contents of {{ $contentTypes }}</span>
                                                                                                                                 <div class="row">
                                                                                                                                     @foreach($get_media_collections as $index2 => $file)
                                                                                                                                         <div class="col-md-4">

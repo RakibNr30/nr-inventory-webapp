@@ -19,6 +19,12 @@
                                 </div>
                                 @php
                                     $available_until = \Carbon\Carbon::parse($campaign_influencer->available_until);
+                                    $contentTypes = '';
+                                    foreach ($campaign_influencer->content_types ?? [] as $key => $contentType) {
+                                        $contentTypes .= $contentType;
+                                        if (count($campaign_influencer->content_types) > $key + 1)
+                                            $contentTypes .= ', ';
+                                    }
                                 @endphp
                                 @foreach(range(1, $campaign_influencer->cycle_count) as $cycle)
                                     @php
@@ -28,11 +34,12 @@
                                     <div class="col-md-4">
                                         <div class="card">
                                             <div class="card-body">
-                                                <div class="form-group">
-                                                    <label>
+                                                <div class="form-group mb-0">
+                                                    <label class="d-block mb-0">
                                                         Cycle {{ $cycle . '/' . $campaign_influencer->cycle_count }}
                                                     </label>
-                                                    @if(\Carbon\Carbon::now()->lt($available_until))
+                                                    <span class="badge p-0 mb-2">{{ $contentTypes }}</span>
+                                                @if(\Carbon\Carbon::now()->lt($available_until))
                                                         <div class="custom-file">
                                                             <input type="file" name="{{ $media_collection }}[]" value="{{ old($media_collection) }}" class="custom-file-input @error($media_collection) is-invalid @enderror" id="customFile" multiple {{ $cycle == $campaign_influencer->current_cycle ? '' : 'disabled' }}>
                                                             <label class="custom-file-label font-weight-normal" for="customFile">Choose file</label>
@@ -50,7 +57,7 @@
                                                             <div class="modal-dialog modal-xl">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
-                                                                        <h4 class="modal-title text-lg font-weight-bold">
+                                                                        <h4 class="modal-title text-lg font-weight-bold d-block">
                                                                             Cycle {{ $cycle }}
                                                                         </h4>
                                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -58,6 +65,7 @@
                                                                         </button>
                                                                     </div>
                                                                     <div class="modal-body">
+                                                                        <span class="badge badge-danger font-weight-normal mb-4">Uploaded contents of {{ $contentTypes }}</span>
                                                                         <div class="row">
                                                                             @foreach($get_media_collections as $index2 => $file)
                                                                                 <div class="col-md-4">
