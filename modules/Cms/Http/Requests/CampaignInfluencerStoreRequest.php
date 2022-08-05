@@ -25,7 +25,7 @@ class CampaignInfluencerStoreRequest extends FormRequest
     {
         return [
             'influencer_id' => 'required',
-            'brand_ids' => 'required|min:1',
+            //'brand_ids' => 'required|min:1',
             'available_until' => 'required',
             'content_types' => 'required|min:1',
             'fee' => 'required|numeric',

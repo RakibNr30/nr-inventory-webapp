@@ -358,7 +358,7 @@
                                                                                     <div class="ml-2">
                                                                                         <h4 class="modal-title">
                                                                                             <span class="font-weight-bold text-md">
-                                                                                                {{ $brands[$index]->additionalInfo->first_name ?? '' }}
+                                                                                                {{ $brands[$index]->additionalInfo->first_name ?? '' }} (Campaign: {{ $campaignInfluencers[$index]->campaign->title ?? '-' }})
                                                                                             </span>
                                                                                         </h4>
                                                                                         <span class="text-sm font-weight-normal">

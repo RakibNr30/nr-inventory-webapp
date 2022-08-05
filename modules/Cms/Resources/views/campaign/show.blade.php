@@ -303,7 +303,7 @@
                                                                                         </tr>
                                                                                         <tr>
                                                                                             <td>{{ $campaign->title ?? '' }}</td>
-                                                                                            <td>{{ $campaignInfluencer->campaign->start_date ?? '' }}</td>
+                                                                                            <td>{{ $campaignInfluencer->start_date ?? '' }}</td>
                                                                                             <td>{{ $campaignInfluencer->next_deadline->format('d.m.Y') ?? '' }}, {{ $campaignInfluencer->next_deadline->diffInDays() }} days</td>
                                                                                             <td>
                                                                                                 <div class="tooltip2">

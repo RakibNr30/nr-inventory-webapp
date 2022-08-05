@@ -79,6 +79,8 @@ class CampaignInfluencerController extends Controller
 
         if (isset($data['brand_ids']))
             $data['brand_ids'] = array_map('intval', $data['brand_ids'] ?? []);
+        else
+            $data['brand_ids'] = [];
 
         $data['campaign_manager_id'] = Campaign::query()->find($id)->created_by ?? null;
 
@@ -130,8 +132,8 @@ class CampaignInfluencerController extends Controller
 
         $this->campaignInfluencerService->update(['base_campaign_influencer_ids' => $base_campaign_influencer_ids], $parent_campaign_influencer->id);
 
-        if ($addedCount > 0) {
-            notifier()->success('This influencer added to ' . $addedCount . ' campaign');
+        if (!empty($parent_campaign_influencer) || ($addedCount > 0)) {
+            notifier()->success('This influencer added to ' . ($addedCount + (!empty($parent_campaign_influencer) == true)) . ' campaign');
         } else {
             notifier()->error('This influencer can not be added any campaign');
         }
