@@ -23,7 +23,7 @@ Route::resource('user-social-account-info', 'UserSocialAccountInfoController');
 Route::resource('user-language', 'UserLanguageController');*/
 
 // Influencer routes...
-Route::resource('influencer', 'InfluencerController');
+Route::resource('influencer', 'InfluencerController')->except(['destroy']);
 Route::get('influencer-list', 'InfluencerController@list')->name('influencer.list');
 
 Route::resource('user-prefix', 'UserPrefixController')->only(['index', 'update']);
@@ -31,7 +31,7 @@ Route::resource('user-prefix', 'UserPrefixController')->only(['index', 'update']
 // User profile routes
 Route::prefix('profile')->name('profile-')->group(function () {
     // User Account Info routes...
-    Route::resource('account-info', 'Profile\AccountInfoController');
+    Route::resource('account-info', 'Profile\AccountInfoController')->only(['index', 'update']);
     // User Additional Info routes...
     Route::resource('additional-info', 'Profile\AdditionalInfoController')->only(['index', 'update']);
     // User Shipping Info routes...
@@ -43,7 +43,7 @@ Route::prefix('profile')->name('profile-')->group(function () {
     // User Language routes...
     //Route::resource('language', 'Profile\LanguageController');
     // Change Password routes...
-    Route::resource('password-change', 'Profile\PasswordChangeController');
+    Route::resource('password-change', 'Profile\PasswordChangeController')->only(['index', 'update']);
 });
 // Role routes...
 // Route::resource('role', 'RoleController');

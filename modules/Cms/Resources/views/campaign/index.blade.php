@@ -263,6 +263,8 @@
                                                     ->whereNotIn('id', $campaign_influencer->denied_brand_ids ?? [])->get();
                                                     $baseCampaignInfluencers = $campaign_influencer->base_campaign_influencers->take(5) ?? [];
 
+                                                    $campaignInfluencers = [];
+
                                                     $brands[] = $campaign_influencer->campaign->brand ?? null;
                                                     $campaignInfluencers[] = $campaign_influencer;
 

@@ -284,4 +284,73 @@ class CampaignService
 
         return count($filters) ? $campaign_collection->unique('id') : $campaigns;
     }
+
+    public function managerCampaignWithInfluencers($filters, $limit = 0)
+    {
+        $campaigns = $this->campaignRepository->model
+            ->where('created_by', auth()->user()->id)
+            ->with(
+                [
+                    'campaignInfluencers' => function (HasMany $query) {
+                        $query->where('accept_status', 1)
+                            ->where('campaign_accept_status_by_influencer', 1);
+                    }
+                ]
+            )
+            ->withCount(
+                [
+                    'campaignInfluencers' => function (Builder $query) {
+                        $query->where('accept_status', 1)
+                            ->where('campaign_accept_status_by_influencer', 1);
+                    }
+                ]
+            )
+            ->paginate($limit);
+
+        $campaigns->map(function ($value) {
+            return [
+                $value['follower_count'] = NumberManager::campaignFollowerCount($value),
+                $value['uploaded_content_count'] = NumberManager::campaignUploadedContentCount($value)
+            ];
+        });
+
+        $campaign_collection = collect();
+
+        foreach ($filters as $filter) {
+            if ($filter == 1) {
+                $filter_campaigns = $campaigns->filter(function ($value) {
+                    return $value->next_deadline->gt(Carbon::now()) && $value->is_active &&
+                        ($value->campaign_influencers_count < $value->amount_of_influencer_per_cycle ||
+                            $value->follower_count < $value->amount_of_influencer_follower_per_cycle ||
+                            $value->uploaded_content_count < $value->amount_of_influencer_per_cycle);
+                });
+                $campaign_collection = $campaign_collection->merge($filter_campaigns);
+            }
+            if ($filter == 2) {
+                $filter_campaigns = $campaigns->filter(function ($value) {
+                    return $value->next_deadline->lte(Carbon::now()) &&
+                        $value->campaign_influencers_count < $value->amount_of_influencer_per_cycle &&
+                        $value->follower_count < $value->amount_of_influencer_follower_per_cycle &&
+                        $value->uploaded_content_count < $value->amount_of_influencer_per_cycle;
+                });
+                $campaign_collection = $campaign_collection->merge($filter_campaigns);
+            }
+            if ($filter == 3) {
+                $filter_campaigns = $campaigns->filter(function ($value) {
+                    return $value->campaign_influencers_count >= $value->amount_of_influencer_per_cycle &&
+                        $value->follower_count >= $value->amount_of_influencer_follower_per_cycle &&
+                        $value->uploaded_content_count >= $value->amount_of_influencer_per_cycle;
+                });
+                $campaign_collection = $campaign_collection->merge($filter_campaigns);
+            }
+            if ($filter == 4) {
+                $filter_campaigns = $campaigns->filter(function ($value) {
+                    return !$value->is_active;
+                });
+                $campaign_collection = $campaign_collection->merge($filter_campaigns);
+            }
+        }
+
+        return count($filters) ? $campaign_collection->unique('id') : $campaigns;
+    }
 }

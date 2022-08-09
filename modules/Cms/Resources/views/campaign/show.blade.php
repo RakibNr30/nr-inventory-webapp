@@ -612,10 +612,13 @@
                                 <h6>Brands</h6>
                             </div>
                             <div class="card-body">
-                                @if(count($brands))
+                                @if(count($campaignInfluencers))
                                     <div class="brand-list">
                                         <div class="row">
-                                            @foreach($brands as $index1 => $brand)
+                                            @foreach($campaignInfluencers as $index1 => $campaignInfluencer)
+                                                @php
+                                                    $brand = $campaignInfluencer->campaign->brand ?? null;
+                                                @endphp
                                                 <div class="col-lg-4 col-6">
                                                     <div class="small-box bg-gradient-secondary">
                                                         <div class="inner text-justify">

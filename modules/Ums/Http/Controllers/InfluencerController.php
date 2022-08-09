@@ -9,22 +9,19 @@ use App\Http\Controllers\Controller;
 use App\Mail\RegisterMail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Modules\Cms\Entities\CampaignInfluencer;
 use Modules\Cms\Services\CampaignInfluencerService;
 use Modules\Cms\Services\CampaignService;
 use Modules\Cms\Services\DashboardService;
 use Modules\Cms\Services\InfluencerCategoryService;
-use Modules\Ums\Entities\User;
 use Modules\Ums\Http\Requests\InfluencerStoreRequest;
 use Modules\Ums\Http\Requests\InfluencerUpdateRequest;
 use Modules\Ums\Http\Requests\UserStoreRequest;
-use Modules\Ums\Http\Requests\UserUpdateRequest;
 
 use Modules\Ums\Services\UserAdditionalInfoService;
 use Modules\Ums\Services\UserService;
 use Modules\Ums\Services\UserShippingInfoService;
 use Modules\Ums\Services\UserSocialAccountInfoService;
-use function GuzzleHttp\Promise\all;
 
 class InfluencerController extends Controller
 {
@@ -127,8 +124,10 @@ class InfluencerController extends Controller
             }
 
             $dashboard->statistics = $this->dashboardService->statisticsBrand();
-        }
-        if (!AuthManager::isBrand() && !AuthManager::isInfluencer()) {
+        } else if (AuthManager::isInfluencerManager()) {
+            $influencers = $this->campaignInfluencerService->campaignManagerInfluencers();
+            $dashboard->statistics = $this->dashboardService->statisticsInfluencerManager();
+        } else if (AuthManager::isAdmin() || AuthManager::isSuperAdmin()) {
             $influencers = $this->campaignInfluencerService->all();
             $dashboard->statistics = $this->dashboardService->statistics();
         }
@@ -227,6 +226,7 @@ class InfluencerController extends Controller
      */
     public function show($id)
     {
+        abort(404);
         // get user
         $user = $this->userService->find($id);
         // check if user doesn't exists
@@ -250,6 +250,12 @@ class InfluencerController extends Controller
      */
     public function edit($id)
     {
+        $influencerIds = CampaignInfluencer::query()->where('campaign_manager_id', \auth()->user()->id)->get()->pluck('influencer_id')->toArray();
+
+        if (!in_array($id, $influencerIds)) {
+            abort(404);
+        }
+
         // get user
         $user = $this->userService->find($id);
         // check if user doesn't exists

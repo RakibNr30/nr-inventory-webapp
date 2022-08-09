@@ -26,6 +26,8 @@ class DashboardController extends Controller
         }
         else if (AuthManager::isInfluencer()) {
             $dashboard->statistics = $this->dashboardService->statisticsInfluencer();
+        } else if (AuthManager::isInfluencerManager()) {
+            $dashboard->statistics = $this->dashboardService->statisticsInfluencerManager();
         }
         else {
             $dashboard->statistics = $this->dashboardService->statistics();

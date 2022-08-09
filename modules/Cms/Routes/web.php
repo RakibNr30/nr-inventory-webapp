@@ -26,7 +26,7 @@ Route::resource('faq', 'FaqController');
 // Testimonial routes...
 Route::resource('testimonial', 'TestimonialController');
 // Campaign routes...
-Route::resource('campaign', 'CampaignController');
+Route::resource('campaign', 'CampaignController')->except(['destroy']);
 Route::get('campaign/{id}/pre-selection', 'CampaignController@preSelection')->name('campaign.pre-selection');
 Route::get('campaign/{id}/pre-selection/{influencerId}/create', 'CampaignController@preSelectionCreate')->name('campaign.influencer.pre-selection.create');
 Route::get('campaign/{id}/influencer/create', 'CampaignInfluencerController@create')->name('campaign.influencer.create');
@@ -34,7 +34,7 @@ Route::post('campaign/{id}/influencer/store', 'CampaignInfluencerController@stor
 Route::get('campaign-influencer-manager', 'CampaignInfluencerController@campaignInfluencerManager')->name('campaign.influencer-manager.list');
 Route::post('campaign/{id}/active-status/update', 'CampaignController@updateActiveStatus')->name('campaign.active-status.update');
 // Brand routes...
-Route::resource('brand', 'BrandController');
+Route::resource('brand', 'BrandController')->except(['destroy']);
 Route::get('brand/{id}/content', 'BrandController@content')->name('brand.content');
 Route::put('brand/{id}/content-upload', 'BrandController@contentUpload')->name('brand.content.upload');
 // Product routes...
@@ -42,7 +42,7 @@ Route::resource('product', 'ProductController');
 // Influencer category routes...
 Route::resource('influencer-category', 'InfluencerCategoryController');
 // Campaign influencer routes...
-Route::resource('campaign-influencer', 'CampaignInfluencerController');
+Route::resource('campaign-influencer', 'CampaignInfluencerController')->except(['show', 'edit', 'destroy']);
 Route::put('campaign-influencer/{id}/feedback', 'CampaignInfluencerController@feedback')->name('campaign-influencer.feedback');
 Route::put('campaign-influencer/{id}/feedback/content', 'CampaignInfluencerController@feedbackContent')->name('campaign-influencer.feedbackContent');
 Route::put('campaign-influencer/{id}/reminder', 'CampaignInfluencerController@reminder')->name('campaign-influencer.reminder');

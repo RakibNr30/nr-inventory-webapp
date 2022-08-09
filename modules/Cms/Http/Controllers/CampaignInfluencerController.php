@@ -60,7 +60,11 @@ class CampaignInfluencerController extends Controller
         $campaign = $this->campaignService->find(\request()->id);
 
         $brandIds = $brands->pluck('id')->toArray();
-        $brandCampaigns = Campaign::query()->whereIn('brand_id', $brandIds)->where('id', '!=', $campaign->id)->get();
+        if (AuthManager::isInfluencerManager()) {
+            $brandCampaigns = Campaign::query()->where('created_by', auth()->user()->id)->whereIn('brand_id', $brandIds)->where('id', '!=', $campaign->id)->get();
+        } else {
+            $brandCampaigns = Campaign::query()->whereIn('brand_id', $brandIds)->where('id', '!=', $campaign->id)->get();
+        }
 
         // return view
         return view('cms::campaign.influencer.create', compact('influencers','brands', 'campaign', 'brandCampaigns'));

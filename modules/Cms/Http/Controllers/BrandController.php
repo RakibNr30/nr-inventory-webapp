@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 
 // services...
 use Modules\Cms\DataTables\BrandDataTable;
+use Modules\Cms\Entities\CampaignInfluencer;
 use Modules\Cms\Http\Requests\BrandStoreRequest;
 use Modules\Cms\Http\Requests\BrandUpdateRequest;
 use Modules\Cms\Http\Requests\FaqStoreRequest;
@@ -215,6 +216,16 @@ class BrandController extends Controller
 
     public function content($id)
     {
+        if (AuthManager::isInfluencer()) {
+            $campaignInfluencerIds = CampaignInfluencer::query()->where('influencer_id', auth()->user()->id)->get()->pluck('id')->toArray();
+            if (!in_array($id, $campaignInfluencerIds)) {
+                abort(404);
+            }
+        } else {
+            abort(404);
+        }
+
+
         $campaign_influencer = $this->campaignInfluencerService->find($id);
 
         if (empty($campaign_influencer)) {
@@ -229,6 +240,15 @@ class BrandController extends Controller
 
     public function contentUpload(Request $request, $id)
     {
+        if (AuthManager::isInfluencer()) {
+            $campaignInfluencerIds = CampaignInfluencer::query()->where('influencer_id', auth()->user()->id)->get()->pluck('id')->toArray();
+            if (!in_array($id, $campaignInfluencerIds)) {
+                abort(404);
+            }
+        } else {
+            abort(404);
+        }
+
         $data = $request->all();
         // get campaign
         $campaign = $this->campaignInfluencerService->find($id);

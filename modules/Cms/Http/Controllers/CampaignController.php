@@ -8,11 +8,9 @@ use App\Http\Controllers\Controller;
 // requests...
 use Illuminate\Http\Request;
 use Modules\Cms\Entities\Campaign;
+use Modules\Cms\Entities\CampaignInfluencer;
 use Modules\Cms\Http\Requests\CampaignStoreRequest;
 use Modules\Cms\Http\Requests\CampaignUpdateRequest;
-
-// datatable...
-use Modules\Cms\DataTables\CampaignDataTable;
 
 // services...
 use Modules\Cms\Services\CampaignInfluencerService;
@@ -119,9 +117,19 @@ class CampaignController extends Controller
                 return preg_match("/$search/", strtolower($item['title']));
             });
         }
-        if (AuthManager::isSuperAdmin() || AuthManager::isAdmin() || AuthManager::isInfluencerManager()) {
+        if (AuthManager::isSuperAdmin() || AuthManager::isAdmin()) {
             $dashboard->statistics = $this->dashboardService->campaignStatistics();
             $campaigns = $this->campaignService->campaignWithInfluencers($filters);
+
+            $campaigns = $campaigns->filter(function ($item) use ($search) {
+                $search = strtolower($search);
+                return preg_match("/$search/", strtolower($item['title']));
+            });
+        }
+
+        if (AuthManager::isInfluencerManager()) {
+            $dashboard->statistics = $this->dashboardService->campaignStatistics();
+            $campaigns = $this->campaignService->managerCampaignWithInfluencers($filters);
 
             $campaigns = $campaigns->filter(function ($item) use ($search) {
                 $search = strtolower($search);
@@ -197,6 +205,31 @@ class CampaignController extends Controller
      */
     public function show($id)
     {
+        $campaignInfluencers = [];
+
+        if (AuthManager::isBrand()) {
+            $campaignIds = Campaign::query()->where('brand_id', auth()->user()->id)->get()->pluck('id')->toArray();
+            if (!in_array($id, $campaignIds)) {
+                abort(404);
+            }
+        } else if (AuthManager::isInfluencerManager()) {
+            $campaignIds = Campaign::query()->where('created_by', auth()->user()->id)->get()->pluck('id')->toArray();
+            if (!in_array($id, $campaignIds)) {
+                abort(404);
+            }
+        } else if (AuthManager::isInfluencer()) {
+            $campaignIds = CampaignInfluencer::query()->where('influencer_id', auth()->user()->id)->where('is_brand_campaign', false)->get()->pluck('campaign_id')->toArray();
+            if (!in_array($id, $campaignIds)) {
+                abort(404);
+            }
+            $campaignInfluencer = CampaignInfluencer::query()->where('campaign_id', $id)
+                ->where('influencer_id', auth()->user()->id)->first();
+
+            $campaignInfluencers = CampaignInfluencer::query()->where('parent_campaign_influencer_id', $campaignInfluencer->id)->get();
+
+            $campaignInfluencers[] = $campaignInfluencer;
+        }
+
         // get campaign
         $campaign = $this->campaignService->find($id);
 
@@ -208,14 +241,8 @@ class CampaignController extends Controller
             return redirect()->back();
         }
 
-        $brands = [];
-
-        if (AuthManager::isInfluencer()) {
-            $brands = $this->campaignInfluencerService->campaignInfluencerBrands($campaign->id);
-        }
-
         // return view
-        return view('cms::campaign.show', compact('campaign', 'brands'));
+        return view('cms::campaign.show', compact('campaign', 'campaignInfluencers'));
     }
 
     /**
@@ -226,6 +253,20 @@ class CampaignController extends Controller
      */
     public function edit($id)
     {
+        if (AuthManager::isBrand()) {
+            $campaignIds = Campaign::query()->where('brand_id', auth()->user()->id)->get()->pluck('id')->toArray();
+            if (!in_array($id, $campaignIds)) {
+                abort(404);
+            }
+        } else if (AuthManager::isInfluencerManager()) {
+            $campaignIds = Campaign::query()->where('created_by', auth()->user()->id)->get()->pluck('id')->toArray();
+            if (!in_array($id, $campaignIds)) {
+                abort(404);
+            }
+        } else if (AuthManager::isInfluencer()) {
+            abort(404);
+        }
+
         // brand lists
         $brands = $this->userService->brands();
         // influencer category lists

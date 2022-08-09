@@ -126,6 +126,36 @@ class DashboardService
      *
      * @return mixed
      */
+    public function statisticsInfluencerManager()
+    {
+        $statistics = new \stdClass();
+        $influencers = $this->campaignInfluencerRepository->model
+            ->with(['campaign'])
+            ->where('campaign_manager_id', auth()->user()->id)->get();
+
+        $statistics->overall_influencers = $influencers
+            ->count();
+        $statistics->pending_influencers = $influencers
+            ->where('accept_status', 0)
+            ->count();
+        $statistics->accepted_influencers = $influencers
+            ->where('accept_status', 1)
+            ->count();
+        $statistics->denied_influencers = $influencers
+            ->where('accept_status', -1)
+            ->count();
+        $statistics->favourite_influencers = $influencers
+            ->where('is_add_to_favourite', 1)
+            ->count();
+
+        return $statistics;
+    }
+
+    /**
+     * Get all data
+     *
+     * @return mixed
+     */
     public function campaignStatistics()
     {
         $statistics = new \stdClass();
@@ -136,7 +166,14 @@ class DashboardService
                 ->with(['campaignInfluencers'])
                 ->withCount(['campaignInfluencers'])
                 ->get();
-        } else {
+        } else if (AuthManager::isInfluencerManager()){
+            $campaigns = $this->campaignRepository->model
+                ->where('created_by', auth()->user()->id)
+                ->with(['campaignInfluencers'])
+                ->withCount(['campaignInfluencers'])
+                ->get();
+        }
+        else {
             $campaigns = $this->campaignRepository->model
                 ->with(['campaignInfluencers'])
                 ->withCount(['campaignInfluencers'])
@@ -269,7 +306,7 @@ class DashboardService
 
     public function campaignChartData()
     {
-        $campaigns = Campaign::query()->latest()->take(10)->get();
+        //$campaigns = Campaign::query()->latest()->take(10)->get();
         $campaigns = $this->campaignRepository->model
             ->withCount(['campaignInfluencers'])
             ->latest()
